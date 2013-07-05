@@ -20,8 +20,10 @@ namespace TimeSheet
         {
             //User usr = User.Get(1);
             //MessageBox.Show(usr.name);
-            User.Create("Administrator", "admin", "admin");
-            MessageBox.Show(User.Count.ToString());
+            //User.Create("Administrator", "admin", "admin");
+            //MessageBox.Show(User.Count.ToString());
+            User.Initialize("users", "id", "name", "login", "pass");
+            List<User> ls = User.FindAll(new Dictionary<string, string> { { "Name", "Administrator" }}).Select(o => (User)o).ToList();            
         }
     }
 }

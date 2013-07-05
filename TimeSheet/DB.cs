@@ -21,7 +21,54 @@ namespace TimeSheet
         }
     }
     public class DBObject
-    {        
+    {
+        public Dictionary<string, object> Fields = new Dictionary<string, object>();
+        static protected List<string> FieldNames = new List<string>();
+        static protected string tableName = "";
+        public Object this[string key]
+        {
+            get
+            {
+                return Fields[key.ToUpper()];
+            }
+            set
+            {
+                Fields[key.ToUpper()] = value;
+            }
+        }
+        public static void Initialize(string TableName, params string[] Fields)
+        {
+            tableName = TableName.ToUpper();
+            FieldNames = Fields.ToList().Select(f => f.ToUpper()).ToList();            
+        }
+        public override string ToString()
+        {
+            return Fields.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1} = \'{2}\'", sb.Length > 0 ? ", " : "", kvp.Key, kvp.Value), sb => sb.ToString());
+        }
+        static public List<DBObject> FindAll(Dictionary<string, string> restrictions)
+        {
+            List<DBObject> result = new List<DBObject>();
+            string fldNames = FieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
+            string rest = restrictions.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1} = \'{2}\'", sb.Length > 0 ? " AND " : "", kvp.Key.ToUpper(), kvp.Value), sb => sb.ToString());
+            DB.Connection.Open();
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} where {2}", fldNames, tableName, rest), DB.Connection);
+            try
+            {
+                FbDataReader data = command.ExecuteReader();                
+                while (data.Read())
+                {
+                    DBObject temp = new DBObject();
+                    FieldNames.ForEach(fn => { temp[fn] = data[fn]; });
+                    result.Add(temp);
+                }                
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
+            DB.Connection.Close();
+            return result;
+        }
         static public int Count(string TableName)
         {
             DB.Connection.Open();
@@ -46,7 +93,7 @@ namespace TimeSheet
     {        
         public int id;
         public string login, password, name;
-        public User()
+        public User()            
         {
         }
         public User(string login, string password, string name)
@@ -106,7 +153,7 @@ namespace TimeSheet
         }
         public static User FindOrCreate(string Login, string Password)
         {
-
+            return null;
         }
     }
 
