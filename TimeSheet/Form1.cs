@@ -15,5 +15,13 @@ namespace TimeSheet
         {
             InitializeComponent();
         }
+        int i = 0;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //User usr = User.Get(1);
+            //MessageBox.Show(usr.name);
+            User.Create("Administrator", "admin", "admin");
+            MessageBox.Show(User.Count.ToString());
+        }
     }
 }
