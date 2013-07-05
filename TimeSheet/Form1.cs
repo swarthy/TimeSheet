@@ -22,8 +22,14 @@ namespace TimeSheet
             //MessageBox.Show(usr.name);
             //User.Create("Administrator", "admin", "admin");
             //MessageBox.Show(User.Count.ToString());
-            User.Initialize("users", "id", "name", "login", "pass");
-            List<User> ls = User.FindAll(new Dictionary<string, string> { { "Name", "Administrator" }}).Select(o => (User)o).ToList();            
+            //User.Initialize("users", "id", "name", "login", "pass");
+            //List<User> ls = User.FindAll(new Dictionary<string, string> { { "Name", "Administrator" } });
+            Domain test = new Domain();
+            test["id"] = 1;
+            test["login"] = "a1";
+            test["pass"] = "a2";
+            test["name"] = "a3";
+            User usr = test.ParseTo<User>();            
         }
     }
 }
