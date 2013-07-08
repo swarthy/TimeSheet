@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Security.Cryptography;
+using System.Reflection;
 
 namespace TimeSheet
 {
@@ -16,6 +17,6 @@ namespace TimeSheet
             for (int i = 0; i < data.Length; i++)
                 sBuilder.Append(data[i].ToString("x2"));
             return sBuilder.ToString();
-        }        
+        }       
     }
 }
