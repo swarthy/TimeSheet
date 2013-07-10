@@ -22,53 +22,12 @@ namespace TimeSheet
             UserDepartment.Initialize<UserDepartment>();
             Calendar.Initialize<Calendar>();
             Calendar_Content.Initialize<Calendar_Content>();
-        }        
-        private void button1_Click(object sender, EventArgs e)
-        {
-            //User usr = User.Get(1);
-            //MessageBox.Show(usr.name);
-            //User.Create("Administrator", "admin", "admin");
-            //MessageBox.Show(User.Count.ToString());
-            //User.Initialize("users", "id", "name", "login", "pass");            
-            /*Domain test = new Domain();
-            test["id"] = 1;
-            test["login"] = "a1";
-            test["pass"] = "a2";
-            test["name"] = "a3";
-            User usr = test.ParseTo<User>();            */
-            //List<User> ls2 = User.FindAll<User>("NAME = 'Administrator' or login = '{0}'","admin");                        
-            //MessageBox.Show(User.Count<User>().ToString());            
-            //User u = User.Get<User>(22);
-            //User u = User.Get<User>(22);
-            //object t = u["personal"];
-            //var c = Personal.Get<Personal>(1).H1<User>(""            
-            /*User u = User.Get<User>(22);
-            u.PersonalList.Remove(u.PersonalList.Last());
-            u.Save();*/
-
-
-            //User u = User.Get<User>(22);
-            //Personal[] p = new Personal[] { Personal.Get<Personal>(1), Personal.Get<Personal>(2), Personal.Get<Personal>(3) };
-            
-            //for (int i = 0; i < p.Length; i++)
-                //u.PersonalList.Add(p[i]);
-            //u.Save();
-            //User.Get<User>(22).PersonalList.ForEach(p => MessageBox.Show(p.User.ToString()));
-        }
+        }                
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-            //User u = User.Get<User>(22);
-            User u = new User("temp", "temp");            
-            Department d = Department.Get<Department>(1);
-            var ud = new UserDepartment(u, d);
-            ud.Save();
         }
     }
     public enum AppState
@@ -181,6 +140,60 @@ namespace TimeSheet
         {
             User = user;
             Department = department;
+        }
+    }
+    public class Department : Domain
+    {
+        new public static string tableName = "DEPARTMENT";
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
+        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
+        {
+            {"DepartmentUsers", new Link("Department_ID", typeof(UserDepartment))}
+        };
+        new public static Dictionary<string, Link> has_one = new Dictionary<string, Link>() {
+            {"DepartmentManager", new Link("PERSONAL_ID", typeof(Personal)) },
+            {"LPU",new Link("LPU_ID",typeof(LPU))}
+        };
+        #region Properties
+        public string Name
+        {
+            get
+            {
+                return this["name"].ToString();
+            }
+            set
+            {
+                this["name"] = value;
+            }
+        }
+        public int Department_Number
+        {
+            get
+            {
+                return (int)this["Department_Number"];
+            }
+            set
+            {
+                this["Department_Number"] = value;
+            }
+        }
+        public DBList<UserDepartment> DepartmentUsers
+        {
+            get
+            {
+                return HM<UserDepartment>("DepartmentUsers");
+            }
+        }
+        #endregion
+        public Department()
+            : base(typeof(Department))
+        {
+        }
+        public Department(string name, int department_number)
+            : base(typeof(Department))
+        {
+            Name = name;
+            Department_Number = department_number;
         }
     }
     public class Personal : Domain
@@ -385,59 +398,6 @@ namespace TimeSheet
             Days = days;
         }
     }
-    public class Department : Domain
-    {
-        new public static string tableName = "DEPARTMENT";
-        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
-        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
-        {
-            {"DepartmentUsers", new Link("Department_ID", typeof(UserDepartment))}
-        };
-        new public static Dictionary<string, Link> has_one = new Dictionary<string, Link>() {
-            {"DepartmentManager", new Link("PERSONAL_ID", typeof(Personal)) },
-            {"LPU",new Link("LPU_ID",typeof(LPU))}
-        };
-        #region Properties
-        public string Name
-        {
-            get
-            {
-                return this["name"].ToString();
-            }
-            set
-            {
-                this["name"] = value;
-            }
-        }
-        public int Department_Number
-        {
-            get
-            {
-                return (int)this["Department_Number"];
-            }
-            set
-            {
-                this["Department_Number"] = value;
-            }
-        }
-        public DBList<UserDepartment> DepartmentUsers
-        {
-            get
-            {
-                return HM<UserDepartment>("DepartmentUsers");
-            }
-        }
-        #endregion
-        public Department()
-            : base(typeof(Department))
-        {
-        }
-        public Department(string name, int department_number)
-            : base(typeof(Department))
-        {            
-            Name = name;
-            Department_Number = department_number;
-        }
-    }
+    
     #endregion
 }

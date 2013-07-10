@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
-using System.Windows.Forms;
 using System.Reflection;
-using System.Diagnostics;
 
 namespace TimeSheet
 {
@@ -83,13 +81,13 @@ namespace TimeSheet
         }
     }
     public class DBList<T> : List<T> where T: Domain, new()
-    {        
-        public DBList(string FieldInDB="")
+    {
+        public DBList(string FieldInDB = "")
             : base()
         {
-            this.FieldInDB = FieldInDB;            
+            this.FieldInDB = FieldInDB;
         }
-        public T this[int i]
+        new public T this[int i]
         {
             get
             {
@@ -102,7 +100,7 @@ namespace TimeSheet
                     OnChange(this, new DBEventArgs<T>(base[i], FieldInDB));
             }
         }
-        public void RemoveAt(int i)
+        new public void RemoveAt(int i)
         {
             Remove(this[i]);
             base.RemoveAt(i);
