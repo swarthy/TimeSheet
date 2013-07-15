@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
-using System.Reflection;
+using System.Windows.Forms;
+///     Developer: Alexander Mochalin
+///     License: GNU GPL
 
 namespace TimeSheet
 {
@@ -18,9 +20,11 @@ namespace TimeSheet
                     try
                     {
                         connection.Open();
+                        Helper.Log("Подключение к БД...");
                     }
                     catch
                     {
+                        Helper.Log("не удалось =\\ Создаю новый экземпляр подключения");
                         connection = GetNewConnection;
                         connection.Open();
                     }
@@ -33,7 +37,7 @@ namespace TimeSheet
             {
                 FbConnection c = new FbConnection("UserID=SYSDBA;Password=masterkey;" +
                                   "Database=c:/FBDB.FDB;" +
-                                  "DataSource=localhost;Charset=NONE;");
+                                  "DataSource=localhost;Charset=NONE;");                
                 c.StateChange += new System.Data.StateChangeEventHandler((sender, args) => {
                     switch (args.CurrentState)
                     {
@@ -53,6 +57,7 @@ namespace TimeSheet
         public static object Query(string query)
         {
             FbCommand command = new FbCommand(query, DB.Connection);
+            Helper.Log("Запрос к БД: {0}", query);
             return command.ExecuteScalar();
         }
     }
@@ -60,10 +65,12 @@ namespace TimeSheet
     {
         private readonly T data;
         private readonly string fieldInDB;
-        public DBEventArgs(T data, string fieldInDB)
+        private readonly bool needSaveThis;
+        public DBEventArgs(T data, string fieldInDB, bool needSaveThis = true)
         {
             this.data = data;
             this.fieldInDB = fieldInDB;
+            this.needSaveThis = needSaveThis;
         }
         public T GetData
         {
@@ -79,13 +86,20 @@ namespace TimeSheet
                 return fieldInDB;
             }
         }
+        public bool NeedSave
+        {
+            get
+            {
+                return needSaveThis;
+            }
+        }
     }
     public class DBList<T> : List<T> where T: Domain, new()
     {
         public DBList(string FieldInDB = "")
             : base()
         {
-            this.FieldInDB = FieldInDB;
+            this.FieldInDB = FieldInDB;            
         }
         new public T this[int i]
         {
@@ -99,6 +113,29 @@ namespace TimeSheet
                 if (OnChange != null)
                     OnChange(this, new DBEventArgs<T>(base[i], FieldInDB));
             }
+        }
+        public DBList<T> Except(DBList<T> ex)
+        {
+            DBList<T> res = new DBList<T>();            
+            foreach (T item in this)
+            {
+                if (ex.Contains(item))
+                    continue;
+                res.Add(item);
+            }
+            return res;
+        }
+        public T FindOrCreate(object match)
+        {
+            var rest = Helper.AnonymousObjectToDictionary(match);
+            var temp = this.Find((item) => { bool result = true; foreach (var k in rest.Keys) if (!rest[k].Equals(item[k])) { result = false; break; } return result; });
+            if (temp == null)
+            {
+                temp = new T();
+                temp.SetValues(match);
+                this.Add(temp);
+            }            
+            return temp;
         }
         new public void RemoveAt(int i)
         {
@@ -115,17 +152,21 @@ namespace TimeSheet
         }
         public void Clear(bool delete_from_db = false)
         {
-            for (int i = 0; i < Count; i++)
-                Remove(this[i], delete_from_db);
-            base.Clear();
+            T temp = null;
+            while (Count > 0)
+            {
+                temp = this.First();
+                if (temp != null)
+                    Remove(temp, delete_from_db);
+            }
         }
         public void Remove(T item, bool delete_removable_object = false)
         {
             if (OnRemove != null)
-                OnRemove(this, new DBEventArgs<T>(item, FieldInDB));
-            base.Remove(item);
+                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, false));            
             if (delete_removable_object)
                 item.Delete();
+            base.Remove(item);
         }     
     }
     public struct Link
@@ -143,13 +184,21 @@ namespace TimeSheet
         /// <summary>
         /// Словарь, содержащий пары [Поле|Значение]
         /// </summary>
-        protected Dictionary<string, object> Fields = new Dictionary<string, object>();
+        protected Dictionary<string, object> Fields = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
         /// <summary>
         /// Список имен полей
         /// </summary>
         public static List<string> FieldNames = new List<string>();
+        /// <summary>
+        /// Словари внешних связей
+        /// </summary>
+        public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_one = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_many = new Dictionary<string, Link>();
+        /// <summary>
+        /// Загружена ли модель из БД?
+        /// </summary>
+        protected Dictionary<string, bool> BTfetched = new Dictionary<string, bool>();
         protected Dictionary<string, bool> H1fetched = new Dictionary<string, bool>();
         protected Dictionary<string, bool> HMfetched = new Dictionary<string, bool>();        
         /// <summary>
@@ -159,21 +208,36 @@ namespace TimeSheet
 
         bool changed = true;
         public bool _Changed { get { return changed; } private set { changed = value; } }
+
         public object this[string key]
         {
             get
-            {
-                if (GetHasOne(GetType()).ContainsKey(key) || GetHasMany(GetType()).ContainsKey(key))
-                    throw new Exception("You can't get \"Domain\" type field from here. Use H1/HM(\"domain_field_name\") method for this type of fields");
-                return Fields[key.ToUpper()];
+            {                
+                //if (GetBelongsTo(GetType()).ContainsKey(key) || GetHasMany(GetType()).ContainsKey(key) || GetHasOne(GetType()).ContainsKey(key))
+                    //throw new Exception("You can't get \"Domain\" type field from here. Use BT/H1/HM(\"domain_field_name\") method for this type of fields");
+                //Для повышения производительности 
+                //
+                // TODO: Раскомментировать для production
+                //
+                return Fields.ContainsKey(key) ? Fields[key] : null;
             }
             set
             {
-                Fields[key.ToUpper()] = value;
+                Fields[key] = value;
                 _Changed = true;
+                if (value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    BTfetched[key] = true;
+                    //Fields[belongs_to[key].FieldInDB] = (value as Domain).ID;
             }
         }
-        public T H1<T>(string key, bool getFromServer = false) where T: Domain, new()
+        public T BT<T>(string key, bool getFromServer = false) where T : Domain, new()
+        {
+            if (GetBelongsTo(GetType()).ContainsKey(key))
+                return FetchBelongsTo<T>(key, getFromServer);
+            else
+                throw new Exception("You can't get field, which is not a Domain object from here");
+        }
+        public T H1<T>(string key, bool getFromServer = false) where T : Domain, new()
         {
             if (GetHasOne(GetType()).ContainsKey(key))
                 return FetchHasOne<T>(key, getFromServer);
@@ -194,15 +258,21 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["ID"];
+                return (int)Fields["ID"];    //чтобы не вызывать лишних проверок
             }
             set
             {
-                this["ID"] = value;                
+                this["ID"] = value;          //чтобы сменился changed      
             }
         }
         public Domain()
         {
+        }
+        public void SetValues(object values)
+        {
+            var val = Helper.AnonymousObjectToDictionary(values);
+            foreach (var k in val.Keys)
+                this[k] = val[k];
         }
         /// <summary>
         /// Констурктор с инициализацией ключей в словаре Fields
@@ -211,9 +281,10 @@ namespace TimeSheet
         public Domain(Type type)
         {
             List<string> field_names = GetFieldNames(type);
-            field_names.ForEach(fn => Fields[fn] = null);            
+            field_names.ForEach(fn => Fields[fn] = null);//инициализация ключей в словаре
+            GetBelongsTo(type).Keys.ToList().ForEach(k => {  BTfetched[k] = false; });
+            GetHasMany(type).Keys.ToList().ForEach(k => {  HMfetched[k] = false; });
             GetHasOne(type).Keys.ToList().ForEach(k => { H1fetched[k] = false; });
-            GetHasMany(type).Keys.ToList().ForEach(k => HMfetched[k] = false);
         }        
         /// <summary>
         /// Инициализация класса перед началом работы. Заполнение списка, содержащего имена полей в БД
@@ -223,49 +294,92 @@ namespace TimeSheet
         {
             Type type = typeof(T);            
             List<string> field_names = GetFieldNames(type);
-            type.GetProperties().ToList().Where(pi => pi.Name != "Item" &&pi.Name[0]!='_' && !pi.PropertyType.IsGenericType && !pi.PropertyType.IsSubclassOf(typeof(Domain))).ToList().ForEach(pi => field_names.Add(pi.Name.ToUpper()));
-            GetHasOne(type).Values.ToList().ForEach(k => { field_names.Add(k.FieldInDB); });
+            type.GetProperties().ToList().Where(pi =>
+                pi.Name != "Item" &&
+                pi.Name[0]!='_' &&
+                !pi.PropertyType.IsGenericType &&
+                !pi.PropertyType.IsSubclassOf(typeof(Domain))).ToList().ForEach(pi => field_names.Add(pi.Name));
+            GetBelongsTo(type).Values.ToList().ForEach(k => { field_names.Add(k.FieldInDB); });
         }        
-        protected T FetchHasOne<T>(string key, bool refetch = false) where T: Domain, new()
+        protected T FetchBelongsTo<T>(string key, bool refetch = false) where T: Domain, new()
         {
-            Dictionary<string, Link> belongsto = GetHasOne(GetType());
+            Dictionary<string, Link> belongsto = GetBelongsTo(GetType());
             if (typeof(T) != belongsto[key].Type)
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
-            if (belongsto.Count > 0 && Fields["ID"] != null && (!H1fetched[key] || refetch))
+            if (belongsto.Count > 0 && Fields["ID"] != null && (!BTfetched[key] || refetch))
             {
                 if (this[belongsto[key].FieldInDB].ToString() == "")
                     return null;
-                var temp = Domain.F_All<Domain>("ID = " + this[belongsto[key].FieldInDB], true, belongsto[key].Type)[0].ParseTo<T>();
+                var temp = Domain.F_All<T>("ID = " + this[belongsto[key].FieldInDB], true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
                 Fields[key] = temp;
-                H1fetched[key] = true;
+                BTfetched[key] = true;
                 return temp;
             }
             else
-                if (H1fetched[key])
+                if (BTfetched[key])
                     return Fields[key] as T;
                 else
-                    throw new Exception("Can't get \"has one\" field");
+                    //throw new Exception("Can't get \"belongs to\" field");
+                    return null;
         }
-        protected DBList<T> FetchHasMany<T>(string key, bool refetch = false)where T: Domain, new()
+        protected T FetchHasOne<T>(string key, bool refetch = false) where T : Domain, new()
+        {
+            Dictionary<string, Link> hasOne = GetHasOne(GetType());
+            if (typeof(T) != hasOne[key].Type)
+                throw new Exception("Fetch error: Type mismatch");
+            if (hasOne.Count > 0 && Fields["ID"] != null && (!H1fetched[key] || refetch))
+            {
+                var temp = Domain.F_All<T>(hasOne[key].FieldInDB + " = " + ID, true);
+                T result;
+                if (temp.Count == 0)
+                    return null;
+                else
+                    result = temp[0];
+                H1fetched[key] = true;
+                Fields[key] = result;
+                return result;
+            }
+            else
+                if (H1fetched[key] || (Fields.ContainsKey(key) && Fields[key] != null))
+                    return Fields[key] as T;
+                else
+                    //throw new Exception("Can't get \"has one\" field. \"this\" is not saved or static \"has_one\" field is not defined correctly");
+                    return null;
+        }
+        protected DBList<T> FetchHasMany<T>(string key, bool refetch = false) where T : Domain, new()
         {
             Dictionary<string, Link> hasmany = GetHasMany(GetType());
             if (typeof(T) != hasmany[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
             if (hasmany.Count > 0 && Fields["ID"] != null && (!HMfetched[key] || refetch))
             {
-                var temp = Domain.F_All<T>(hasmany[key].FieldInDB + " = " + ID, false);
+                var temp = Domain.F_All<T>(hasmany[key].FieldInDB + " = " + ID);
                 HMfetched[key] = true;
                 temp.FieldInDB = hasmany[key].FieldInDB;
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
-                Fields[key] = temp;                
+                Fields[key] = temp;
                 return temp;
             }
             else
-                if (HMfetched[key] || Fields[key]!=null)
+                if (HMfetched[key] || (Fields.ContainsKey(key) && Fields[key] != null))
                     return Fields[key] as DBList<T>;
                 else
-                    throw new Exception("Can't get \"has many\" field. \"this\" is not saved or static \"has_many\" field is not defined correctly");
+                    //throw new Exception("Can't get \"has many\" field. \"this\" is not saved or static \"has_many\" field is not defined correctly");
+                    return new DBList<T>();
+        }
+        public static T FindOrCreate<T>(object restrictions) where T : Domain, new()
+        {
+            var rest = Helper.AnonymousObjectToDictionary(restrictions);
+            var result = Domain.Find<T>(restrictions);
+            if (result == null)
+            {
+                result = new T();
+                rest.Keys.ToList().ForEach(k => result.Fields[k] = rest[k]);
+            }
+            else
+                result.changed = false;            
+            return result;
         }
         /// <summary>
         /// Получить список полей для типа type
@@ -287,12 +401,25 @@ namespace TimeSheet
         }
         static Dictionary<string, Link> GetHasMany(Type type)
         {
-            return type.GetField("has_many").GetValue(null) as Dictionary<string, Link>;
+            var f = type.GetField("has_many");
+            if (f == null)
+                return new Dictionary<string,Link>();
+            return f.GetValue(null) as Dictionary<string, Link>;
         }
         static Dictionary<string, Link> GetHasOne(Type type)
         {
-            return type.GetField("has_one").GetValue(null) as Dictionary<string, Link>;
+            var f = type.GetField("has_one");
+            if (f == null)
+                return new Dictionary<string, Link>();
+            return f.GetValue(null) as Dictionary<string, Link>;
         }
+        static Dictionary<string, Link> GetBelongsTo(Type type)
+        {
+            var f = type.GetField("belongs_to");
+            if (f == null)
+                return new Dictionary<string,Link>();
+            return f.GetValue(null) as Dictionary<string, Link>;
+        }        
         /// <summary>
         /// Преобразование из Domain в производные классы
         /// </summary>
@@ -305,18 +432,10 @@ namespace TimeSheet
             T newinst = new T();
             GetFieldNames(typeof(T)).ForEach(fn => newinst[fn] = this[fn]);            
             return newinst;
-        }
-        public object ParseTo(Type t)
-        {
-            if (!t.IsSubclassOf(typeof(Domain)))
-                throw new Exception("Parsing class must be a derived for Domain");            
-            var newinst = Activator.CreateInstance(t);
-            GetFieldNames(t).ForEach(fn => (newinst as Domain)[fn] = this[fn]);
-            return newinst;
-        }
+        }        
         public override string ToString()
         {
-            return "["+Fields.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1} = \'{2}\'", sb.Length > 0 ? ", " : "", kvp.Key, kvp.Value), sb => sb.ToString())+"]";
+            return "["+Fields.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1} = {2}", sb.Length > 0 ? ", " : "", kvp.Key, kvp.Value), sb => sb.ToString())+"]";
         }   
         /// <summary>
         /// Поиск записей в БД
@@ -325,32 +444,66 @@ namespace TimeSheet
         /// <param name="where_str">Условия выборки</param>
         /// <param name="single">Необходим один элемент?</param>
         /// <returns>Список объектов</returns>
-        private static DBList<T> F_All<T>(string where_str = "", bool single = false, Type customType = null) where T: Domain, new()
-        {   
+        private static DBList<T> F_All<T>(string where_str = "", bool single = false, Type customType = null) where T : Domain, new()
+        {
             DBList<T> result = new DBList<T>();
-            Type type = customType == null ? typeof(T) : customType;            
+            Type type = customType == null ? typeof(T) : customType;
             string tableName = GetTableName(type);
             List<string> fieldNames = GetFieldNames(type);
             // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
             string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
             FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : ""), DB.Connection);
             //try
-            //{            
-            FbDataReader data = command.ExecuteReader();
-            while (data.Read())
-            {
-                T temp = new T();                
-                fieldNames.ForEach(fn => temp[fn] = data[fn]);
-                temp._Changed = false;
-                result.Add(temp);
-                if (single)
-                    break;
-            }
+            //{
+                FbDataReader data = command.ExecuteReader();
+                while (data.Read())
+                {
+                    T temp = new T();
+                    fieldNames.ForEach(fn => temp[fn] = data[fn]);
+                    temp._Changed = false;
+                    result.Add(temp);
+                    if (single)
+                        break;
+                }
             //}
             //catch (Exception e)
             //{
-                //MessageBox.Show(e.Message,"SQL Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
-            //}                 
+                //MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
+            return result;
+        }
+        private static DBList<T> F_All<T>(object restrictions, bool single = false, Type customType = null) where T : Domain, new()
+        {
+            var rest = Helper.AnonymousObjectToDictionary(restrictions);
+            DBList<T> result = new DBList<T>();
+            Type type = customType == null ? typeof(T) : customType;
+            string tableName = GetTableName(type);
+            List<string> fieldNames = GetFieldNames(type);
+            // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
+            string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
+            string wherestr = rest.Aggregate(new StringBuilder(),
+              (sb, kvp) => sb.AppendFormat("{0}{1} = @{1}",
+                           sb.Length > 0 ? " AND " : "", kvp.Key, kvp.Value),
+              sb => sb.ToString());
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} where {2}", fields, tableName, wherestr), DB.Connection);
+            rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
+            //try
+            //{
+                FbDataReader data = command.ExecuteReader();
+                while (data.Read())
+                {
+                    T temp = new T();
+                    fieldNames.ForEach(fn => temp[fn] = data[fn]);
+                    temp._Changed = false;
+                    result.Add(temp);
+                    if (single)
+                        break;
+                }
+            //}
+            //catch (Exception e)
+            //{
+                //MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
             return result;
         }
         /// <summary>
@@ -383,7 +536,7 @@ namespace TimeSheet
         /// </summary>
         public void Save(bool hard_save = false)
         {
-            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) { (Fields[k] as Domain).Save(); Fields[GetHasOne(GetType())[k].FieldInDB] = (Fields[k] as Domain).ID; changed = true; } });
+            GetBelongsTo(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k]!=null) { (Fields[k] as Domain).Save(); Fields[GetBelongsTo(GetType())[k].FieldInDB] = (Fields[k] as Domain).ID; changed = true; } });
             if (!_Changed && !hard_save)
                 return;
             if (Fields["ID"]!=null)
@@ -391,6 +544,7 @@ namespace TimeSheet
             else
                 Create();
             _Changed = false;
+            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Save(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save()); });
         }
         /// <summary>
@@ -405,8 +559,10 @@ namespace TimeSheet
         /// </summary>
         public void Delete()
         {
-            if (Fields["ID"]==null)
-                throw new Exception("You can't delete object without ID");
+            if (Fields["ID"] == null)
+                return;//throw new Exception("You can't delete object without ID");
+            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Delete(); });
+            GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Delete()); });
             string tableName = GetTableName(GetType());
             FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);            
             command.ExecuteNonQuery();
@@ -421,6 +577,10 @@ namespace TimeSheet
         public static DBList<T> FindAll<T>(string where_str = "", params object[] args) where T : Domain, new()
         {
             return F_All<T>(args.Length > 0 ? string.Format(where_str, args) : where_str);
+        }
+        public static DBList<T> FindAll<T>(object restrictions) where T : Domain, new()
+        {
+            return F_All<T>(restrictions);
         }
         /// <summary>
         /// Получить все записи таблицы
@@ -438,9 +598,15 @@ namespace TimeSheet
         /// <param name="where_str">where</param>
         /// <param name="args">Необязательные аргументы, которые могут быть использованы в where_str</param>
         /// <returns>Объект, удовлетворяющий условию where_str</returns>
-        public static T Find<T>(string where_str = "", params object[] args) where T: Domain, new()
+        public static T Find<T>(string where_str = "", params object[] args) where T : Domain, new()
         {
-            return F_All<T>(args.Length > 0 ? string.Format(where_str, args) : where_str, true)[0];
+            var item = F_All<T>(args.Length > 0 ? string.Format(where_str, args) : where_str, true);
+            return item.Count > 0 ? item[0] : null;
+        }
+        public static T Find<T>(object restrictions) where T : Domain, new()
+        {
+            var item = F_All<T>(restrictions, true);
+            return item.Count > 0 ? item[0] : null;
         }        
         /// <summary>
         /// Поиск элемента по ID
@@ -450,7 +616,7 @@ namespace TimeSheet
         /// <returns>Элемент с ID = id</returns>
         public static T Get<T>(int id) where T: Domain, new()
         {
-            return F_All<T>(string.Format("ID = {0}",id), true)[0];
+            return Find<T>("id = '{0}'", id);
         }
         /// <summary>
         /// Количество элементов в базе
@@ -464,17 +630,38 @@ namespace TimeSheet
             FbCommand command = new FbCommand(string.Format("select count(*) from {0} where {1};", tableName, where_str), DB.Connection);
             return (int)command.ExecuteScalar();            
         }
-        void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
+        public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldInDBName] = ID;
             args.GetData.changed = true;
             changed = true;
         }
-        void ListOnRemove<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
+        public void ListOnRemove<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldInDBName] = null;            
-            args.GetData.Save(true);
+            if (args.NeedSave)
+                args.GetData.Save(true);
             changed = true;
+        }
+        public static bool operator ==(Domain A, Domain B)
+        {
+            return Domain.Equals(A, B);            
+        }
+        public static bool operator !=(Domain A, Domain B)
+        {
+            return !Domain.Equals(A, B);
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null)
+                return false;
+            if ((obj as Domain) == null)
+                return false;
+            return (obj as Domain).ID == ID;
+        }
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();            
         }
     }    
 }
