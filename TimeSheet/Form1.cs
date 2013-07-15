@@ -9,7 +9,17 @@ using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using TimeSheet.Properties;
 using System.Globalization;
-
+/*
+ * 
+ * 
+ * 
+ *          TODO:
+ *          RowRender(row) - для создания, изменения, удаления
+ * 
+ * 
+ * 
+ * 
+ * */
 namespace TimeSheet
 {
     public partial class Form1 : Form
@@ -157,14 +167,16 @@ namespace TimeSheet
         {
             var daysCount = ts._DaysInMonth;
             dgTimeSheet.Columns.Clear();
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cFIO", "ФИО")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cPost", "Должность")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cRate", "Ставка")].ReadOnly = true;
+            var lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cFIO", "ФИО")]; lastAdded.ReadOnly = true; lastAdded.Frozen = true;
+            lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cPost", "Должность")]; lastAdded.ReadOnly = true;
+            lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cRate", "Ставка")]; lastAdded.ReadOnly = true;
 
             for (int i = 0; i < daysCount; i++)
             {
                 var ind = dgTimeSheet.Columns.Add(string.Format("cDay{0}", i + 1), (i + 1).ToString());
-                dgTimeSheet.Columns[ind].Width = 56;
+                dgTimeSheet.Columns[ind].MinimumWidth = 50;
+                dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                //dgTimeSheet.Columns[ind].Width = 56;                
                 dgTimeSheet.Columns[ind].Tag = "DayCell";
                 dgTimeSheet.Columns[ind].ReadOnly = true;
             }
@@ -175,7 +187,11 @@ namespace TimeSheet
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных")].ReadOnly = true;
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер")].ReadOnly = true;            
         }
-
+        public void RowRender(TimeSheet_Content content, int row)
+        {
+            var r = dgTimeSheet.Rows[row];
+            r.SetValues(content.ForTable(currentTimeSheet));
+        }
         private void dgTimeSheet_KeyDown(object sender, KeyEventArgs e)
         {
             flagForm = new FlagsForm(this);
@@ -195,8 +211,7 @@ namespace TimeSheet
                     }
                     Saving = false;
                 e.Handled = true;                
-            }
-            
+            }            
         }
         public bool SetTimeSheetContent(int row, int col, bool needWindow = false)
         {
@@ -245,6 +260,29 @@ namespace TimeSheet
         {
             changeState(AppState.Auth);
         }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (dgTimeSheet.SelectedRows.Count > 0)
+            {
+                if (dgTimeSheet.SelectedRows[0].Cells[0].Value == null)
+                    return;
+                var rowContent = dgTimeSheet.SelectedRows[0].Cells[0].Value as TimeSheet_Content;
+                RowEditForm re = new RowEditForm(this, rowContent);
+                var res = re.ShowDialog();
+                if (res == System.Windows.Forms.DialogResult.OK)
+                {
+                    re.TSContent.Save();//Зацикливание при сохранении, скорее всего через department или timesheet
+                    dgTimeSheet.SelectedRows[0].SetValues(re.TSContent.ForTable(currentTimeSheet));                    
+                }
+            }
+        }
+        /*
+        private void btnDelete_Click(object sender, EventArgs e)
+        {            
+            if (dgTimeSheet.SelectedRows.Count > 0)
+                dgTimeSheet_UserDeletingRow(this, new DataGridViewRowCancelEventArgs(dgTimeSheet.SelectedRows[0]));
+        }*/
     }
     public enum AppState
     {
@@ -277,7 +315,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["login"].ToString();
+                return this["login"] == null ? "" : this["login"].ToString();
             }
             set
             {
@@ -288,7 +326,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["pass"].ToString();
+                return this["pass"] == null ? "" : this["pass"].ToString();
             }
             set
             {
@@ -421,7 +459,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["name"].ToString();
+                return this["name"] == null ? "" : this["name"].ToString();
             }
             set
             {
@@ -432,7 +470,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["Department_Number"];
+                return this["Department_Number"]==null?0:(int)this["Department_Number"];
             }
             set
             {
@@ -506,7 +544,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["name"].ToString();
+                return this["name"] == null ? "" : this["name"].ToString();
             }
             set
             {
@@ -517,7 +555,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["Table_Number"];
+                return this["Table_Number"]==null?0:(int)this["Table_Number"];
             }
             set
             {
@@ -599,7 +637,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["name"].ToString();
+                return this["name"] == null ? "" : this["name"].ToString();
             }
             set
             {
@@ -637,7 +675,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["name"].ToString();
+                return this["name"] == null ? "" : this["name"].ToString();
             }
             set
             {
@@ -667,7 +705,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["name"].ToString();
+                return this["name"] == null ? "" : this["name"].ToString();
             }
             set
             {
@@ -694,7 +732,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["Month"];
+                return this["Month"]==null?0:(int)this["Month"];
             }
             set
             {
@@ -705,7 +743,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["hours"];
+                return this["hours"]==null?0:(double)this["hours"];
             }
             set
             {
@@ -716,7 +754,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["days"];
+                return this["days"]==null?0:(int)this["days"];
             }
             set
             {
@@ -774,7 +812,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["TS_Month"];
+                return this["TS_Month"]==null?0:(int)this["TS_Month"];
             }
             set
             {
@@ -785,7 +823,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)this["TS_Year"];
+                return this["TS_Year"]==null?0:(int)this["TS_Year"];
             }
             set
             {
@@ -990,7 +1028,7 @@ namespace TimeSheet
         {
             get
             {
-                return (DateTime)this["Item_Date"];
+                return this["Item_Date"]==null?DateTime.MinValue:(DateTime)this["Item_Date"];
             }
             set
             {
@@ -1091,7 +1129,7 @@ namespace TimeSheet
         {
             get
             {
-                return (DateTime)this["Spec_Date"];
+                return this["Spec_Date"]==null?DateTime.MinValue:(DateTime)this["Spec_Date"];
             }
             set
             {

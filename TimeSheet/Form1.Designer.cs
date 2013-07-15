@@ -44,6 +44,7 @@
             this.pWorkspace = new System.Windows.Forms.Panel();
             this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
+            this.btnEdit = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
@@ -206,14 +207,26 @@
             this.pTimeSheetEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.pTimeSheetEditor.Controls.Add(this.btnEdit);
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
             this.pTimeSheetEditor.Controls.Add(this.btnNewRow);
             this.pTimeSheetEditor.Location = new System.Drawing.Point(3, 32);
             this.pTimeSheetEditor.Name = "pTimeSheetEditor";
-            this.pTimeSheetEditor.Size = new System.Drawing.Size(786, 354);
+            this.pTimeSheetEditor.Size = new System.Drawing.Size(786, 349);
             this.pTimeSheetEditor.TabIndex = 4;
             this.pTimeSheetEditor.Visible = false;
+            // 
+            // btnEdit
+            // 
+            this.btnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnEdit.Location = new System.Drawing.Point(3, 289);
+            this.btnEdit.Name = "btnEdit";
+            this.btnEdit.Size = new System.Drawing.Size(144, 23);
+            this.btnEdit.TabIndex = 5;
+            this.btnEdit.Text = "Изменить запись";
+            this.btnEdit.UseVisualStyleBackColor = true;
+            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // pDepartment
             // 
@@ -222,7 +235,7 @@
             this.pDepartment.Controls.Add(this.lbCurrentDepartment);
             this.pDepartment.Controls.Add(this.tbCurrentDepartmentManager);
             this.pDepartment.Controls.Add(this.tbCurrentDepartment);
-            this.pDepartment.Location = new System.Drawing.Point(441, 278);
+            this.pDepartment.Location = new System.Drawing.Point(441, 273);
             this.pDepartment.Name = "pDepartment";
             this.pDepartment.Size = new System.Drawing.Size(342, 73);
             this.pDepartment.TabIndex = 4;
@@ -278,7 +291,7 @@
             this.cRate});
             this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
             this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.Size = new System.Drawing.Size(780, 269);
+            this.dgTimeSheet.Size = new System.Drawing.Size(780, 251);
             this.dgTimeSheet.TabIndex = 2;
             this.dgTimeSheet.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgTimeSheet_CellMouseDoubleClick);
             this.dgTimeSheet.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgTimeSheet_UserDeletingRow);
@@ -308,7 +321,7 @@
             // btnNewRow
             // 
             this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 279);
+            this.btnNewRow.Location = new System.Drawing.Point(3, 260);
             this.btnNewRow.Name = "btnNewRow";
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;
@@ -397,6 +410,7 @@
         private System.Windows.Forms.TextBox tbCurrentDepartmentManager;
         private System.Windows.Forms.TextBox tbCurrentDepartment;
         private System.Windows.Forms.Button btnLogout;
+        private System.Windows.Forms.Button btnEdit;
 
 
 

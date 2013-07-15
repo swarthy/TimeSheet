@@ -65,7 +65,7 @@ namespace TimeSheet
         {
             if (lbTimeSheets.SelectedIndex != -1)
             {
-                if (MessageBox.Show("Вы уверены?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
+                if (MessageBox.Show("Вы действительно хотите удалить табель?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
                 {
                     var ind = lbTimeSheets.SelectedIndex;
                     lbTimeSheets.Items.RemoveAt(ind);
