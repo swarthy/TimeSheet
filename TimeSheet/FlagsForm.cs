@@ -11,7 +11,7 @@ namespace TimeSheet
 {
     public partial class FlagsForm : Form
     {
-        Form1 mainForm;
+        MainForm mainForm;
         public int Hours=0, Minutes=0;
         public string flag = "";
         public TimeSpan worked_time
@@ -22,7 +22,7 @@ namespace TimeSheet
             }
         }
         private TimeSheet_Day preDay = null;
-        public FlagsForm(Form1 mainform, TimeSheet_Day day = null)
+        public FlagsForm(MainForm mainform, TimeSheet_Day day = null)
         {
             mainForm = mainform;
             preDay = day;
@@ -54,9 +54,9 @@ namespace TimeSheet
         private void FlagsForm_Load(object sender, EventArgs e)
         {
             var needCh = preDay != null;
-            for (int i = 0; i < TimeSheet_Day.flag_list.Count; i++)
+            for (int i = 0; i < mainForm.Flags.Count; i++)
             {
-                CreateRadioButton(TimeSheet_Day.flag_list[i], TimeSheet_Day.ru_flag_list[i], 12 + i % 6 * 40, 12 + (i / 6) * 23, 100 + i, needCh ? TimeSheet_Day.flag_list[i] == preDay.Flag : false);
+                CreateRadioButton(mainForm.Flags[i].Name, mainForm.Flags[i].Ru_Name, 12 + i % 6 * 40, 12 + (i / 6) * 23, 100 + i, needCh ? mainForm.Flags[i] == preDay.Flag : false);
             }
             if (preDay!=null && preDay.Worked_Time != null)
             {

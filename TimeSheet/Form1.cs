@@ -22,21 +22,34 @@ using System.Globalization;
  * */
 namespace TimeSheet
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         public AppState State = AppState.LPUselect;
         public DBList<LPU> LPUlist = new DBList<LPU>();
         public DBList<Department> Departmentlist = new DBList<Department>();
-        public DBList<Post> Posts = new DBList<Post>();        
-        public LPU currentLPU = null;
-        public User currentUser = null;
-        public TimeSheetInstance currentTimeSheet = null;
+        public DBList<Post> Posts = new DBList<Post>();
+        public DBList<Flag> Flags = new DBList<Flag>();
+        public LPU currentLPU { get; set; }
+        User curUsr = null;
+        public User currentUser
+        {
+            get
+            {
+                return curUsr;
+            }
+            set
+            {
+                curUsr = value;                
+                btnAdminPanel.Visible = btnAdminPanel.Enabled = curUsr.Is_admin;
+            }
+        }
+        public TimeSheetInstance currentTimeSheet { get; set; }
 
         FlagsForm flagForm;        
 
         public bool Saving = false;
 
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             #region DB Initialization
@@ -90,7 +103,8 @@ namespace TimeSheet
                     UpdateColumns(currentTimeSheet);
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
-                    currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row => dgTimeSheet.Rows.Add(row.ForTable(currentTimeSheet)));                    
+                    currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row => dgTimeSheet.Rows.Add(row));                    
+                    
                     pTimeSheetEditor.Show();
                     break;
             }
@@ -109,13 +123,13 @@ namespace TimeSheet
             foreach (LPU lpu in LPUlist)            
                 cbLPUList.Items.Add(lpu);
             Posts = Post.All<Post>();
-            changeState(AppState.LPUselect);  //release
+            //changeState(AppState.LPUselect);  //release
             //DEBUG
-            /*currentLPU = LPU.Get<LPU>(1);
+            currentLPU = LPU.Get<LPU>(1);
             currentUser = User.Get<User>(22);
             currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(18);
             changeState(AppState.Workspace);//для сортировки списка табелей
-            changeState(AppState.EditTimeSheet);            */
+            changeState(AppState.EditTimeSheet);            
         }
 
         private void btnLPUChoiceEnter_Click(object sender, EventArgs e)
@@ -135,7 +149,7 @@ namespace TimeSheet
             else
             {
                 Helper.SetAndSave("lastLogin", tbAuthLogin.Text);
-                currentUser = user;
+                currentUser = user;                
                 changeState(AppState.Workspace);
             }
         }
@@ -197,63 +211,8 @@ namespace TimeSheet
             flagForm = new FlagsForm(this);
             if (e.KeyCode == Keys.Enter && dgTimeSheet.SelectedCells.Count > 0 && !Saving)
             {
-                bool needWindow = true;
-                Saving = true;
-                    for (int i = 0; i < dgTimeSheet.SelectedCells.Count; i++)
-                    {                        
-                        if ((dgTimeSheet.SelectedCells[i].OwningColumn.Tag as string) == "DayCell")
-                        {
-                            if (!SetTimeSheetContent(dgTimeSheet.SelectedCells[i].RowIndex, dgTimeSheet.SelectedCells[i].ColumnIndex, needWindow))
-                                break;
-                            needWindow = false;
-                            Saving = true;
-                        }
-                    }
-                    Saving = false;
-                e.Handled = true;                
+                         
             }            
-        }
-        public bool SetTimeSheetContent(int row, int col, bool needWindow = false)
-        {
-            if (dgTimeSheet.Rows[row].Cells[0].Value == null)
-            {
-                MessageBox.Show("Пустая строка");
-                return false;//добавление данных в новую пустую строку            
-            }            
-            var content = dgTimeSheet.Rows[row].Cells[0].Value as TimeSheet_Content;
-            var search_date = new DateTime(currentTimeSheet.TS_Year, currentTimeSheet.TS_Month, col - 2);
-            var day = content.Days.FindOrCreate(new { item_date = search_date });
-            if (needWindow)
-            {
-                flagForm = new FlagsForm(this, day);                
-                var res = flagForm.ShowDialog();
-                if (res != System.Windows.Forms.DialogResult.OK)                
-                    return false;
-            }
-            day.Worked_Time = flagForm.worked_time;
-            day["flag"] = flagForm.flag;
-            dgTimeSheet[col, row].Value = TimeSheet_Day.ru_flag_list[day._FlagInd] + " " + day.Worked_Time.ToString("hh':'mm");
-            content.UpdateSummary(dgTimeSheet.Rows[row]);
-            day.Save();
-            return true;
-        }
-
-        
-        private void dgTimeSheet_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
-        {
-            if (MessageBox.Show("Вы уверены?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
-            {
-                var content = e.Row.Cells[0].Value as TimeSheet_Content;                
-                content.Delete();
-            }
-            else
-                e.Cancel = true;
-        }
-
-        private void dgTimeSheet_CellMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if ((dgTimeSheet[e.ColumnIndex, e.RowIndex].OwningColumn.Tag as string) == "DayCell" && !Saving)                            
-                SetTimeSheetContent(e.RowIndex, e.ColumnIndex, true);            
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
@@ -261,28 +220,17 @@ namespace TimeSheet
             changeState(AppState.Auth);
         }
 
-        private void btnEdit_Click(object sender, EventArgs e)
+        private void btnAdminPanel_Click(object sender, EventArgs e)
         {
-            if (dgTimeSheet.SelectedRows.Count > 0)
-            {
-                if (dgTimeSheet.SelectedRows[0].Cells[0].Value == null)
-                    return;
-                var rowContent = dgTimeSheet.SelectedRows[0].Cells[0].Value as TimeSheet_Content;
-                RowEditForm re = new RowEditForm(this, rowContent);
-                var res = re.ShowDialog();
-                if (res == System.Windows.Forms.DialogResult.OK)
-                {
-                    re.TSContent.Save();//Зацикливание при сохранении, скорее всего через department или timesheet
-                    dgTimeSheet.SelectedRows[0].SetValues(re.TSContent.ForTable(currentTimeSheet));                    
-                }
-            }
+            AdminPanelForm admin = new AdminPanelForm(this);
+            admin.Show();
         }
-        /*
-        private void btnDelete_Click(object sender, EventArgs e)
-        {            
-            if (dgTimeSheet.SelectedRows.Count > 0)
-                dgTimeSheet_UserDeletingRow(this, new DataGridViewRowCancelEventArgs(dgTimeSheet.SelectedRows[0]));
-        }*/
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            TimeSheet_Content c = TimeSheet_Content.Get<TimeSheet_Content>(1);
+        }
+
     }
     public enum AppState
     {
@@ -332,7 +280,18 @@ namespace TimeSheet
             {
                 this["pass"] = value;
             }
-        }        
+        }
+        public bool Is_admin
+        {
+            get
+            {
+                return ((short)this["IS_ADMIN"]) == 1;
+            }
+            set
+            {
+                this["IS_ADMIN"] = Convert.ToInt16(value);
+            }
+        }
         public LPU LPU
         {
             get
@@ -662,6 +621,49 @@ namespace TimeSheet
             Name = name;
         }
     }
+    public class Flag : Domain
+    {
+        new public static string tableName = "FLAGS";
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                        
+        public override string ToString()
+        {
+            return Ru_Name;
+        }
+        #region Properties
+        public string Name
+        {
+            get
+            {
+                return this["name"] == null ? "" : this["name"].ToString();
+            }
+            set
+            {
+                this["name"] = value;
+            }
+        }
+        public string Ru_Name
+        {
+            get
+            {
+                return this["Ru_Name"] == null ? "" : this["Ru_Name"].ToString();
+            }
+            set
+            {
+                this["Ru_Name"] = value;
+            }
+        }
+        #endregion
+        public Flag()
+            : base(typeof(Flag))
+        {
+        }
+        public Flag(string name, string ru_name)
+            : base(typeof(Flag))
+        {
+            Name = name;
+            Ru_Name = ru_name;
+        }
+    }
     public class Post : Domain
     {
         new public static string tableName = "POSTS";
@@ -868,67 +870,21 @@ namespace TimeSheet
     public class TimeSheet_Content : Domain
     {        
         new public static string tableName = "TIMESHEET_CONTENT";
-        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
             {"Days", new Link("TimeSheet_Content_ID", typeof(TimeSheet_Day))}            
         };         
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"Personal", new Link("Personal_ID",typeof(Personal))},
-            {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))},
-            {"Post", new Link("POST_ID",typeof(Post))}
+            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar_Content))},
+            {"Post", new Link("POST_ID",typeof(Post))},
+            {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
         public override string ToString()
         {
             return Personal.ToString();
-        }      
-        public object[] ForTable(TimeSheetInstance ts)
-        {
-            List<object> result = new List<object>()
-            {
-                this,
-                Post,
-                Rate
-            };            
-            for (int i = 0; i < ts._DaysInMonth; i++)                            
-                result.Add(Days.Find(c => c.Item_Date.Day == i + 1));
-            //явок
-            result.Add(Days.Where(d => d.Flag == "ya").Count());
-            //часов всего
-            TimeSpan summAll = new TimeSpan();
-            Days.ForEach(d => summAll += d.Worked_Time);
-            result.Add(Helper.FormatSpan(summAll));
-            //часов ночных
-            TimeSpan summNight = new TimeSpan();
-            Days.Where(d => d.Flag == "n").ToList().ForEach(d => summNight += d.Worked_Time);
-            result.Add(Helper.FormatSpan(summNight));
-            //часов праздничных
-            TimeSpan summWeekEndHolyday = new TimeSpan();
-            Days.Where(d => d.Flag == "v" || d.Flag == "rp").ToList().ForEach(d => summWeekEndHolyday += d.Worked_Time);
-            result.Add(Helper.FormatSpan(summWeekEndHolyday));
-            //табельный номер
-            result.Add(Personal.Table_Number);
-            return result.ToArray();
-        }
-        public void UpdateSummary(DataGridViewRow row)
-        {
-            var col = row.Cells.Count-5;
-            var result = new List<object>();
-            //явок
-            row.Cells[col++].Value = Days.Where(d => d.Flag == "ya").Count();
-            //часов всего
-            TimeSpan summAll = new TimeSpan();
-            Days.ForEach(d => summAll += d.Worked_Time);
-            row.Cells[col++].Value=Helper.FormatSpan(summAll);
-            //часов ночных
-            TimeSpan summNight = new TimeSpan();
-            Days.Where(d => d.Flag == "n").ToList().ForEach(d => summNight += d.Worked_Time);
-            row.Cells[col++].Value=Helper.FormatSpan(summNight);
-            //часов праздничных
-            TimeSpan summWeekEndHolyday = new TimeSpan();
-            Days.Where(d => d.Flag == "v" || d.Flag == "rp").ToList().ForEach(d => summWeekEndHolyday += d.Worked_Time);
-            row.Cells[col++].Value=Helper.FormatSpan(summWeekEndHolyday);
-        }
+        }                      
         #region Properties
         public DBList<TimeSheet_Day> Days
         {
@@ -946,6 +902,17 @@ namespace TimeSheet
             set
             {
                 this["TimeSheet"] = value;
+            }
+        }
+        public Calendar Calendar
+        {
+            get
+            {
+                return BT<Calendar>("Calendar");
+            }
+            set
+            {
+                this["Calendar"] = value;
             }
         }
         public Post Post
@@ -974,7 +941,7 @@ namespace TimeSheet
         {
             get
             {
-                return this["Rate"] == null ? 0 : (double)this["Rate"];
+                return this["Rate"] == null ? 1 : (double)this["Rate"];
             }
             set
             {
@@ -982,6 +949,15 @@ namespace TimeSheet
             }
         }        
         #endregion
+        public object[] Render()
+        {
+            List<object> list = new List<object>();
+
+            DataGridViewRow[] rows = new DataGridViewRow[2];
+            Days.GroupBy(d => d.Item_Date);
+
+            return list.ToArray();
+        }
         public TimeSheet_Content()
             : base(typeof(TimeSheet_Content))
         {            
@@ -996,23 +972,29 @@ namespace TimeSheet
         }
     }
     public class TimeSheet_Day : Domain
-    {
-        public static List<string> flag_list = new List<string>() {
-                "v", "n", "g", "o", "b", "r", "s", "p", "k", "a", "vu", "ou", "zn", "zp", "zs", "rp", "f", "ya"
-            };
-        public static List<string> ru_flag_list = new List<string>() {
-                "В", "Н", "Г", "О", "Б", "Р", "С", "П", "К", "А", "ВУ", "ОУ", "ЗН", "ЗП", "ЗС", "РП", "Ф", "Я"
-            };
+    {        
         new public static string tableName = "TIMESHEET_DAYS";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
-            {"TimeSheetContent", new Link("TimeSheet_Content_ID",typeof(TimeSheet_Content))}            
+            {"TimeSheetContent", new Link("TimeSheet_Content_ID",typeof(TimeSheet_Content))},
+            {"Flag", new Link("Flag_ID",typeof(Flag))},
         };
         public override string ToString()
         {
-            return ru_flag_list[_FlagInd] + " " + Worked_Time.ToString("hh':'mm");
+            return Flag + " " + Worked_Time.ToString("hh':'mm");
         }
         #region Properties
+        public Flag Flag
+        {
+            get
+            {
+                return BT<Flag>("Flag");
+            }
+            set
+            {
+                this["Flag"] = value;
+            }
+        }
         public TimeSheet_Content TimeSheetContent
         {
             get
@@ -1045,68 +1027,7 @@ namespace TimeSheet
             {
                 this["Worked_Time"] = value.TotalHours;
             }
-        }
-        #region Флаги
-        public int _FlagInd
-        {
-            get
-            {
-                return flag_list.IndexOf(Flag);
-            }
-            set
-            {
-                Flag = flag_list[value];
-            }
-        }
-        public string Flag
-        {
-            get
-            {
-                return (this["flag"]??"").ToString();
-            }
-            set
-            {
-                this["flag"] = value.ToLower();
-            }
-        }
-        /*
-        public int _CheckedFlag
-        {
-            get
-            {
-                return flag_list.FindIndex(f => getFlag(f));
-            }
-            set
-            {
-                this[flag_list[value]] = (short)1;
-            }
-        }
-        
-        public bool getFlag(string key)
-        {
-            return ((short)this[key]) == 1;
-        }
-        
-        public bool V { get { return getFlag("v"); } set { this["v"] = value; } }
-        public bool N { get { return getFlag("n"); } set { this["n"] = value; } }
-        public bool G { get { return getFlag("g"); } set { this["g"] = value; } }
-        public bool O { get { return getFlag("o"); } set { this["o"] = value; } }
-        public bool B { get { return getFlag("b"); } set { this["b"] = value; } }
-        public bool R { get { return getFlag("r"); } set { this["r"] = value; } }
-        public bool S { get { return getFlag("s"); } set { this["s"] = value; } }
-        public bool P { get { return getFlag("p"); } set { this["p"] = value; } }
-        public bool K { get { return getFlag("k"); } set { this["k"] = value; } }
-        public bool A { get { return getFlag("a"); } set { this["a"] = value; } }
-        public bool VU { get { return getFlag("vu"); } set { this["vu"] = value; } }
-        public bool OU { get { return getFlag("ou"); } set { this["ou"] = value; } }
-        public bool ZN { get { return getFlag("zn"); } set { this["zn"] = value; } }
-        public bool ZP { get { return getFlag("zp"); } set { this["zp"] = value; } }
-        public bool ZS { get { return getFlag("zs"); } set { this["zs"] = value; } }
-        public bool RP { get { return getFlag("rp"); } set { this["rp"] = value; } }
-        public bool F { get { return getFlag("f"); } set { this["f"] = value; } }
-        public bool YA { get { return getFlag("ya"); } set { this["ya"] = value; } }
-         * */
-        #endregion
+        }        
         #endregion
         public TimeSheet_Day()
             : base(typeof(TimeSheet_Day))

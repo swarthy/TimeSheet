@@ -11,9 +11,9 @@ namespace TimeSheet
 {
     public partial class AddTimeSheetInstanceForm : Form
     {
-        Form1 mainform;
+        MainForm mainform;
         public TimeSheetInstance TimeSheetIns = null;
-        public AddTimeSheetInstanceForm(Form1 mainForm)
+        public AddTimeSheetInstanceForm(MainForm mainForm)
         {
             mainform = mainForm;
             InitializeComponent();

@@ -62,6 +62,18 @@
     <Compile Include="AddTimeSheetInstanceForm.Designer.cs">
       <DependentUpon>AddTimeSheetInstanceForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="AdminPanelForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AdminPanelForm.Designer.cs">
+      <DependentUpon>AdminPanelForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CatalogEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CatalogEditorForm.Designer.cs">
+      <DependentUpon>CatalogEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="FlagsForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +121,12 @@
     </Compile>
     <EmbeddedResource Include="AddTimeSheetInstanceForm.resx">
       <DependentUpon>AddTimeSheetInstanceForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AdminPanelForm.resx">
+      <DependentUpon>AdminPanelForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CatalogEditorForm.resx">
+      <DependentUpon>CatalogEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FlagsForm.resx">
       <DependentUpon>FlagsForm.cs</DependentUpon>

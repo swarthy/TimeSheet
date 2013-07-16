@@ -458,7 +458,7 @@ namespace TimeSheet
                 FbDataReader data = command.ExecuteReader();
                 while (data.Read())
                 {
-                    T temp = new T();
+                    T temp = new T();                    
                     fieldNames.ForEach(fn => temp[fn] = data[fn]);
                     temp._Changed = false;
                     result.Add(temp);

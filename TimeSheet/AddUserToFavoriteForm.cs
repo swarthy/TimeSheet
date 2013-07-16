@@ -11,11 +11,11 @@ namespace TimeSheet
 {
     public partial class AddUserToFavoriteForm : Form
     {
-        Form1 mainform;
+        MainForm mainform;
         PersonalListForm pl;
         List<Personal> personals;
         public Personal SelectedPersonal { get; set; }        
-        public AddUserToFavoriteForm(Form1 mainForm, PersonalListForm personList)
+        public AddUserToFavoriteForm(MainForm mainForm, PersonalListForm personList)
         {
             InitializeComponent();
             this.mainform = mainForm;

@@ -12,8 +12,8 @@ namespace TimeSheet
 {
     public partial class TimeSheets : Form
     {
-        Form1 mainForm;        
-        public TimeSheets(Form1 form)
+        MainForm mainForm;        
+        public TimeSheets(MainForm form)
         {
             InitializeComponent();
             mainForm = form;

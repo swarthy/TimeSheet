@@ -1,6 +1,6 @@
 ﻿namespace TimeSheet
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Требуется переменная конструктора.
@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pLPUSelection = new System.Windows.Forms.Panel();
             this.btnLPUChoiceEnter = new System.Windows.Forms.Button();
             this.lbChoiceLPU = new System.Windows.Forms.Label();
@@ -42,9 +42,9 @@
             this.lbLogin = new System.Windows.Forms.Label();
             this.btnLoginEnter = new System.Windows.Forms.Button();
             this.pWorkspace = new System.Windows.Forms.Panel();
+            this.btnAdminPanel = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
-            this.btnEdit = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
@@ -59,6 +59,7 @@
             this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.timeSheetContentBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.timeSheetContentBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
@@ -183,6 +184,8 @@
             this.pWorkspace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.pWorkspace.Controls.Add(this.button1);
+            this.pWorkspace.Controls.Add(this.btnAdminPanel);
             this.pWorkspace.Controls.Add(this.btnLogout);
             this.pWorkspace.Controls.Add(this.pTimeSheetEditor);
             this.pWorkspace.Controls.Add(this.btnTimeSheetList);
@@ -190,6 +193,19 @@
             this.pWorkspace.Name = "pWorkspace";
             this.pWorkspace.Size = new System.Drawing.Size(792, 413);
             this.pWorkspace.TabIndex = 2;
+            // 
+            // btnAdminPanel
+            // 
+            this.btnAdminPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAdminPanel.Enabled = false;
+            this.btnAdminPanel.Location = new System.Drawing.Point(546, 3);
+            this.btnAdminPanel.Name = "btnAdminPanel";
+            this.btnAdminPanel.Size = new System.Drawing.Size(159, 23);
+            this.btnAdminPanel.TabIndex = 6;
+            this.btnAdminPanel.Text = "Панель администратора";
+            this.btnAdminPanel.UseVisualStyleBackColor = true;
+            this.btnAdminPanel.Visible = false;
+            this.btnAdminPanel.Click += new System.EventHandler(this.btnAdminPanel_Click);
             // 
             // btnLogout
             // 
@@ -207,7 +223,6 @@
             this.pTimeSheetEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pTimeSheetEditor.Controls.Add(this.btnEdit);
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
             this.pTimeSheetEditor.Controls.Add(this.btnNewRow);
@@ -216,17 +231,6 @@
             this.pTimeSheetEditor.Size = new System.Drawing.Size(786, 349);
             this.pTimeSheetEditor.TabIndex = 4;
             this.pTimeSheetEditor.Visible = false;
-            // 
-            // btnEdit
-            // 
-            this.btnEdit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnEdit.Location = new System.Drawing.Point(3, 289);
-            this.btnEdit.Name = "btnEdit";
-            this.btnEdit.Size = new System.Drawing.Size(144, 23);
-            this.btnEdit.TabIndex = 5;
-            this.btnEdit.Text = "Изменить запись";
-            this.btnEdit.UseVisualStyleBackColor = true;
-            this.btnEdit.Click += new System.EventHandler(this.btnEdit_Click);
             // 
             // pDepartment
             // 
@@ -293,8 +297,6 @@
             this.dgTimeSheet.Name = "dgTimeSheet";
             this.dgTimeSheet.Size = new System.Drawing.Size(780, 251);
             this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellMouseDoubleClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgTimeSheet_CellMouseDoubleClick);
-            this.dgTimeSheet.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgTimeSheet_UserDeletingRow);
             this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
             // 
             // cFIO
@@ -351,7 +353,17 @@
             // 
             this.timeSheetContentBindingSource.DataSource = typeof(TimeSheet.TimeSheet_Content);
             // 
-            // Form1
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(162, 11);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 7;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -360,7 +372,7 @@
             this.Controls.Add(this.pAuth);
             this.Controls.Add(this.pLPUSelection);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "TimeSheet Manager v 1.0";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -410,7 +422,8 @@
         private System.Windows.Forms.TextBox tbCurrentDepartmentManager;
         private System.Windows.Forms.TextBox tbCurrentDepartment;
         private System.Windows.Forms.Button btnLogout;
-        private System.Windows.Forms.Button btnEdit;
+        private System.Windows.Forms.Button btnAdminPanel;
+        private System.Windows.Forms.Button button1;
 
 
 

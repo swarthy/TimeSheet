@@ -11,10 +11,10 @@ namespace TimeSheet
 {
     public partial class PersonalListForm : Form
     {
-        Form1 mainform;
+        MainForm mainform;
         public List<Personal> personals;
         public Personal SelectedPersonal { get; set; }
-        public PersonalListForm(Form1 mainForm)
+        public PersonalListForm(MainForm mainForm)
         {
             InitializeComponent();
             this.mainform = mainForm;

@@ -11,9 +11,9 @@ namespace TimeSheet
 {
     public partial class RowEditForm : Form
     {
-        Form1 mainForm;                
+        MainForm mainForm;                
         public TimeSheet_Content TSContent { get; set; }
-        public RowEditForm(Form1 form, TimeSheet_Content row = null)
+        public RowEditForm(MainForm form, TimeSheet_Content row = null)
         {
             mainForm = form;
             TSContent = row ?? new TimeSheet_Content();
