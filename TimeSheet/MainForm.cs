@@ -9,17 +9,7 @@ using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using TimeSheet.Properties;
 using System.Globalization;
-/*
- * 
- * 
- * 
- *          TODO:
- *          RowRender(row) - для создания, изменения, удаления
- * 
- * 
- * 
- * 
- * */
+
 namespace TimeSheet
 {
     public partial class MainForm : Form
@@ -51,6 +41,7 @@ namespace TimeSheet
 
         public MainForm()
         {
+            DoubleBuffered = true;
             InitializeComponent();
             #region DB Initialization
             User.Initialize<User>();
@@ -188,14 +179,21 @@ namespace TimeSheet
                 dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;                           
                 dgTimeSheet.Columns[ind].Tag = "DayCell";
                 dgTimeSheet.Columns[ind].ReadOnly = true;
+                dgTimeSheet.Columns[ind].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
-                
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cDaysCount1", "Дни явок")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount1", "Часов всего")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount2", "Часов ночных")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных")].ReadOnly = true;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер")].ReadOnly = true;            
-        }        
+   
+            dgTimeSheet.Columns.Add("cDaysCount1", "Дни явок");
+            dgTimeSheet.Columns.Add("cHoursCount1", "Часов всего");
+            dgTimeSheet.Columns.Add("cHoursCount2", "Часов ночных");
+            dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных");
+            dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер");
+
+            for (int i = 1; i <= 5; i++)
+            {
+                dgTimeSheet.Columns[dgTimeSheet.Columns.Count - i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dgTimeSheet.Columns[dgTimeSheet.Columns.Count - i].ReadOnly = true;
+            }
+        }
 
         private void dgTimeSheet_KeyDown(object sender, KeyEventArgs e)
         {
@@ -219,7 +217,25 @@ namespace TimeSheet
         }
         private void dgTimeSheet_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            MessageBox.Show(dgTimeSheet[e.ColumnIndex, e.RowIndex].Value.GetType().Name);
+            if (e.ColumnIndex == -1 || e.RowIndex == -1)
+                return;
+            var val = dgTimeSheet[e.ColumnIndex, e.RowIndex].Value;
+            switch (val.GetType().Name)
+            {
+                case "TimeSheet_Day":
+                    var content = val as TimeSheet_Day;
+                    //modify content
+                    //content.TimeSheetContent.RefreshSummary()
+                    //ReDrawSummary();
+                    //BurnInHell(DateTime.Now);
+                    break;
+                case "TimeSheet_Content":
+                    MessageBox.Show("Я заголовок");
+                    break;
+                case "Post":
+                    MessageBox.Show("Я должность");
+                    break;                
+            }
         }
 
     }

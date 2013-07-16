@@ -27,7 +27,7 @@
         /// содержимое данного метода при помощи редактора кода.
         /// </summary>
         private void InitializeComponent()
-        {
+        {            
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pLPUSelection = new System.Windows.Forms.Panel();
@@ -198,7 +198,7 @@
             // 
             this.lbCurrentTimeSheetName.AutoSize = true;
             this.lbCurrentTimeSheetName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbCurrentTimeSheetName.Location = new System.Drawing.Point(95, 8);
+            this.lbCurrentTimeSheetName.Location = new System.Drawing.Point(95, 6);
             this.lbCurrentTimeSheetName.Name = "lbCurrentTimeSheetName";
             this.lbCurrentTimeSheetName.Size = new System.Drawing.Size(0, 17);
             this.lbCurrentTimeSheetName.TabIndex = 7;
@@ -297,11 +297,12 @@
             this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
             this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.cFIO,
             this.cPost,
-            this.cRate});
+            this.cRate});            
             this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
             this.dgTimeSheet.Name = "dgTimeSheet";
             this.dgTimeSheet.Size = new System.Drawing.Size(780, 251);
