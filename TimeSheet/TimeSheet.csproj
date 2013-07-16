@@ -159,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
-    <None Include="ClassDiagram1.cd" />
     <None Include="Resources\ajax-loader.gif" />
   </ItemGroup>
   <ItemGroup>

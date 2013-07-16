@@ -402,7 +402,10 @@ namespace TimeSheet
         }
         static string GetOrderBy(Type type)
         {
-            return type.GetField("OrderBy").GetValue(null) as string;
+            var f = type.GetField("OrderBy");
+            if (f == null)
+                return "";
+            return f.GetValue(null) as string;
         }
         static Dictionary<string, Link> GetHasMany(Type type)
         {
