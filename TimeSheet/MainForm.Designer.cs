@@ -42,6 +42,7 @@
             this.lbLogin = new System.Windows.Forms.Label();
             this.btnLoginEnter = new System.Windows.Forms.Button();
             this.pWorkspace = new System.Windows.Forms.Panel();
+            this.lbCurrentTimeSheetName = new System.Windows.Forms.Label();
             this.btnAdminPanel = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
@@ -59,7 +60,6 @@
             this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.timeSheetContentBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
             this.timeSheetContentBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.button1 = new System.Windows.Forms.Button();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
@@ -184,7 +184,7 @@
             this.pWorkspace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pWorkspace.Controls.Add(this.button1);
+            this.pWorkspace.Controls.Add(this.lbCurrentTimeSheetName);
             this.pWorkspace.Controls.Add(this.btnAdminPanel);
             this.pWorkspace.Controls.Add(this.btnLogout);
             this.pWorkspace.Controls.Add(this.pTimeSheetEditor);
@@ -193,6 +193,15 @@
             this.pWorkspace.Name = "pWorkspace";
             this.pWorkspace.Size = new System.Drawing.Size(792, 413);
             this.pWorkspace.TabIndex = 2;
+            // 
+            // lbCurrentTimeSheetName
+            // 
+            this.lbCurrentTimeSheetName.AutoSize = true;
+            this.lbCurrentTimeSheetName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.lbCurrentTimeSheetName.Location = new System.Drawing.Point(95, 8);
+            this.lbCurrentTimeSheetName.Name = "lbCurrentTimeSheetName";
+            this.lbCurrentTimeSheetName.Size = new System.Drawing.Size(0, 17);
+            this.lbCurrentTimeSheetName.TabIndex = 7;
             // 
             // btnAdminPanel
             // 
@@ -297,6 +306,7 @@
             this.dgTimeSheet.Name = "dgTimeSheet";
             this.dgTimeSheet.Size = new System.Drawing.Size(780, 251);
             this.dgTimeSheet.TabIndex = 2;
+            this.dgTimeSheet.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellContentDoubleClick);
             this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
             // 
             // cFIO
@@ -328,7 +338,7 @@
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;
             this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;            
+            this.btnNewRow.UseVisualStyleBackColor = true;
             // 
             // btnTimeSheetList
             // 
@@ -352,16 +362,6 @@
             // 
             this.timeSheetContentBindingSource.DataSource = typeof(TimeSheet.TimeSheet_Content);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(162, 11);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 7;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -380,6 +380,7 @@
             this.pAuth.ResumeLayout(false);
             this.pAuth.PerformLayout();
             this.pWorkspace.ResumeLayout(false);
+            this.pWorkspace.PerformLayout();
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
@@ -422,7 +423,7 @@
         private System.Windows.Forms.TextBox tbCurrentDepartment;
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnAdminPanel;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lbCurrentTimeSheetName;
 
 
 

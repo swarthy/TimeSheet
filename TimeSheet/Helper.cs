@@ -33,7 +33,13 @@ namespace TimeSheet
             Set(key, value);
             Properties.Settings.Default.Save();
         }
-        
+        public static object[] EmptyArray(int size)
+        {
+            var temp = new object[size];
+            for (int i = 0; i < size; i++)
+                temp[i] = null;
+            return temp;
+        }
         public static IDictionary<string, object> AnonymousObjectToDictionary(object propertyBag)
         {
             var result = new Dictionary<string, object>();

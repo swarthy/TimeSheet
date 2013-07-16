@@ -30,8 +30,8 @@
         {
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.btnEditCatalog = new System.Windows.Forms.Button();
+            this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tbContent.SuspendLayout();
@@ -64,6 +64,17 @@
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // btnEditCatalog
+            // 
+            this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEditCatalog.Location = new System.Drawing.Point(321, 6);
+            this.btnEditCatalog.Name = "btnEditCatalog";
+            this.btnEditCatalog.Size = new System.Drawing.Size(98, 23);
+            this.btnEditCatalog.TabIndex = 1;
+            this.btnEditCatalog.Text = "Редактировать";
+            this.btnEditCatalog.UseVisualStyleBackColor = true;
+            this.btnEditCatalog.Click += new System.EventHandler(this.btnEditCatalog_Click);
+            // 
             // cbCatalogs
             // 
             this.cbCatalogs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -81,17 +92,6 @@
             this.cbCatalogs.Name = "cbCatalogs";
             this.cbCatalogs.Size = new System.Drawing.Size(309, 21);
             this.cbCatalogs.TabIndex = 0;
-            // 
-            // btnEditCatalog
-            // 
-            this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditCatalog.Location = new System.Drawing.Point(321, 6);
-            this.btnEditCatalog.Name = "btnEditCatalog";
-            this.btnEditCatalog.Size = new System.Drawing.Size(98, 23);
-            this.btnEditCatalog.TabIndex = 1;
-            this.btnEditCatalog.Text = "Редактировать";
-            this.btnEditCatalog.UseVisualStyleBackColor = true;
-            this.btnEditCatalog.Click += new System.EventHandler(this.btnEditCatalog_Click);
             // 
             // tabPage2
             // 
@@ -118,7 +118,7 @@
             this.ClientSize = new System.Drawing.Size(457, 324);
             this.Controls.Add(this.tbContent);
             this.Name = "AdminPanelForm";
-            this.Text = "AdminPanelForm";
+            this.Text = "Панель администратора";
             this.tbContent.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.ResumeLayout(false);

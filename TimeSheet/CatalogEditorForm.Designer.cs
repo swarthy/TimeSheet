@@ -49,9 +49,9 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(688, 251);
+            this.btnSave.Location = new System.Drawing.Point(683, 251);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(75, 23);
+            this.btnSave.Size = new System.Drawing.Size(80, 23);
             this.btnSave.TabIndex = 1;
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -60,14 +60,12 @@
             // btnUpdate
             // 
             this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnUpdate.Image = global::TimeSheet.Properties.Resources.ajax_loader;
             this.btnUpdate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnUpdate.Location = new System.Drawing.Point(12, 251);
             this.btnUpdate.Name = "btnUpdate";
-            this.btnUpdate.Size = new System.Drawing.Size(89, 23);
+            this.btnUpdate.Size = new System.Drawing.Size(80, 23);
             this.btnUpdate.TabIndex = 2;
             this.btnUpdate.Text = "Обновить";
-            this.btnUpdate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnUpdate.UseVisualStyleBackColor = true;
             this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
@@ -80,7 +78,7 @@
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.dgTable);
             this.Name = "CatalogEditorForm";
-            this.Text = "Спраовчник";
+            this.Text = "Справочник";
             ((System.ComponentModel.ISupportInitialize)(this.dgTable)).EndInit();
             this.ResumeLayout(false);
 

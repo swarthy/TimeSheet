@@ -64,6 +64,7 @@ namespace TimeSheet
             TimeSheetInstance.Initialize<TimeSheetInstance>();
             TimeSheet_Content.Initialize<TimeSheet_Content>();
             TimeSheet_Day.Initialize<TimeSheet_Day>();
+            Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             #endregion                                                            
         }
@@ -103,8 +104,13 @@ namespace TimeSheet
                     UpdateColumns(currentTimeSheet);
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
-                    currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row => dgTimeSheet.Rows.Add(row));                    
-                    
+                    lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+                    currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row =>{
+                            var temp = row.Render(dgTimeSheet);
+                            if (temp != null)
+                                dgTimeSheet.Rows.AddRange(temp);                                 
+                        }
+                        );                    
                     pTimeSheetEditor.Show();
                     break;
             }
@@ -213,8 +219,13 @@ namespace TimeSheet
         }
 
         private void button1_Click(object sender, EventArgs e)
+        {            
+                  
+        }
+
+        private void dgTimeSheet_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
-            TimeSheet_Content c = TimeSheet_Content.Get<TimeSheet_Content>(1);
+            MessageBox.Show(dgTimeSheet[e.ColumnIndex, e.RowIndex].Value.GetType().Name);
         }
 
     }
@@ -935,14 +946,48 @@ namespace TimeSheet
             }
         }        
         #endregion
-        public object[] Render()
+        public DataGridViewRow[] Render(DataGridView dg)
         {
-            List<object> list = new List<object>();
-
-            DataGridViewRow[] rows = new DataGridViewRow[2];
-            Days.GroupBy(d => d.Item_Date);
-
-            return list.ToArray();
+            if (Days.Count == 0)
+                return null;
+            DataGridViewRow[] result;
+            var groups = Days.GroupBy(d => d.Item_Date);
+            var needRows = groups.Max(a => a.Count());
+            result = new DataGridViewRow[needRows];
+            var values = new object[needRows][];            
+            for (int i = 0; i < needRows; i++)
+            {
+                result[i] = new DataGridViewRow();
+                result[i].CreateCells(dg);
+                values[i] = new object[3 + TimeSheet._DaysInMonth + 4];
+            }
+            values[0][0] = Personal;
+            values[0][1] = Post;
+            values[0][2] = Rate;
+            foreach (IGrouping<DateTime,TimeSheet_Day> group in groups)
+            {
+                int i=0;
+                foreach(var item in group)                
+                    values[i++][group.Key.Day + 2] = item;                
+            }
+            for (int i = 0; i < needRows; i++)
+                result[i].SetValues(values[i]);
+            return result;
+            /*var list = Days.ToList();
+            int[] ind = dg.Rows.Add(
+            while (list.Count > 0)
+            {
+                var temp = list.First();                
+            }
+            DataGridViewRow[] result;
+            var groups = Days.GroupBy(d => d.Item_Date);
+            var needRows = groups.Max(a => a.Count());
+            result = new DataGridViewRow[needRows];
+            for (int i = 0; i < needRows; i++)
+            {
+                result[i] = new DataGridViewRow();                
+            }
+            return result;*/
         }
         public TimeSheet_Content()
             : base(typeof(TimeSheet_Content))

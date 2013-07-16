@@ -21,7 +21,7 @@ namespace TimeSheet
             mainForm = mainform;            
             InitializeComponent();
             tbl = new DataTable(table);
-            Text = "Справочник " + caption;
+            Text = "Справочник: " + caption;
             Init();            
         }
         public void Init()
