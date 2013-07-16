@@ -59,10 +59,10 @@
             // 
             // btnUpdate
             // 
-            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUpdate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnUpdate.Image = global::TimeSheet.Properties.Resources.ajax_loader;
             this.btnUpdate.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnUpdate.Location = new System.Drawing.Point(593, 251);
+            this.btnUpdate.Location = new System.Drawing.Point(12, 251);
             this.btnUpdate.Name = "btnUpdate";
             this.btnUpdate.Size = new System.Drawing.Size(89, 23);
             this.btnUpdate.TabIndex = 2;
@@ -81,7 +81,6 @@
             this.Controls.Add(this.dgTable);
             this.Name = "CatalogEditorForm";
             this.Text = "Спраовчник";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CatalogEditorForm_FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.dgTable)).EndInit();
             this.ResumeLayout(false);
 
