@@ -167,16 +167,6 @@ namespace TimeSheet
                 changeState(AppState.EditTimeSheet);            
         }
 
-        private void btnNewRow_Click(object sender, EventArgs e)
-        {
-            RowEditForm re = new RowEditForm(this);
-            var res = re.ShowDialog();
-            if (res == System.Windows.Forms.DialogResult.OK)
-            {
-                re.TSContent.Save();
-                dgTimeSheet.Rows.Add(re.TSContent.ForTable(currentTimeSheet));
-            }
-        }
         public void UpdateColumns(TimeSheetInstance ts)
         {
             var daysCount = ts._DaysInMonth;
@@ -200,12 +190,7 @@ namespace TimeSheet
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount2", "Часов ночных")].ReadOnly = true;
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных")].ReadOnly = true;
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер")].ReadOnly = true;            
-        }
-        public void RowRender(TimeSheet_Content content, int row)
-        {
-            var r = dgTimeSheet.Rows[row];
-            r.SetValues(content.ForTable(currentTimeSheet));
-        }
+        }        
         private void dgTimeSheet_KeyDown(object sender, KeyEventArgs e)
         {
             flagForm = new FlagsForm(this);
@@ -217,6 +202,7 @@ namespace TimeSheet
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            currentUser = null;
             changeState(AppState.Auth);
         }
 

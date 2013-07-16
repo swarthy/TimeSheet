@@ -53,10 +53,7 @@ namespace TimeSheet
                 var count = adapter.Update(tbl);
                 MessageBox.Show(string.Format("Успешно сохранено. Затронуто {0} строк.", count), "Состояние данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 if (count > 0)
-                {
-                    tbl.Clear();
-                    adapter.Fill(tbl);
-                }
+                    updateTable();
             }
             catch
             {
@@ -65,10 +62,14 @@ namespace TimeSheet
             }
             
         }
-
-        private void CatalogEditorForm_FormClosed(object sender, FormClosedEventArgs e)
+        void updateTable()
         {
-            
+            tbl.Clear();
+            adapter.Fill(tbl);
+        }
+        private void btnUpdate_Click(object sender, EventArgs e)
+        {
+            updateTable();
         }
     }
 }

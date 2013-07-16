@@ -328,8 +328,7 @@
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;
             this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;
-            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
+            this.btnNewRow.UseVisualStyleBackColor = true;            
             // 
             // btnTimeSheetList
             // 

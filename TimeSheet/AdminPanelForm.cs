@@ -26,7 +26,7 @@ namespace TimeSheet
             if (cbCatalogs.SelectedIndex == -1)
                 return;
             CatalogEditorForm form = new CatalogEditorForm(mainForm, tableNames[cbCatalogs.SelectedIndex], cbCatalogs.SelectedText);
-            form.ShowDialog();
+            form.Show();
         }
     }
 }
