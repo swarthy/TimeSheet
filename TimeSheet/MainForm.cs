@@ -184,9 +184,8 @@ namespace TimeSheet
             for (int i = 0; i < daysCount; i++)
             {
                 var ind = dgTimeSheet.Columns.Add(string.Format("cDay{0}", i + 1), (i + 1).ToString());
-                dgTimeSheet.Columns[ind].MinimumWidth = 50;
-                dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                //dgTimeSheet.Columns[ind].Width = 56;                
+                dgTimeSheet.Columns[ind].MinimumWidth = 55;
+                dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;                           
                 dgTimeSheet.Columns[ind].Tag = "DayCell";
                 dgTimeSheet.Columns[ind].ReadOnly = true;
             }
@@ -197,6 +196,7 @@ namespace TimeSheet
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных")].ReadOnly = true;
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер")].ReadOnly = true;            
         }        
+
         private void dgTimeSheet_KeyDown(object sender, KeyEventArgs e)
         {
             flagForm = new FlagsForm(this);
@@ -217,12 +217,6 @@ namespace TimeSheet
             AdminPanelForm admin = new AdminPanelForm(this);
             admin.Show();
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {            
-                  
-        }
-
         private void dgTimeSheet_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             MessageBox.Show(dgTimeSheet[e.ColumnIndex, e.RowIndex].Value.GetType().Name);
@@ -484,6 +478,7 @@ namespace TimeSheet
     public class Personal : Domain
     {
         new public static string tableName = "PERSONAL";
+        new public static string OrderBy = "Name";
         new public static List<string> FieldNames = new List<string>();        
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //{"LPU", new Link("LPU_ID",typeof(LPU)) },

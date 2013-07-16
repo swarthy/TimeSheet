@@ -195,6 +195,7 @@ namespace TimeSheet
         public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_one = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_many = new Dictionary<string, Link>();
+        public static string OrderBy = "";
         /// <summary>
         /// Загружена ли модель из БД?
         /// </summary>
@@ -399,6 +400,10 @@ namespace TimeSheet
         {
             return type.GetField("tableName").GetValue(null) as string;
         }
+        static string GetOrderBy(Type type)
+        {
+            return type.GetField("OrderBy").GetValue(null) as string;
+        }
         static Dictionary<string, Link> GetHasMany(Type type)
         {
             var f = type.GetField("has_many");
@@ -452,7 +457,7 @@ namespace TimeSheet
             List<string> fieldNames = GetFieldNames(type);
             // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
             string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
-            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : ""), DB.Connection);
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{3}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : "", GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : ""), DB.Connection);
             //try
             //{
                 FbDataReader data = command.ExecuteReader();
@@ -485,7 +490,7 @@ namespace TimeSheet
               (sb, kvp) => sb.AppendFormat("{0}{1} = @{1}",
                            sb.Length > 0 ? " AND " : "", kvp.Key, kvp.Value),
               sb => sb.ToString());
-            FbCommand command = new FbCommand(string.Format("select {0} from {1} where {2}", fields, tableName, wherestr), DB.Connection);
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} where {2}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : ""), DB.Connection);
             rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
             //try
             //{
