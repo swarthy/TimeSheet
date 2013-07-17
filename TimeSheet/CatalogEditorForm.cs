@@ -36,14 +36,7 @@ namespace TimeSheet
             
             dgTable.DataSource = tbl;
         }
-        void updateTransaction()
-        {
-            transaction = DB.Connection.BeginTransaction();
-            adapter.DeleteCommand.Transaction = transaction;
-            adapter.UpdateCommand.Transaction = transaction;
-            adapter.InsertCommand.Transaction = transaction;
-        }
-
+        
         private void btnSave_Click(object sender, EventArgs e)
         {
             if (tbl.HasErrors)
@@ -74,8 +67,8 @@ namespace TimeSheet
 
         private void dgTable_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
-            if (MessageBox.Show("Вы уверены, что хотите удалить выбранную строку?\r\nЭто может привести к нарушению целостности данных в других таблицах и/или справочниках.\r\nДля редактирования данных строки дважды щелкните по выбранной ячейке или нажмите F2", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)            
-                e.Cancel = true;            
+            if (MessageBox.Show("Вы уверены, что хотите удалить выбранную строку?\r\nЭто может привести к нарушению целостности данных в других таблицах и/или справочниках.\r\nДля редактирования данных строки дважды щелкните по выбранной ячейке или нажмите F2", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                e.Cancel = true;
         }
     }
 }

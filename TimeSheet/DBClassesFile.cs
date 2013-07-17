@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace TimeSheet
 {
-
+    //Все классы должны быть инициализированны при создании формы (см MainForm.MainForm())
     public class User : Domain
     {
         new public static string tableName = "USERS";
@@ -256,8 +256,7 @@ namespace TimeSheet
         new public static string tableName = "PERSONAL";
         new public static string OrderBy = "Name";
         new public static List<string> FieldNames = new List<string>();
-        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            //{"LPU", new Link("LPU_ID",typeof(LPU)) },
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
             {"Post", new Link("POST_ID",typeof(Post)) },
             {"Department", new Link("DEPARTMENT_ID",typeof(Department))},
             {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
@@ -322,18 +321,6 @@ namespace TimeSheet
                 this["TimeSheetManager"] = value;
             }
         }
-        /*
-        public LPU LPU
-        {
-            get
-            {
-                return BT<LPU>("LPU");
-            }
-            set
-            {
-                this["LPU"] = value;
-            }
-        }*/
         #endregion
         public Personal()
             : base(typeof(Personal))
@@ -465,7 +452,7 @@ namespace TimeSheet
     }
     public class Calendar : Domain
     {
-        new public static string tableName = "LPU";
+        new public static string tableName = "CALENDAR";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("CALENDAR_ID",typeof(Calendar_Content))}
@@ -497,16 +484,45 @@ namespace TimeSheet
     {
         new public static string tableName = "CALENDAR_CONTENT";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
+            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar)) }
+        };
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}",Calendar.Name,new DateTime(CYear,CMonth,1).ToString("MMMM yyyy"));
+        }
         #region Properties
-        public int Month
+        public Calendar Calendar
         {
             get
             {
-                return this["Month"] == null ? 0 : (int)this["Month"];
+                return BT<Calendar>("Calendar");
             }
             set
             {
-                this["Month"] = value;
+                this["Calendar"] = value;
+            }
+        }
+        public int CMonth
+        {
+            get
+            {
+                return this["CMonth"] == null ? 0 : (int)this["CMonth"];
+            }
+            set
+            {
+                this["CMonth"] = value;
+            }
+        }
+        public int CYear
+        {
+            get
+            {
+                return this["CYear"] == null ? 0 : (int)this["CYear"];
+            }
+            set
+            {
+                this["CYear"] = value;
             }
         }
         public double Hours
@@ -536,10 +552,11 @@ namespace TimeSheet
             : base(typeof(Calendar_Content))
         {
         }
-        public Calendar_Content(int month, double hours, int days)
+        public Calendar_Content(Calendar calendar, int month, double hours, int days)
             : base(typeof(Calendar_Content))
         {
-            Month = month;
+            Calendar = calendar;
+            CMonth = month;
             Hours = hours;
             Days = days;
         }
@@ -645,7 +662,7 @@ namespace TimeSheet
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"Personal", new Link("Personal_ID",typeof(Personal))},
-            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar_Content))},
+            {"CalendarInstance", new Link("CALENDAR_CONTENT_ID",typeof(Calendar_Content))},
             {"Post", new Link("POST_ID",typeof(Post))},
             {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
@@ -672,15 +689,15 @@ namespace TimeSheet
                 this["TimeSheet"] = value;
             }
         }
-        public Calendar Calendar
+        public Calendar_Content CalendarIns
         {
             get
             {
-                return BT<Calendar>("Calendar");
+                return BT<Calendar_Content>("CalendarInstance");
             }
             set
             {
-                this["Calendar"] = value;
+                this["CalendarInstance"] = value;
             }
         }
         public Post Post

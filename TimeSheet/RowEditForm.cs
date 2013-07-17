@@ -28,7 +28,7 @@ namespace TimeSheet
             {
                 TSContent.Personal = per_sel.SelectedPersonal;
                 tbName.Text = per_sel.SelectedPersonal.Name;
-                cbPost.SelectedItem = per_sel.SelectedPersonal.Post;
+                cbPost.SelectedItem = per_sel.SelectedPersonal.Post;                
             }
         }
 
@@ -40,7 +40,14 @@ namespace TimeSheet
             {
                 MessageBox.Show("Выберите должность", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }     
+            }
+            if (cbCalendar.SelectedIndex != -1)
+                TSContent.CalendarIns = (Calendar_Content)cbCalendar.SelectedItem;
+            else
+            {
+                MessageBox.Show("Выберите календарь", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            } 
             
             if (TSContent.Personal == null)
             {
@@ -63,12 +70,15 @@ namespace TimeSheet
             tbName.Text = content.Personal != null ? content.Personal.Name : "";
             tbRate.Text = content.Rate.ToString();
             cbPost.SelectedItem = content.Post;
+            cbCalendar.SelectedItem = content.CalendarIns;
         }
 
         private void RowEditForm_Load(object sender, EventArgs e)
         {
             cbPost.Items.Clear();
-            mainForm.Posts.ForEach(p => cbPost.Items.Add(p));            
+            cbCalendar.Items.Clear();
+            mainForm.Posts.ForEach(p => cbPost.Items.Add(p));
+            mainForm.Calendars.ForEach(c => cbCalendar.Items.Add(c));
             if (TSContent != null)            
                 DrawPRow(TSContent);                
         }

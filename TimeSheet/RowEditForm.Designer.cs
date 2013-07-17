@@ -36,6 +36,8 @@
             this.tbRate = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.btnAdd = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.cbCalendar = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // label1
@@ -92,7 +94,7 @@
             // 
             this.tbRate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbRate.Location = new System.Drawing.Point(81, 77);
+            this.tbRate.Location = new System.Drawing.Point(81, 112);
             this.tbRate.Name = "tbRate";
             this.tbRate.Size = new System.Drawing.Size(150, 20);
             this.tbRate.TabIndex = 4;
@@ -101,7 +103,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 80);
+            this.label3.Location = new System.Drawing.Point(12, 115);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(46, 13);
             this.label3.TabIndex = 5;
@@ -110,7 +112,7 @@
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdd.Location = new System.Drawing.Point(237, 107);
+            this.btnAdd.Location = new System.Drawing.Point(237, 109);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 6;
@@ -118,17 +120,39 @@
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 83);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(65, 13);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Календарь:";
+            // 
+            // cbCalendar
+            // 
+            this.cbCalendar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbCalendar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbCalendar.FormattingEnabled = true;
+            this.cbCalendar.Location = new System.Drawing.Point(81, 80);
+            this.cbCalendar.Name = "cbCalendar";
+            this.cbCalendar.Size = new System.Drawing.Size(150, 21);
+            this.cbCalendar.TabIndex = 3;
+            // 
             // RowEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 142);
+            this.ClientSize = new System.Drawing.Size(324, 144);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tbRate);
+            this.Controls.Add(this.cbCalendar);
             this.Controls.Add(this.cbPost);
             this.Controls.Add(this.btnSelectPersonal);
             this.Controls.Add(this.tbName);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -152,5 +176,7 @@
         private System.Windows.Forms.TextBox tbRate;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox cbCalendar;
     }
 }

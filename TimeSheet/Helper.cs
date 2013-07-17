@@ -24,7 +24,23 @@ namespace TimeSheet
         {
             Properties.Settings.Default[key] = value;
         }
-        
+        public static void SetCurrentUser(string key, object value)
+        {
+            if (MainForm.curUsr==null)
+                return;
+            Set(MainForm.curUsr.Profile.Table_Number.ToString() + key, value);
+        }
+        public static void SetAndSaveCurrentUser(string key, object value)
+        {
+            SetCurrentUser(key, value);
+            Properties.Settings.Default.Save();
+        }
+        public static object GetCurrentUser(string key, object value)
+        {
+            if (MainForm.curUsr == null)
+                return null;
+            return Get(MainForm.curUsr.Profile.Table_Number.ToString() + key);
+        }
         public static object Get(string key)
         {
             return Properties.Settings.Default[key];

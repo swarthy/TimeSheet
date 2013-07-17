@@ -10,6 +10,22 @@ using System.Collections.ObjectModel;
 using TimeSheet.Properties;
 using System.Globalization;
 
+/*
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ *              TODO: Календарь переработать структуру, а то у календаря может быть названия
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
 namespace TimeSheet
 {
     public partial class MainForm : Form
@@ -23,10 +39,11 @@ namespace TimeSheet
         public DBList<LPU> LPUlist = new DBList<LPU>();
         public DBList<Department> Departmentlist = new DBList<Department>();
         public DBList<Post> Posts = new DBList<Post>();
+        public DBList<Calendar_Content> Calendars = new DBList<Calendar_Content>();
         public DBList<Flag> Flags = new DBList<Flag>();
         public DBList<SpecialDay> specialDays;
         public LPU currentLPU { get; set; }
-        User curUsr = null;
+        public static User curUsr = null;
         public User currentUser
         {
             get
@@ -46,8 +63,7 @@ namespace TimeSheet
         public bool Saving = false;
 
         public MainForm()
-        {
-            //DoubleBuffered = true;            
+        {            
             InitializeComponent();
             #region DB Initialization
             User.Initialize<User>();
@@ -101,9 +117,9 @@ namespace TimeSheet
                     });
                     break;
                 case AppState.EditTimeSheet:
-                    specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);
-                    Flags = Flag.All<Flag>();
+                    specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);
+                    Calendars = Calendar_Content.FindAll<Calendar_Content>("cyear = {0}", currentTimeSheet._GetDate.Year);
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
@@ -129,19 +145,20 @@ namespace TimeSheet
             }
                         );
         }
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();            
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void MainForm_Load(object sender, EventArgs e)
         {
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
             foreach (LPU lpu in LPUlist)            
                 cbLPUList.Items.Add(lpu);
             Posts = Post.All<Post>();
+            Flags = Flag.All<Flag>();            
             //changeState(AppState.LPUselect);  //release
             //DEBUG
             currentLPU = LPU.Get<LPU>(1);
@@ -318,13 +335,22 @@ namespace TimeSheet
             {
                 var cell = dgTimeSheet.SelectedCells[0];
                 var content = GetContentForDayByCell(cell);
-                FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
-                if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                var roweditor = new RowEditForm(this, content);
+                if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    var newCell = new TimeSheet_Day(content, Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
-                    newCell.Save();
+                    roweditor.TSContent.Save();
                     DrawTimeSheetContent();
                 }
+            }
+        }
+
+        private void btnNewRow_Click(object sender, EventArgs e)
+        {
+            var roweditor = new RowEditForm(this);
+            if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                roweditor.TSContent.Save();
+                DrawTimeSheetContent();
             }
         }
     }

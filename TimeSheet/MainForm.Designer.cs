@@ -51,25 +51,25 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.btnNewRow = new System.Windows.Forms.Button();
-            this.btnTimeSheetList = new System.Windows.Forms.Button();
-            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
             this.dgTimeSheet = new TimeSheet.MyDataGridView();
             this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.miEditPersonal = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnNewRow = new System.Windows.Forms.Button();
+            this.btnTimeSheetList = new System.Windows.Forms.Button();
+            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).BeginInit();
-            this.cmsDaysMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
+            this.cmsDaysMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -292,42 +292,6 @@
             this.tbCurrentDepartment.Size = new System.Drawing.Size(189, 20);
             this.tbCurrentDepartment.TabIndex = 0;
             // 
-            // btnNewRow
-            // 
-            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
-            this.btnNewRow.Name = "btnNewRow";
-            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
-            this.btnNewRow.TabIndex = 3;
-            this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;
-            // 
-            // btnTimeSheetList
-            // 
-            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
-            this.btnTimeSheetList.Name = "btnTimeSheetList";
-            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
-            this.btnTimeSheetList.TabIndex = 1;
-            this.btnTimeSheetList.Text = "Табели";
-            this.btnTimeSheetList.UseVisualStyleBackColor = true;
-            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
-            // 
-            // cmsDaysMenu
-            // 
-            this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miAddMore,
-            this.toolStripMenuItem1,
-            this.miEditPersonal});
-            this.cmsDaysMenu.Name = "cmsDaysMenu";
-            this.cmsDaysMenu.Size = new System.Drawing.Size(265, 76);
-            // 
-            // miAddMore
-            // 
-            this.miAddMore.Name = "miAddMore";
-            this.miAddMore.Size = new System.Drawing.Size(264, 22);
-            this.miAddMore.Text = "Добавить дополнительную запись";
-            this.miAddMore.Click += new System.EventHandler(this.miAddMore_Click);
-            // 
             // dgTimeSheet
             // 
             this.dgTimeSheet.AllowUserToDeleteRows = false;
@@ -372,6 +336,22 @@
             this.cRate.ReadOnly = true;
             this.cRate.Width = 68;
             // 
+            // cmsDaysMenu
+            // 
+            this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAddMore,
+            this.toolStripMenuItem1,
+            this.miEditPersonal});
+            this.cmsDaysMenu.Name = "cmsDaysMenu";
+            this.cmsDaysMenu.Size = new System.Drawing.Size(265, 54);
+            // 
+            // miAddMore
+            // 
+            this.miAddMore.Name = "miAddMore";
+            this.miAddMore.Size = new System.Drawing.Size(264, 22);
+            this.miAddMore.Text = "Добавить дополнительную запись";
+            this.miAddMore.Click += new System.EventHandler(this.miAddMore_Click);
+            // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
@@ -384,6 +364,27 @@
             this.miEditPersonal.Text = "Редактировать данные персонала";
             this.miEditPersonal.Click += new System.EventHandler(this.miEditPersonal_Click);
             // 
+            // btnNewRow
+            // 
+            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
+            this.btnNewRow.Name = "btnNewRow";
+            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
+            this.btnNewRow.TabIndex = 3;
+            this.btnNewRow.Text = "Добавить запись";
+            this.btnNewRow.UseVisualStyleBackColor = true;
+            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
+            // 
+            // btnTimeSheetList
+            // 
+            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
+            this.btnTimeSheetList.Name = "btnTimeSheetList";
+            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
+            this.btnTimeSheetList.TabIndex = 1;
+            this.btnTimeSheetList.Text = "Табели";
+            this.btnTimeSheetList.UseVisualStyleBackColor = true;
+            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -395,8 +396,8 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "TimeSheet Manager v 1.0";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form1_FormClosed);
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.pLPUSelection.ResumeLayout(false);
             this.pLPUSelection.PerformLayout();
             this.pAuth.ResumeLayout(false);
@@ -406,9 +407,9 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).EndInit();
-            this.cmsDaysMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
+            this.cmsDaysMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
