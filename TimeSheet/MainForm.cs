@@ -107,11 +107,16 @@ namespace TimeSheet
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row =>{
-                            var temp = row.Render(dgTimeSheet);
+                        var rows = row.AddToTable(timeSheetTable);
+                        foreach (var r in rows)
+                            timeSheetTable.Rows.Add(r);
+                            /*var temp = row.Render(dgTimeSheet);
                             if (temp != null)
                                 dgTimeSheet.Rows.AddRange(temp);                                 
+                             */
                         }
-                        );                    
+                        );
+                    timeSheetTable.AcceptChanges();
                     pTimeSheetEditor.Show();
                     break;
             }
@@ -1027,10 +1032,29 @@ namespace TimeSheet
                 result[i].SetValues(values[i]);
             return result;            
         }*/
-        public void AddToTable(DataTable table)
+        public List<DataRow> AddToTable(DataTable table)
         {
             //table.LoadDataRow(new object[] {},LoadOption.
-            var mainrow = table.NewRow();
+            //var mainrow = table.NewRow();
+            List<DataRow> contentRows = new List<DataRow>();
+            contentRows.Add(table.NewRow());
+            contentRows[0][0] = Personal;
+            contentRows[0][1] = Personal.Table_Number;
+            contentRows[0][2] = Post;
+            contentRows[0][3] = Rate;
+            for (int i = 0; i < Days.Count; i++)
+            {
+                int indx = 0;
+                var cPos = Days[i].Item_Date.Day;
+                while (contentRows[indx][cPos+3].GetType()==typeof(TimeSheet_Day))
+                {                    
+                    indx++;
+                    if (indx == contentRows.Count)
+                        contentRows.Add(table.NewRow());
+                }
+                contentRows[indx][cPos] = Days[i];
+            }
+            return contentRows;
         }
         public TimeSheet_Content()
             : base(typeof(TimeSheet_Content))

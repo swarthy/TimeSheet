@@ -57,18 +57,13 @@
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnNewRow = new System.Windows.Forms.Button();
             this.btnTimeSheetList = new System.Windows.Forms.Button();
-            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.timeSheetContentBindingSource1 = new System.Windows.Forms.BindingSource(this.components);
-            this.timeSheetContentBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);            
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.timeSheetContentBindingSource1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.timeSheetContentBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();                        
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -351,19 +346,7 @@
             this.btnTimeSheetList.TabIndex = 1;
             this.btnTimeSheetList.Text = "Табели";
             this.btnTimeSheetList.UseVisualStyleBackColor = true;
-            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
-            // 
-            // postBindingSource
-            // 
-            this.postBindingSource.DataSource = typeof(TimeSheet.Post);
-            // 
-            // timeSheetContentBindingSource1
-            // 
-            this.timeSheetContentBindingSource1.DataSource = typeof(TimeSheet.TimeSheet_Content);
-            // 
-            // timeSheetContentBindingSource
-            // 
-            this.timeSheetContentBindingSource.DataSource = typeof(TimeSheet.TimeSheet_Content);
+            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);            
             // 
             // MainForm
             // 
@@ -387,10 +370,7 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.timeSheetContentBindingSource1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.timeSheetContentBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();                        
             this.ResumeLayout(false);
 
         }
