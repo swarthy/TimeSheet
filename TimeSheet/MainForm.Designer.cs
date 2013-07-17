@@ -51,19 +51,25 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new MyDataGridView();
+            this.btnNewRow = new System.Windows.Forms.Button();
+            this.btnTimeSheetList = new System.Windows.Forms.Button();
+            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
+            this.dgTimeSheet = new TimeSheet.MyDataGridView();
             this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnNewRow = new System.Windows.Forms.Button();
-            this.btnTimeSheetList = new System.Windows.Forms.Button();
-            this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);            
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
+            this.miEditPersonal = new System.Windows.Forms.ToolStripMenuItem();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();                        
+            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).BeginInit();
+            this.cmsDaysMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -286,9 +292,45 @@
             this.tbCurrentDepartment.Size = new System.Drawing.Size(189, 20);
             this.tbCurrentDepartment.TabIndex = 0;
             // 
+            // btnNewRow
+            // 
+            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
+            this.btnNewRow.Name = "btnNewRow";
+            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
+            this.btnNewRow.TabIndex = 3;
+            this.btnNewRow.Text = "Добавить запись";
+            this.btnNewRow.UseVisualStyleBackColor = true;
+            // 
+            // btnTimeSheetList
+            // 
+            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
+            this.btnTimeSheetList.Name = "btnTimeSheetList";
+            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
+            this.btnTimeSheetList.TabIndex = 1;
+            this.btnTimeSheetList.Text = "Табели";
+            this.btnTimeSheetList.UseVisualStyleBackColor = true;
+            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
+            // 
+            // cmsDaysMenu
+            // 
+            this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miAddMore,
+            this.toolStripMenuItem1,
+            this.miEditPersonal});
+            this.cmsDaysMenu.Name = "cmsDaysMenu";
+            this.cmsDaysMenu.Size = new System.Drawing.Size(265, 76);
+            // 
+            // miAddMore
+            // 
+            this.miAddMore.Name = "miAddMore";
+            this.miAddMore.Size = new System.Drawing.Size(264, 22);
+            this.miAddMore.Text = "Добавить дополнительную запись";
+            this.miAddMore.Click += new System.EventHandler(this.miAddMore_Click);
+            // 
             // dgTimeSheet
             // 
-            this.dgTimeSheet.AllowUserToOrderColumns = true;
+            this.dgTimeSheet.AllowUserToDeleteRows = false;
             this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -298,12 +340,14 @@
             this.cFIO,
             this.cPost,
             this.cRate});
+            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
+            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
             this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
             this.dgTimeSheet.Name = "dgTimeSheet";
             this.dgTimeSheet.ReadOnly = true;
             this.dgTimeSheet.Size = new System.Drawing.Size(780, 264);
             this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellContentDoubleClick);
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
             this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
             // 
             // cFIO
@@ -328,25 +372,17 @@
             this.cRate.ReadOnly = true;
             this.cRate.Width = 68;
             // 
-            // btnNewRow
+            // toolStripMenuItem1
             // 
-            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
-            this.btnNewRow.Name = "btnNewRow";
-            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
-            this.btnNewRow.TabIndex = 3;
-            this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(261, 6);
             // 
-            // btnTimeSheetList
+            // miEditPersonal
             // 
-            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
-            this.btnTimeSheetList.Name = "btnTimeSheetList";
-            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
-            this.btnTimeSheetList.TabIndex = 1;
-            this.btnTimeSheetList.Text = "Табели";
-            this.btnTimeSheetList.UseVisualStyleBackColor = true;
-            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);            
+            this.miEditPersonal.Name = "miEditPersonal";
+            this.miEditPersonal.Size = new System.Drawing.Size(264, 22);
+            this.miEditPersonal.Text = "Редактировать данные персонала";
+            this.miEditPersonal.Click += new System.EventHandler(this.miEditPersonal_Click);
             // 
             // MainForm
             // 
@@ -370,7 +406,9 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();                        
+            ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).EndInit();
+            this.cmsDaysMenu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -405,6 +443,10 @@
         private System.Windows.Forms.Button btnLogout;
         private System.Windows.Forms.Button btnAdminPanel;
         private System.Windows.Forms.Label lbCurrentTimeSheetName;
+        private System.Windows.Forms.ContextMenuStrip cmsDaysMenu;
+        private System.Windows.Forms.ToolStripMenuItem miAddMore;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem miEditPersonal;
 
 
 
