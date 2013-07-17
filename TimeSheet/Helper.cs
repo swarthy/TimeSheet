@@ -10,6 +10,7 @@ namespace TimeSheet
 {
     public static class Helper
     {
+        public static Random R = new Random();
         public static string getMD5(string input)
         {
             MD5 md5Hasher = MD5.Create();

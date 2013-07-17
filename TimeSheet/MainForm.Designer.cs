@@ -27,7 +27,7 @@
         /// содержимое данного метода при помощи редактора кода.
         /// </summary>
         private void InitializeComponent()
-        {            
+        {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pLPUSelection = new System.Windows.Forms.Panel();
@@ -302,10 +302,11 @@
             this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.cFIO,
             this.cPost,
-            this.cRate});            
+            this.cRate});
             this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
             this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.Size = new System.Drawing.Size(780, 251);
+            this.dgTimeSheet.ReadOnly = true;
+            this.dgTimeSheet.Size = new System.Drawing.Size(780, 264);
             this.dgTimeSheet.TabIndex = 2;
             this.dgTimeSheet.CellContentDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellContentDoubleClick);
             this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
@@ -329,12 +330,13 @@
             // 
             this.cRate.HeaderText = "Ставка";
             this.cRate.Name = "cRate";
+            this.cRate.ReadOnly = true;
             this.cRate.Width = 68;
             // 
             // btnNewRow
             // 
             this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 260);
+            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
             this.btnNewRow.Name = "btnNewRow";
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;

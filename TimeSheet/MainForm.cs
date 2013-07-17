@@ -41,7 +41,7 @@ namespace TimeSheet
 
         public MainForm()
         {
-            DoubleBuffered = true;
+            DoubleBuffered = true;            
             InitializeComponent();
             #region DB Initialization
             User.Initialize<User>();
@@ -168,30 +168,32 @@ namespace TimeSheet
         {
             var daysCount = ts._DaysInMonth;
             dgTimeSheet.Columns.Clear();
-            var lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cFIO", "ФИО")]; lastAdded.ReadOnly = true; lastAdded.Frozen = true;
-            lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cPost", "Должность")]; lastAdded.ReadOnly = true;
-            lastAdded = dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cRate", "Ставка")]; lastAdded.ReadOnly = true;
-
+            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cFIO", "ФИО")].Frozen = true;
+            dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер");
+            dgTimeSheet.Columns.Add("cPost", "Должность");
+            dgTimeSheet.Columns.Add("cRate", "Ставка");
+            var date = ts._GetDate;
             for (int i = 0; i < daysCount; i++)
-            {
-                var ind = dgTimeSheet.Columns.Add(string.Format("cDay{0}", i + 1), (i + 1).ToString());
+            {                
+                var ind = dgTimeSheet.Columns.Add(string.Format("cDay{0}", i + 1), date.ToString("d ddd"));
+                //if calendar.isWeekEnd(date) { backcolor = red; }
+                date = date.AddDays(1);
                 dgTimeSheet.Columns[ind].MinimumWidth = 55;
                 dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;                           
                 dgTimeSheet.Columns[ind].Tag = "DayCell";
-                dgTimeSheet.Columns[ind].ReadOnly = true;
-                dgTimeSheet.Columns[ind].SortMode = DataGridViewColumnSortMode.NotSortable;
+                //dgTimeSheet.Columns[ind].ReadOnly = true;
+                //dgTimeSheet.Columns[ind].SortMode = DataGridViewColumnSortMode.NotSortable;
             }
    
             dgTimeSheet.Columns.Add("cDaysCount1", "Дни явок");
             dgTimeSheet.Columns.Add("cHoursCount1", "Часов всего");
             dgTimeSheet.Columns.Add("cHoursCount2", "Часов ночных");
-            dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных");
-            dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер");
+            dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных");            
 
-            for (int i = 1; i <= 5; i++)
+            for (int i = 0; i < dgTimeSheet.Columns.Count; i++)
             {
-                dgTimeSheet.Columns[dgTimeSheet.Columns.Count - i].SortMode = DataGridViewColumnSortMode.NotSortable;
-                dgTimeSheet.Columns[dgTimeSheet.Columns.Count - i].ReadOnly = true;
+                dgTimeSheet.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dgTimeSheet.Columns[i].ReadOnly = true;
             }
         }
 
@@ -228,6 +230,8 @@ namespace TimeSheet
                     //content.TimeSheetContent.RefreshSummary()
                     //ReDrawSummary();
                     //BurnInHell(DateTime.Now);
+                    //в конструкторе,
+                    /////SetStyle(ControlStyle.OptimizedDoubleBuffer | ControlStyles.AllPainttingInWmPaint, true);
                     break;
                 case "TimeSheet_Content":
                     MessageBox.Show("Я заголовок");
@@ -960,7 +964,8 @@ namespace TimeSheet
         public DataGridViewRow[] Render(DataGridView dg)
         {
             if (Days.Count == 0)
-                return null;
+                return null;               
+            //Color color = Color.FromArgb(100, rand.Next(255), rand.Next(255), rand.Next(255));
             DataGridViewRow[] result;
             var groups = Days.GroupBy(d => d.Item_Date);
             var needRows = groups.Max(a => a.Count());
@@ -969,12 +974,13 @@ namespace TimeSheet
             for (int i = 0; i < needRows; i++)
             {
                 result[i] = new DataGridViewRow();
-                result[i].CreateCells(dg);
+                result[i].CreateCells(dg);                
                 values[i] = new object[3 + TimeSheet._DaysInMonth + 4];
             }
             values[0][0] = Personal;
-            values[0][1] = Post;
-            values[0][2] = Rate;
+            values[0][1] = Personal.Table_Number;
+            values[0][2] = Post;
+            values[0][3] = Rate;
             foreach (IGrouping<DateTime,TimeSheet_Day> group in groups)
             {
                 int i=0;
@@ -983,22 +989,7 @@ namespace TimeSheet
             }
             for (int i = 0; i < needRows; i++)
                 result[i].SetValues(values[i]);
-            return result;
-            /*var list = Days.ToList();
-            int[] ind = dg.Rows.Add(
-            while (list.Count > 0)
-            {
-                var temp = list.First();                
-            }
-            DataGridViewRow[] result;
-            var groups = Days.GroupBy(d => d.Item_Date);
-            var needRows = groups.Max(a => a.Count());
-            result = new DataGridViewRow[needRows];
-            for (int i = 0; i < needRows; i++)
-            {
-                result[i] = new DataGridViewRow();                
-            }
-            return result;*/
+            return result;            
         }
         public TimeSheet_Content()
             : base(typeof(TimeSheet_Content))
@@ -1099,7 +1090,17 @@ namespace TimeSheet
                 this["Spec_Date"] = value;
             }
         }
-
+        public int State
+        {
+            get
+            {
+                return Convert.ToInt32(this["State"]);
+            }
+            set
+            {
+                this["State"] = value;
+            }
+        }        
         #endregion
         public SpecialDay()
             : base(typeof(SpecialDay))
@@ -1108,7 +1109,7 @@ namespace TimeSheet
         public SpecialDay(DateTime date)
             : base(typeof(SpecialDay))
         {
-            Spec_Date = date;
+            Spec_Date = date;            
         }
     }
 

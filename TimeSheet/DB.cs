@@ -574,6 +574,7 @@ namespace TimeSheet
             string tableName = GetTableName(GetType());
             FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);            
             command.ExecuteNonQuery();
+            Fields["ID"] = null;
         }
         /// <summary>
         /// Найти все записи, удовлетворяющие условию where_str

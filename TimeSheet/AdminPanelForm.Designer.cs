@@ -34,8 +34,14 @@
             this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.calHolydays = new System.Windows.Forms.MonthCalendar();
+            this.rbUsualDay = new System.Windows.Forms.RadioButton();
+            this.rbWeekEnd = new System.Windows.Forms.RadioButton();
+            this.rbHolyDay = new System.Windows.Forms.RadioButton();
+            this.rbShortDay = new System.Windows.Forms.RadioButton();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbContent
@@ -49,7 +55,7 @@
             this.tbContent.Location = new System.Drawing.Point(12, 12);
             this.tbContent.Name = "tbContent";
             this.tbContent.SelectedIndex = 0;
-            this.tbContent.Size = new System.Drawing.Size(433, 300);
+            this.tbContent.Size = new System.Drawing.Size(402, 211);
             this.tbContent.TabIndex = 0;
             // 
             // tabPage1
@@ -59,7 +65,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(425, 274);
+            this.tabPage1.Size = new System.Drawing.Size(394, 185);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -67,7 +73,7 @@
             // btnEditCatalog
             // 
             this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditCatalog.Location = new System.Drawing.Point(321, 6);
+            this.btnEditCatalog.Location = new System.Drawing.Point(290, 6);
             this.btnEditCatalog.Name = "btnEditCatalog";
             this.btnEditCatalog.Size = new System.Drawing.Size(98, 23);
             this.btnEditCatalog.TabIndex = 1;
@@ -90,37 +96,100 @@
             "ЛПУ"});
             this.cbCatalogs.Location = new System.Drawing.Point(6, 6);
             this.cbCatalogs.Name = "cbCatalogs";
-            this.cbCatalogs.Size = new System.Drawing.Size(309, 21);
+            this.cbCatalogs.Size = new System.Drawing.Size(278, 21);
             this.cbCatalogs.TabIndex = 0;
             // 
             // tabPage2
             // 
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(425, 274);
+            this.tabPage2.Size = new System.Drawing.Size(394, 185);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Производственные календари";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.rbShortDay);
+            this.tabPage3.Controls.Add(this.rbHolyDay);
+            this.tabPage3.Controls.Add(this.rbWeekEnd);
+            this.tabPage3.Controls.Add(this.rbUsualDay);
+            this.tabPage3.Controls.Add(this.calHolydays);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(425, 274);
+            this.tabPage3.Size = new System.Drawing.Size(394, 185);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Праздники/Выходные";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // calHolydays
+            // 
+            this.calHolydays.Location = new System.Drawing.Point(9, 9);
+            this.calHolydays.MaxSelectionCount = 1;
+            this.calHolydays.Name = "calHolydays";
+            this.calHolydays.ShowWeekNumbers = true;
+            this.calHolydays.TabIndex = 0;
+            this.calHolydays.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.calHolydays_DateChanged);
+            // 
+            // rbUsualDay
+            // 
+            this.rbUsualDay.AutoSize = true;
+            this.rbUsualDay.Checked = true;
+            this.rbUsualDay.Location = new System.Drawing.Point(207, 9);
+            this.rbUsualDay.Name = "rbUsualDay";
+            this.rbUsualDay.Size = new System.Drawing.Size(99, 17);
+            this.rbUsualDay.TabIndex = 1;
+            this.rbUsualDay.TabStop = true;
+            this.rbUsualDay.Text = "Обычный день";
+            this.rbUsualDay.UseVisualStyleBackColor = true;
+            this.rbUsualDay.CheckedChanged += new System.EventHandler(this.rbUsualDay_CheckedChanged);
+            // 
+            // rbWeekEnd
+            // 
+            this.rbWeekEnd.AutoSize = true;
+            this.rbWeekEnd.Location = new System.Drawing.Point(207, 32);
+            this.rbWeekEnd.Name = "rbWeekEnd";
+            this.rbWeekEnd.Size = new System.Drawing.Size(75, 17);
+            this.rbWeekEnd.TabIndex = 1;
+            this.rbWeekEnd.Text = "Выходной";
+            this.rbWeekEnd.UseVisualStyleBackColor = true;
+            this.rbWeekEnd.CheckedChanged += new System.EventHandler(this.rbWeekEnd_CheckedChanged);
+            // 
+            // rbHolyDay
+            // 
+            this.rbHolyDay.AutoSize = true;
+            this.rbHolyDay.Location = new System.Drawing.Point(207, 55);
+            this.rbHolyDay.Name = "rbHolyDay";
+            this.rbHolyDay.Size = new System.Drawing.Size(75, 17);
+            this.rbHolyDay.TabIndex = 1;
+            this.rbHolyDay.Text = "Праздник";
+            this.rbHolyDay.UseVisualStyleBackColor = true;
+            this.rbHolyDay.CheckedChanged += new System.EventHandler(this.rbHolyDay_CheckedChanged);
+            // 
+            // rbShortDay
+            // 
+            this.rbShortDay.AutoSize = true;
+            this.rbShortDay.Location = new System.Drawing.Point(207, 78);
+            this.rbShortDay.Name = "rbShortDay";
+            this.rbShortDay.Size = new System.Drawing.Size(168, 17);
+            this.rbShortDay.TabIndex = 1;
+            this.rbShortDay.Text = "Сокращенный рабочий день";
+            this.rbShortDay.UseVisualStyleBackColor = true;
+            this.rbShortDay.CheckedChanged += new System.EventHandler(this.rbShortDay_CheckedChanged);
             // 
             // AdminPanelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(457, 324);
+            this.ClientSize = new System.Drawing.Size(426, 235);
             this.Controls.Add(this.tbContent);
             this.Name = "AdminPanelForm";
             this.Text = "Панель администратора";
+            this.Load += new System.EventHandler(this.AdminPanelForm_Load);
             this.tbContent.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -133,5 +202,10 @@
         private System.Windows.Forms.Button btnEditCatalog;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.MonthCalendar calHolydays;
+        private System.Windows.Forms.RadioButton rbShortDay;
+        private System.Windows.Forms.RadioButton rbHolyDay;
+        private System.Windows.Forms.RadioButton rbWeekEnd;
+        private System.Windows.Forms.RadioButton rbUsualDay;
     }
 }
