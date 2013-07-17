@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgTable = new System.Windows.Forms.DataGridView();
+            this.dgTable = new MyDataGridView();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgTable)).BeginInit();
@@ -86,7 +86,7 @@
 
         #endregion
 
-        private System.Windows.Forms.DataGridView dgTable;
+        private MyDataGridView dgTable;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnUpdate;
     }

@@ -39,6 +39,8 @@
             this.rbWeekEnd = new System.Windows.Forms.RadioButton();
             this.rbHolyDay = new System.Windows.Forms.RadioButton();
             this.rbShortDay = new System.Windows.Forms.RadioButton();
+            this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
+            this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage3.SuspendLayout();
@@ -55,7 +57,7 @@
             this.tbContent.Location = new System.Drawing.Point(12, 12);
             this.tbContent.Name = "tbContent";
             this.tbContent.SelectedIndex = 0;
-            this.tbContent.Size = new System.Drawing.Size(402, 211);
+            this.tbContent.Size = new System.Drawing.Size(402, 227);
             this.tbContent.TabIndex = 0;
             // 
             // tabPage1
@@ -110,6 +112,8 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.pbGeneratingWeekEnds);
+            this.tabPage3.Controls.Add(this.btnGenerateWeekEnds);
             this.tabPage3.Controls.Add(this.rbShortDay);
             this.tabPage3.Controls.Add(this.rbHolyDay);
             this.tabPage3.Controls.Add(this.rbWeekEnd);
@@ -117,7 +121,7 @@
             this.tabPage3.Controls.Add(this.calHolydays);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(394, 185);
+            this.tabPage3.Size = new System.Drawing.Size(394, 201);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Праздники/Выходные";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -177,11 +181,34 @@
             this.rbShortDay.UseVisualStyleBackColor = true;
             this.rbShortDay.CheckedChanged += new System.EventHandler(this.rbShortDay_CheckedChanged);
             // 
+            // btnGenerateWeekEnds
+            // 
+            this.btnGenerateWeekEnds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnGenerateWeekEnds.Location = new System.Drawing.Point(207, 130);
+            this.btnGenerateWeekEnds.Name = "btnGenerateWeekEnds";
+            this.btnGenerateWeekEnds.Size = new System.Drawing.Size(168, 41);
+            this.btnGenerateWeekEnds.TabIndex = 2;
+            this.btnGenerateWeekEnds.Text = "Сделать все Сб и Вс выходными днями";
+            this.btnGenerateWeekEnds.UseVisualStyleBackColor = true;
+            this.btnGenerateWeekEnds.Click += new System.EventHandler(this.btnGenerateWeekEnds_Click);
+            // 
+            // pbGeneratingWeekEnds
+            // 
+            this.pbGeneratingWeekEnds.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pbGeneratingWeekEnds.Location = new System.Drawing.Point(9, 177);
+            this.pbGeneratingWeekEnds.MarqueeAnimationSpeed = 10;
+            this.pbGeneratingWeekEnds.Maximum = 366;
+            this.pbGeneratingWeekEnds.Name = "pbGeneratingWeekEnds";
+            this.pbGeneratingWeekEnds.Size = new System.Drawing.Size(366, 15);
+            this.pbGeneratingWeekEnds.TabIndex = 3;
+            this.pbGeneratingWeekEnds.Visible = false;
+            // 
             // AdminPanelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 235);
+            this.ClientSize = new System.Drawing.Size(426, 251);
             this.Controls.Add(this.tbContent);
             this.Name = "AdminPanelForm";
             this.Text = "Панель администратора";
@@ -207,5 +234,7 @@
         private System.Windows.Forms.RadioButton rbHolyDay;
         private System.Windows.Forms.RadioButton rbWeekEnd;
         private System.Windows.Forms.RadioButton rbUsualDay;
+        private System.Windows.Forms.Button btnGenerateWeekEnds;
+        private System.Windows.Forms.ProgressBar pbGeneratingWeekEnds;
     }
 }

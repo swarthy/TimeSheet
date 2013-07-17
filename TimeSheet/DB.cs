@@ -163,10 +163,10 @@ namespace TimeSheet
         public void Remove(T item, bool delete_removable_object = false)
         {
             if (OnRemove != null)
-                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, false));            
-            if (delete_removable_object)
-                item.Delete();
+                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, false));
             base.Remove(item);
+            if (delete_removable_object)
+                item.Delete();            
         }     
     }
     public struct Link
@@ -206,7 +206,13 @@ namespace TimeSheet
         /// Имя таблицы
         /// </summary>
         public static string tableName = "";
-
+        public bool _IsNew
+        {
+            get
+            {
+                return Fields["ID"] == null;
+            }
+        }
         bool changed = true;
         public bool _Changed { get { return changed; } private set { changed = value; } }
 
@@ -259,7 +265,7 @@ namespace TimeSheet
         {
             get
             {
-                return (int)Fields["ID"];    //чтобы не вызывать лишних проверок
+                return Fields["ID"]==null?-1:(int)Fields["ID"];    //чтобы не вызывать лишних проверок
             }
             set
             {
@@ -666,7 +672,7 @@ namespace TimeSheet
                 return false;
             if ((obj as Domain) == null)
                 return false;
-            return (obj as Domain).ID == ID;
+            return (obj as Domain).Fields.All(kv => Fields.ContainsKey(kv.Key) && Fields[kv.Key] == kv.Value);
         }
         public override int GetHashCode()
         {

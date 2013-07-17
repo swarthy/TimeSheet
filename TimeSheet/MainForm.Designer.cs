@@ -51,7 +51,7 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new System.Windows.Forms.DataGridView();
+            this.dgTimeSheet = new MyDataGridView();
             this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -410,9 +410,7 @@
         private System.Windows.Forms.Button btnLPUSelect;
         private System.Windows.Forms.Panel pWorkspace;
         private System.Windows.Forms.Button btnTimeSheetList;
-        private System.Windows.Forms.DataGridView dgTimeSheet;
-        private System.Windows.Forms.BindingSource timeSheetContentBindingSource;
-        private System.Windows.Forms.BindingSource timeSheetContentBindingSource1;
+        private MyDataGridView dgTimeSheet;        
         private System.Windows.Forms.Button btnNewRow;
         private System.Windows.Forms.Panel pTimeSheetEditor;
         private System.Windows.Forms.BindingSource postBindingSource;

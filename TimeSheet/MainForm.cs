@@ -14,11 +14,17 @@ namespace TimeSheet
 {
     public partial class MainForm : Form
     {
+        BindingSource timeSheetSource;
+        DataTable timeSheetTable = new DataTable();
+        public static Color weekEndColor = Color.MistyRose;
+        public static Color holyDayColor = Color.LightCoral;
+        public static Color shortDayColor = Color.BurlyWood;
         public AppState State = AppState.LPUselect;
         public DBList<LPU> LPUlist = new DBList<LPU>();
         public DBList<Department> Departmentlist = new DBList<Department>();
         public DBList<Post> Posts = new DBList<Post>();
         public DBList<Flag> Flags = new DBList<Flag>();
+        public DBList<SpecialDay> specialDays;
         public LPU currentLPU { get; set; }
         User curUsr = null;
         public User currentUser
@@ -41,7 +47,7 @@ namespace TimeSheet
 
         public MainForm()
         {
-            DoubleBuffered = true;            
+            //DoubleBuffered = true;            
             InitializeComponent();
             #region DB Initialization
             User.Initialize<User>();
@@ -58,6 +64,9 @@ namespace TimeSheet
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             #endregion                                                            
+            timeSheetSource = new BindingSource();
+            timeSheetSource.DataSource = timeSheetTable;
+            dgTimeSheet.DataSource = timeSheetSource;
         }
         void HideAllShowThis(Panel p)
         {            
@@ -92,6 +101,7 @@ namespace TimeSheet
                     });
                     break;
                 case AppState.EditTimeSheet:
+                    specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);
                     UpdateColumns(currentTimeSheet);
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
@@ -165,18 +175,40 @@ namespace TimeSheet
         }
 
         public void UpdateColumns(TimeSheetInstance ts)
-        {
+        {            
             var daysCount = ts._DaysInMonth;
+            timeSheetTable.Columns.Clear();            
             dgTimeSheet.Columns.Clear();
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cFIO", "ФИО")].Frozen = true;
+            timeSheetTable.Columns.Add("cFIO");
+            //попробовать добавить аналогичные столбцы в timesheettable
             dgTimeSheet.Columns.Add("cTimeSheetNumber", "Табельный номер");
+            timeSheetTable.Columns.Add("cTimeSheetNumber");
             dgTimeSheet.Columns.Add("cPost", "Должность");
+            timeSheetTable.Columns.Add("cPost");
             dgTimeSheet.Columns.Add("cRate", "Ставка");
+            timeSheetTable.Columns.Add("cRate");
             var date = ts._GetDate;
             for (int i = 0; i < daysCount; i++)
             {                
                 var ind = dgTimeSheet.Columns.Add(string.Format("cDay{0}", i + 1), date.ToString("d ddd"));
-                //if calendar.isWeekEnd(date) { backcolor = red; }
+                timeSheetTable.Columns.Add(string.Format("cDay{0}", i + 1));
+                var spec = specialDays.Find(sd => sd.Spec_Date == date);
+                if (spec != null)
+                {
+                    switch (spec.State)
+                    {
+                        case 1:
+                            dgTimeSheet.Columns[ind].DefaultCellStyle.BackColor = weekEndColor;
+                            break;
+                        case 2:
+                            dgTimeSheet.Columns[ind].DefaultCellStyle.BackColor = holyDayColor;
+                            break;
+                        case 3:
+                            dgTimeSheet.Columns[ind].DefaultCellStyle.BackColor = shortDayColor;
+                            break;
+                    }
+                }
                 date = date.AddDays(1);
                 dgTimeSheet.Columns[ind].MinimumWidth = 55;
                 dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;                           
@@ -186,12 +218,16 @@ namespace TimeSheet
             }
    
             dgTimeSheet.Columns.Add("cDaysCount1", "Дни явок");
+            timeSheetTable.Columns.Add("cDaysCount1");
             dgTimeSheet.Columns.Add("cHoursCount1", "Часов всего");
+            timeSheetTable.Columns.Add("cHoursCount1");
             dgTimeSheet.Columns.Add("cHoursCount2", "Часов ночных");
-            dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных");            
+            timeSheetTable.Columns.Add("cHoursCount2");
+            dgTimeSheet.Columns.Add("cHoursCount3", "Часов выходных, праздничных");
+            timeSheetTable.Columns.Add("cHoursCount3");
 
             for (int i = 0; i < dgTimeSheet.Columns.Count; i++)
-            {
+            {                
                 dgTimeSheet.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
                 dgTimeSheet.Columns[i].ReadOnly = true;
             }
@@ -961,11 +997,11 @@ namespace TimeSheet
             }
         }        
         #endregion
-        public DataGridViewRow[] Render(DataGridView dg)
+        /*
+        public DataGridViewRow[] Render(MyDataGridView dg)
         {
             if (Days.Count == 0)
-                return null;               
-            //Color color = Color.FromArgb(100, rand.Next(255), rand.Next(255), rand.Next(255));
+                return null;            
             DataGridViewRow[] result;
             var groups = Days.GroupBy(d => d.Item_Date);
             var needRows = groups.Max(a => a.Count());
@@ -977,7 +1013,7 @@ namespace TimeSheet
                 result[i].CreateCells(dg);                
                 values[i] = new object[3 + TimeSheet._DaysInMonth + 4];
             }
-            values[0][0] = Personal;
+            values[0][0] = Personal;            
             values[0][1] = Personal.Table_Number;
             values[0][2] = Post;
             values[0][3] = Rate;
@@ -990,6 +1026,11 @@ namespace TimeSheet
             for (int i = 0; i < needRows; i++)
                 result[i].SetValues(values[i]);
             return result;            
+        }*/
+        public void AddToTable(DataTable table)
+        {
+            //table.LoadDataRow(new object[] {},LoadOption.
+            var mainrow = table.NewRow();
         }
         public TimeSheet_Content()
             : base(typeof(TimeSheet_Content))
@@ -1102,6 +1143,11 @@ namespace TimeSheet
             }
         }        
         #endregion
+        public static DBList<SpecialDay> GetAllForYear(int year)
+        {
+            string start = new DateTime(year, 1, 1).ToShortDateString(), end = new DateTime(year, 12, 31).ToShortDateString();
+            return SpecialDay.FindAll<SpecialDay>("spec_date >= '{0}' and spec_date <= '{1}'", start, end);
+        }
         public SpecialDay()
             : base(typeof(SpecialDay))
         {
@@ -1113,5 +1159,5 @@ namespace TimeSheet
         }
     }
 
-    #endregion
+    #endregion    
 }

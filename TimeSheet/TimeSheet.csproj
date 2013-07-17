@@ -80,6 +80,9 @@
     <Compile Include="FlagsForm.Designer.cs">
       <DependentUpon>FlagsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="MyDataGridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="RowEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
