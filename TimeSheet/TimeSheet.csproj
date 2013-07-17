@@ -74,6 +74,7 @@
     <Compile Include="CatalogEditorForm.Designer.cs">
       <DependentUpon>CatalogEditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DBClassesFile.cs" />
     <Compile Include="FlagsForm.cs">
       <SubType>Form</SubType>
     </Compile>

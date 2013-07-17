@@ -13,7 +13,7 @@ namespace TimeSheet
     {
         MainForm mainForm;
         public int Hours=0, Minutes=0;
-        public string flag = "";
+        public Flag flag = null;
         public TimeSpan worked_time
         {
             get
@@ -42,7 +42,7 @@ namespace TimeSheet
             }
             var c = Controls.OfType<RadioButton>();
             if (c.Any(cc => cc.Checked))
-                flag = c.First(b => b.Checked).Name;
+                flag = c.First(b => b.Checked).Tag as Flag;
             else
             {
                 MessageBox.Show("Выберите показатель", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -55,26 +55,27 @@ namespace TimeSheet
         {
             var needCh = preDay != null;
             for (int i = 0; i < mainForm.Flags.Count; i++)
-            {
-                CreateRadioButton(mainForm.Flags[i].Name, mainForm.Flags[i].Ru_Name, 12 + i % 6 * 40, 12 + (i / 6) * 23, 100 + i, needCh ? mainForm.Flags[i] == preDay.Flag : false);
-            }
+                CreateRadioButton(mainForm.Flags[i].Name, mainForm.Flags[i].Ru_Name, 12 + i % 6 * 40, 12 + (i / 6) * 23, mainForm.Flags[i], 100 + i, needCh ? mainForm.Flags[i].ID == preDay.Flag.ID : false);
+            if (needCh)
+                flag = preDay.Flag;
             if (preDay!=null && preDay.Worked_Time != null)
             {
                 tbHours.Text = preDay.Worked_Time.Hours.ToString();
                 tbMinutes.Text = preDay.Worked_Time.Minutes.ToString();
             }
         }        
-        RadioButton CreateRadioButton(string name, string text, int x, int y, int tabIndex = 0, bool check=false)
+        RadioButton CreateRadioButton(string name, string text, int x, int y,  Flag rbflag, int tabIndex = 0, bool check=false)
         {
             var rb = new RadioButton();
             rb.AutoSize = true;
             rb.Location = new System.Drawing.Point(x, y);
             rb.Name = name;
-            rb.Text = text;
+            rb.Text = text;            
             rb.Checked = check;
             rb.Size = new System.Drawing.Size(85, 17);
             rb.TabStop = true;
-            rb.UseVisualStyleBackColor = true;            
+            rb.UseVisualStyleBackColor = true;
+            rb.Tag = rbflag;
             Controls.Add(rb);
             return rb;
         }

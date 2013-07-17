@@ -71,5 +71,11 @@ namespace TimeSheet
         {
             updateTable();
         }
+
+        private void dgTable_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            if (MessageBox.Show("Вы уверены, что хотите удалить выбранную строку?\r\nЭто может привести к нарушению целостности данных в других таблицах и/или справочниках.\r\nДля редактирования данных строки дважды щелкните по выбранной ячейке или нажмите F2", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)            
+                e.Cancel = true;            
+        }
     }
 }

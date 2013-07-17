@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgTable = new MyDataGridView();
+            this.dgTable = new TimeSheet.MyDataGridView();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgTable)).BeginInit();
@@ -45,15 +45,16 @@
             this.dgTable.Name = "dgTable";
             this.dgTable.Size = new System.Drawing.Size(751, 233);
             this.dgTable.TabIndex = 0;
+            this.dgTable.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgTable_UserDeletingRow);
             // 
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(683, 251);
+            this.btnSave.Location = new System.Drawing.Point(586, 251);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(80, 23);
+            this.btnSave.Size = new System.Drawing.Size(177, 23);
             this.btnSave.TabIndex = 1;
-            this.btnSave.Text = "Сохранить";
+            this.btnSave.Text = "Сохранить изменения";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
             // 
