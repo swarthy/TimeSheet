@@ -193,7 +193,7 @@ namespace TimeSheet
         /// При включении данной функции будет производиться не физическое удаление объектов,
         /// а пометка в поле _deleted (short) (которое, соответственно, должно присутсвовать в таблице)
         /// </summary>
-        public static bool VirtualDeleteEnabled = true;
+        public static bool VirtualDeleteEnabled = false;
         /// <summary>
         /// Словари внешних связей
         /// </summary>
@@ -596,13 +596,13 @@ namespace TimeSheet
             command.ExecuteNonQuery();
             Fields["ID"] = null;
         }
-        public void VirtualDelete()
+        void VirtualDelete()
         {
             string tableName = GetTableName(GetType());
             FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 1 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
             command.ExecuteNonQuery();
         }
-        public void VirtualDeletedRepair()
+        internal void VirtualDeletedRepair()
         {
             if (Fields["ID"] == null)
                 return;
