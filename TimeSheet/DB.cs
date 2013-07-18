@@ -163,7 +163,7 @@ namespace TimeSheet
         public void Remove(T item, bool delete_removable_object = false)
         {
             if (OnRemove != null)
-                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, false));
+                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, true));//true для удалени персонала из списка favorite 
             base.Remove(item);
             if (delete_removable_object)
                 item.Delete();            
@@ -596,12 +596,18 @@ namespace TimeSheet
             command.ExecuteNonQuery();
             Fields["ID"] = null;
         }
+        /// <summary>
+        /// Виртуальное удаление
+        /// </summary>
         void VirtualDelete()
         {
             string tableName = GetTableName(GetType());
             FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 1 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
             command.ExecuteNonQuery();
         }
+        /// <summary>
+        /// Восстановление виртуально удаленных данных
+        /// </summary>
         internal void VirtualDeletedRepair()
         {
             if (Fields["ID"] == null)

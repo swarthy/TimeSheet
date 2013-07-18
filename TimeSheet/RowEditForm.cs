@@ -22,9 +22,8 @@ namespace TimeSheet
 
         private void btnSelectPersonal_Click(object sender, EventArgs e)
         {
-            var per_sel = new PersonalListForm(mainForm);
-            var res = per_sel.ShowDialog();
-            if (res == System.Windows.Forms.DialogResult.OK)
+            var per_sel = new PersonalListForm(mainForm);            
+            if (per_sel.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 TSContent.Personal = per_sel.SelectedPersonal;
                 tbName.Text = per_sel.SelectedPersonal.Name;

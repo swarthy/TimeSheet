@@ -73,7 +73,7 @@ namespace TimeSheet
             TimeSheet_Day.Initialize<TimeSheet_Day>();
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
-            #endregion                                                            
+            #endregion                                                                        
             //timeSheetSource = new BindingSource();
             //timeSheetSource.DataSource = timeSheetTable;
             //dgTimeSheet.DataSource = timeSheetSource;
@@ -113,8 +113,7 @@ namespace TimeSheet
                 case AppState.EditTimeSheet:
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);
-                    Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });
-                    Calendars[0].VirtualDelete();
+                    Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
@@ -156,8 +155,8 @@ namespace TimeSheet
             Flags = Flag.All<Flag>();            
             //changeState(AppState.LPUselect);  //release
             //DEBUG
-            currentLPU = LPU.Get<LPU>(1);
-            currentUser = User.Get<User>(22);
+            currentLPU = LPU.Get<LPU>(1);            
+            currentUser = User.Get<User>(29);
             currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(18);
             changeState(AppState.Workspace);//для сортировки списка табелей
             changeState(AppState.EditTimeSheet);            
@@ -256,8 +255,7 @@ namespace TimeSheet
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
-        {
-            throw new Exception("доделать епт, нельзя чтобы был null, из него берется visible для панелей");
+        {            
             currentUser = null;
             changeState(AppState.Auth);
         }

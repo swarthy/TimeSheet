@@ -125,10 +125,11 @@ namespace TimeSheet
             : base(typeof(User))
         {
         }
-        public User(LPU Lpu, Personal profile, string login, string password)
+        public User(LPU Lpu, Personal profile, int role, string login, string password)
             : base(typeof(User))
         {
             LPU = Lpu;
+            Role = role;
             Profile = profile;
             Login = login;
             Pass = Helper.getMD5(password);

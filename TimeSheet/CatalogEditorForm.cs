@@ -38,7 +38,8 @@ namespace TimeSheet
             if (!mainForm.currentUser._IS_ADMIN)
             {
                 dgTable.Columns["ID"].Visible = false;
-                dgTable.Columns["_DELETED"].Visible = false;
+                if (dgTable.Columns.Contains("_DELETED"))//часть ветки VirtualDelete
+                    dgTable.Columns["_DELETED"].Visible = false;
             }
         }
         

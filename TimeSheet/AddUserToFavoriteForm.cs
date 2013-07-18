@@ -46,7 +46,7 @@ namespace TimeSheet
         private void AddUserToFavoriteForm_Load(object sender, EventArgs e)
         {
             lbPersonal.Items.Clear();
-            personals = mainform.currentTimeSheet.Department.PersonalOfDepartment.Except(pl.personals).ToList();
+            personals = mainform.currentTimeSheet.Department.PersonalOfDepartment.Where(pd => pl.personals.FindIndex(p => p.ID == pd.ID) == -1).ToList();
             lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;
             personals.Sort((p1, p2) => p1.Name.CompareTo(p2.Name));
             personals.ForEach(p => lbPersonal.Items.Add(p));
