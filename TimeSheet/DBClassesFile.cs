@@ -48,15 +48,29 @@ namespace TimeSheet
                 this["pass"] = value;
             }
         }
-        public bool Is_admin
+        public bool _IS_MODERATOR
         {
             get
             {
-                return ((short)this["IS_ADMIN"]) == 1;
+                return Role > 0;
+            }            
+        }
+        public bool _IS_ADMIN
+        {
+            get
+            {
+                return Role > 1;
+            }
+        }
+        public int Role
+        {
+            get
+            {
+                return Convert.ToInt32(this["ROLE"]);
             }
             set
             {
-                this["IS_ADMIN"] = Convert.ToInt16(value);
+                this["ROLE"] = value;
             }
         }
         public LPU LPU
@@ -457,27 +471,46 @@ namespace TimeSheet
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("CALENDAR_ID",typeof(Calendar_Content))}
         };
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            {"Name", new Link("NAME_ID",typeof(Calendar_Name))}
+        };
+        public override string ToString()
+        {
+            return Name.Name;
+        }
         #region Properties
-        public string Name
+        public Calendar_Name Name
         {
             get
             {
-                return this["name"] == null ? "" : this["name"].ToString();
+                return BT<Calendar_Name>("Name");
             }
             set
             {
-                this["name"] = value;
+                this["Name"] = value;
             }
         }
+        public int CYear
+        {
+            get
+            {
+                return this["CYear"] == null ? 0 : (int)this["CYear"];
+            }
+            set
+            {
+                this["CYear"] = value;
+            }
+        }        
         #endregion
         public Calendar()
             : base(typeof(Calendar))
         {
         }
-        public Calendar(string name)
+        public Calendar(Calendar_Name name, int year)
             : base(typeof(Calendar))
         {
             Name = name;
+            CYear = year;
         }
     }
     public class Calendar_Content : Domain
@@ -489,7 +522,7 @@ namespace TimeSheet
         };
         public override string ToString()
         {
-            return string.Format("{0} - {1}",Calendar.Name,new DateTime(CYear,CMonth,1).ToString("MMMM yyyy"));
+            return string.Format(new DateTime(Calendar.CYear, CMonth, 1).ToString("MMMM yyyy"));            
         }
         #region Properties
         public Calendar Calendar
@@ -513,18 +546,7 @@ namespace TimeSheet
             {
                 this["CMonth"] = value;
             }
-        }
-        public int CYear
-        {
-            get
-            {
-                return this["CYear"] == null ? 0 : (int)this["CYear"];
-            }
-            set
-            {
-                this["CYear"] = value;
-            }
-        }
+        }        
         public double Hours
         {
             get
@@ -559,6 +581,37 @@ namespace TimeSheet
             CMonth = month;
             Hours = hours;
             Days = days;
+        }
+    }
+    public class Calendar_Name : Domain
+    {
+        new public static string tableName = "CALENDAR_NAMES";
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                        
+        public override string ToString()
+        {
+            return Name;
+        }
+        #region Properties
+        public string Name
+        {
+            get
+            {
+                return this["name"] == null ? "" : this["name"].ToString();
+            }
+            set
+            {
+                this["name"] = value;
+            }
+        }  
+        #endregion
+        public Calendar_Name()
+            : base(typeof(Calendar_Name))
+        {
+        }
+        public Calendar_Name(string name)
+            : base(typeof(Calendar_Name))
+        {
+            Name = name;
         }
     }
     public class TimeSheetInstance : Domain
@@ -662,7 +715,7 @@ namespace TimeSheet
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"Personal", new Link("Personal_ID",typeof(Personal))},
-            {"CalendarInstance", new Link("CALENDAR_CONTENT_ID",typeof(Calendar_Content))},
+            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
             {"Post", new Link("POST_ID",typeof(Post))},
             {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
@@ -689,15 +742,15 @@ namespace TimeSheet
                 this["TimeSheet"] = value;
             }
         }
-        public Calendar_Content CalendarIns
+        public Calendar Calendar
         {
             get
             {
-                return BT<Calendar_Content>("CalendarInstance");
+                return BT<Calendar>("Calendar");
             }
             set
             {
-                this["CalendarInstance"] = value;
+                this["Calendar"] = value;
             }
         }
         public Post Post

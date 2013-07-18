@@ -42,7 +42,7 @@ namespace TimeSheet
                 return;
             }
             if (cbCalendar.SelectedIndex != -1)
-                TSContent.CalendarIns = (Calendar_Content)cbCalendar.SelectedItem;
+                TSContent.Calendar = (Calendar)cbCalendar.SelectedItem;
             else
             {
                 MessageBox.Show("Выберите календарь", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -70,7 +70,7 @@ namespace TimeSheet
             tbName.Text = content.Personal != null ? content.Personal.Name : "";
             tbRate.Text = content.Rate.ToString();
             cbPost.SelectedItem = content.Post;
-            cbCalendar.SelectedItem = content.CalendarIns;
+            cbCalendar.SelectedItem = content.Calendar;
         }
 
         private void RowEditForm_Load(object sender, EventArgs e)

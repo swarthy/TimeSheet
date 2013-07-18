@@ -17,14 +17,7 @@ using System.Globalization;
  * 
  * 
  * 
- *              TODO: Календарь переработать структуру, а то у календаря может быть названия
- * 
- * 
- * 
- * 
- * 
- * 
- * 
+ *              TODO: Календарь переработать структуру, а то у календаря может быть названия 
  */
 namespace TimeSheet
 {
@@ -39,7 +32,7 @@ namespace TimeSheet
         public DBList<LPU> LPUlist = new DBList<LPU>();
         public DBList<Department> Departmentlist = new DBList<Department>();
         public DBList<Post> Posts = new DBList<Post>();
-        public DBList<Calendar_Content> Calendars = new DBList<Calendar_Content>();
+        public DBList<Calendar> Calendars = new DBList<Calendar>();
         public DBList<Flag> Flags = new DBList<Flag>();
         public DBList<SpecialDay> specialDays;
         public LPU currentLPU { get; set; }
@@ -53,7 +46,7 @@ namespace TimeSheet
             set
             {
                 curUsr = value;                
-                btnAdminPanel.Visible = btnAdminPanel.Enabled = curUsr.Is_admin;
+                btnAdminPanel.Visible = btnAdminPanel.Enabled = curUsr!=null && curUsr._IS_MODERATOR;
             }
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
@@ -73,6 +66,7 @@ namespace TimeSheet
             Department.Initialize<Department>();
             UserDepartment.Initialize<UserDepartment>();
             Calendar.Initialize<Calendar>();
+            Calendar_Name.Initialize<Calendar_Name>();
             Calendar_Content.Initialize<Calendar_Content>();
             TimeSheetInstance.Initialize<TimeSheetInstance>();
             TimeSheet_Content.Initialize<TimeSheet_Content>();
@@ -119,7 +113,8 @@ namespace TimeSheet
                 case AppState.EditTimeSheet:
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);
-                    Calendars = Calendar_Content.FindAll<Calendar_Content>("cyear = {0}", currentTimeSheet._GetDate.Year);
+                    Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });
+                    Calendars[0].VirtualDelete();
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
@@ -143,7 +138,7 @@ namespace TimeSheet
                 if (temp != null)
                     dgTimeSheet.Rows.AddRange(temp);
             }
-                        );
+            );
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -262,6 +257,7 @@ namespace TimeSheet
 
         private void btnLogout_Click(object sender, EventArgs e)
         {
+            throw new Exception("доделать епт, нельзя чтобы был null, из него берется visible для панелей");
             currentUser = null;
             changeState(AppState.Auth);
         }

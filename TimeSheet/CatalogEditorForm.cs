@@ -35,6 +35,11 @@ namespace TimeSheet
             adapter.InsertCommand = cmd_builder.GetInsertCommand();
             
             dgTable.DataSource = tbl;
+            if (!mainForm.currentUser._IS_ADMIN)
+            {
+                dgTable.Columns["ID"].Visible = false;
+                dgTable.Columns["_DELETED"].Visible = false;
+            }
         }
         
         private void btnSave_Click(object sender, EventArgs e)
@@ -58,7 +63,7 @@ namespace TimeSheet
         void updateTable()
         {
             tbl.Clear();
-            adapter.Fill(tbl);
+            adapter.Fill(tbl);            
         }
         private void btnUpdate_Click(object sender, EventArgs e)
         {

@@ -190,6 +190,11 @@ namespace TimeSheet
         /// </summary>
         public static List<string> FieldNames = new List<string>();
         /// <summary>
+        /// При включении данной функции будет производиться не физическое удаление объектов,
+        /// а пометка в поле _deleted (short) (которое, соответственно, должно присутсвовать в таблице)
+        /// </summary>
+        public static bool VirtualDeleteEnabled = true;
+        /// <summary>
         /// Словари внешних связей
         /// </summary>
         public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>();
@@ -449,8 +454,12 @@ namespace TimeSheet
         }        
         public override string ToString()
         {
-            return "["+Fields.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1} = {2}", sb.Length > 0 ? ", " : "", kvp.Key, kvp.Value), sb => sb.ToString())+"]";
-        }   
+            return GetTextData();
+        }
+        public string GetTextData()
+        {
+            return "[" + Fields.Aggregate(new StringBuilder(), (sb, kvp) => sb.AppendFormat("{0}{1}={2}", sb.Length > 0 ? ", " : "", kvp.Key, kvp.Value), sb => sb.ToString()) + "]";
+        }
         /// <summary>
         /// Поиск записей в БД
         /// </summary>
@@ -466,7 +475,7 @@ namespace TimeSheet
             List<string> fieldNames = GetFieldNames(type);
             // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
             string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
-            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{3}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : "", GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : ""), DB.Connection);
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{4}{3}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : "", GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : "",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
             //try
             //{
                 FbDataReader data = command.ExecuteReader();
@@ -486,7 +495,7 @@ namespace TimeSheet
             //}
             return result;
         }
-        private static DBList<T> F_All<T>(object restrictions, bool single = false, Type customType = null) where T : Domain, new()
+        private static DBList<T> F_All<T>(object restrictions, bool single = false, Type customType = null, bool Distinct = false) where T : Domain, new()
         {
             var rest = Helper.AnonymousObjectToDictionary(restrictions);
             DBList<T> result = new DBList<T>();
@@ -499,7 +508,7 @@ namespace TimeSheet
               (sb, kvp) => sb.AppendFormat("{0}{1} = @{1}",
                            sb.Length > 0 ? " AND " : "", kvp.Key, kvp.Value),
               sb => sb.ToString());
-            FbCommand command = new FbCommand(string.Format("select {0} from {1} where {2}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : ""), DB.Connection);
+            FbCommand command = new FbCommand(string.Format("select{4} {0} from {1} where {2}{5}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : "",Distinct?" DISTINCT":"",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
             rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
             //try
             //{
@@ -574,13 +583,34 @@ namespace TimeSheet
         public void Delete()
         {
             if (Fields["ID"] == null)
-                return;//throw new Exception("You can't delete object without ID");
+                return;            
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Delete(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Delete()); });
+            if (VirtualDeleteEnabled)
+            {
+                VirtualDelete();
+                return;
+            }
             string tableName = GetTableName(GetType());
-            FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);            
+            FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);
             command.ExecuteNonQuery();
             Fields["ID"] = null;
+        }
+        public void VirtualDelete()
+        {
+            string tableName = GetTableName(GetType());
+            FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 1 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
+            command.ExecuteNonQuery();
+        }
+        public void VirtualDeletedRepair()
+        {
+            if (Fields["ID"] == null)
+                return;
+            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).VirtualDeletedRepair(); });
+            GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.VirtualDeletedRepair()); });            
+            string tableName = GetTableName(GetType());
+            FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 0 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
+            command.ExecuteNonQuery();
         }
         /// <summary>
         /// Найти все записи, удовлетворяющие условию where_str
@@ -605,7 +635,7 @@ namespace TimeSheet
         public static DBList<T> All<T>() where T : Domain, new()
         {
             return F_All<T>("1=1");
-        }
+        }        
         /// <summary>
         /// Поиск одного элемента
         /// </summary>
