@@ -5,13 +5,14 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using System.Windows.Forms;
 ///     Developer: Alexander Mochalin
-///     License: GNU GPL
+///     License: GNU LGPL
 
 namespace TimeSheet
 {
     public static class DB
     {
         private static FbConnection connection = GetNewConnection;
+        public static string ConnectionString = "";
         internal static FbConnection Connection
         {
             get
@@ -36,7 +37,7 @@ namespace TimeSheet
             get
             {
                 FbConnection c = new FbConnection("UserID=SYSDBA;Password=masterkey;" +
-                                  "Database=c:/FBDB.FDB;" +
+                                  "Database=c:/FBDB.FDB;" +                                   
                                   "DataSource=localhost;Charset=NONE;");                
                 c.StateChange += new System.Data.StateChangeEventHandler((sender, args) => {
                     switch (args.CurrentState)
@@ -476,8 +477,8 @@ namespace TimeSheet
             // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
             string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
             FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{4}{3}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : "", GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : "",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
-            //try
-            //{
+            try
+            {
                 FbDataReader data = command.ExecuteReader();
                 while (data.Read())
                 {
@@ -488,11 +489,11 @@ namespace TimeSheet
                     if (single)
                         break;
                 }
-            //}
-            //catch (Exception e)
-            //{
-                //MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             return result;
         }
         private static DBList<T> F_All<T>(object restrictions, bool single = false, Type customType = null, bool Distinct = false) where T : Domain, new()
@@ -510,8 +511,8 @@ namespace TimeSheet
               sb => sb.ToString());
             FbCommand command = new FbCommand(string.Format("select{4} {0} from {1} where {2}{5}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : "",Distinct?" DISTINCT":"",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
             rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
-            //try
-            //{
+            try
+            {
                 FbDataReader data = command.ExecuteReader();
                 while (data.Read())
                 {
@@ -522,11 +523,11 @@ namespace TimeSheet
                     if (single)
                         break;
                 }
-            //}
-            //catch (Exception e)
-            //{
-                //MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //}
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             return result;
         }
         /// <summary>
@@ -545,27 +546,39 @@ namespace TimeSheet
         /// Создать новую запись в БД
         /// </summary>
         private void Create()
-        {
+        {   
             string tableName = GetTableName(GetType());
             List<string> fieldNames = GetFieldNames(GetType());
             string fields = fieldNames.Where(k => k != "ID").Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
             string values = fieldNames.Where(k => k != "ID").Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + "@" + str; });
             FbCommand command = new FbCommand(string.Format("insert into {0}({1}) values ({2}) returning ID;", tableName, fields, values), DB.Connection);
             fieldNames.Where(k => k != "ID").ToList().ForEach(key => command.Parameters.AddWithValue("@" + key, Fields[key]));
-            Fields["ID"] = (int)command.ExecuteScalar();
+            Fields["ID"] = (int)command.ExecuteScalar();            
         }
         /// <summary>
         /// Сохроняет запись в БД. В зависимости от того, задан ID или нет, будет вызван запрос UPDATE или INSERT
         /// </summary>
         public void Save(bool hard_save = false)
         {
-            GetBelongsTo(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k]!=null) { (Fields[k] as Domain).Save(); Fields[GetBelongsTo(GetType())[k].FieldInDB] = (Fields[k] as Domain).ID; changed = true; } });
             if (!_Changed && !hard_save)
                 return;
-            if (Fields["ID"]!=null)
-                Update();
-            else
-                Create();
+            GetBelongsTo(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k]!=null) {
+                var itm = (Fields[k] as Domain);                
+                itm.Save();
+                Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
+                changed = true; } });
+            
+            try
+            {
+                if (Fields["ID"] != null)
+                    Update();
+                else
+                    Create();
+            }
+            catch (FbException ex)
+            {                
+                MessageBox.Show(ex.Message, "DataBase: Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
             _Changed = false;
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Save(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save()); });
@@ -591,10 +604,17 @@ namespace TimeSheet
                 VirtualDelete();
                 return;
             }
-            string tableName = GetTableName(GetType());
-            FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);
-            command.ExecuteNonQuery();
-            Fields["ID"] = null;
+            try
+            {
+                string tableName = GetTableName(GetType());
+                FbCommand command = new FbCommand(string.Format("delete from {0} where ID = {1}", tableName, Fields["ID"]), DB.Connection);
+                command.ExecuteNonQuery();
+                Fields["ID"] = null;
+            }
+            catch (FbException ex)
+            {
+                MessageBox.Show(ex.Message, "DataBase: Ошибка удаления", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         /// <summary>
         /// Виртуальное удаление
@@ -708,7 +728,8 @@ namespace TimeSheet
                 return false;
             if ((obj as Domain) == null)
                 return false;
-            return (obj as Domain).Fields.All(kv => Fields.ContainsKey(kv.Key) && Fields[kv.Key] == kv.Value);
+            //return (obj as Domain).Fields.All(kv => Fields.ContainsKey(kv.Key) && Fields[kv.Key] == kv.Value);
+            return (obj as Domain).ID == ID;
         }
         public override int GetHashCode()
         {

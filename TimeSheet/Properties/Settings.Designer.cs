@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TimeSheet.Properties {
+namespace TimeSheetManger.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -32,6 +32,18 @@ namespace TimeSheet.Properties {
             }
             set {
                 this["lastLogin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string serverString {
+            get {
+                return ((string)(this["serverString"]));
+            }
+            set {
+                this["serverString"] = value;
             }
         }
     }

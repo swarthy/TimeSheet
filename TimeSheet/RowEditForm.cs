@@ -11,12 +11,16 @@ namespace TimeSheet
 {
     public partial class RowEditForm : Form
     {
-        MainForm mainForm;                
+        MainForm mainForm;
+        bool isNew = false;
+        public bool defaultval = false;
         public TimeSheet_Content TSContent { get; set; }
-        public RowEditForm(MainForm form, TimeSheet_Content row = null)
+        public RowEditForm(MainForm form, TimeSheet_Content row = null, bool defaultval = false)
         {
             mainForm = form;
             TSContent = row ?? new TimeSheet_Content();
+            isNew = row == null;
+            this.defaultval = defaultval;
             InitializeComponent();
         }
 
@@ -60,7 +64,10 @@ namespace TimeSheet
                 return;
             }
             TSContent.Rate = rate;
-            TSContent.TimeSheet = mainForm.currentTimeSheet;
+            defaultval = cbDefaultValues.Checked;
+            if (isNew)
+                mainForm.currentTimeSheet.Content.Add(TSContent);
+            //TSContent.TimeSheet = mainForm.currentTimeSheet;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }
@@ -78,6 +85,7 @@ namespace TimeSheet
             cbCalendar.Items.Clear();
             mainForm.Posts.ForEach(p => cbPost.Items.Add(p));
             mainForm.Calendars.ForEach(c => cbCalendar.Items.Add(c));
+            cbDefaultValues.Visible = defaultval;
             if (TSContent != null)            
                 DrawPRow(TSContent);                
         }

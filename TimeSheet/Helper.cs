@@ -10,6 +10,7 @@ namespace TimeSheet
 {
     public static class Helper
     {
+        public static IniFile settings;    
         public static Random R = new Random();
         public static string getMD5(string input)
         {
@@ -20,36 +21,27 @@ namespace TimeSheet
                 sBuilder.Append(data[i].ToString("x2"));
             return sBuilder.ToString();
         }
-        public static void Set(string key, object value)
+        public static void Set(string section, string key, object value)
         {
-            Properties.Settings.Default[key] = value;
+            settings.IniWriteValue(section, key, value.ToString());
         }
-        public static void SetCurrentUser(string key, object value)
+        public static void SetForCurrentUser(string section, string key, object value)
         {
             if (MainForm.curUsr==null)
                 return;
-            Set(MainForm.curUsr.Profile.Table_Number.ToString() + key, value);
-        }
-        public static void SetAndSaveCurrentUser(string key, object value)
-        {
-            SetCurrentUser(key, value);
-            Properties.Settings.Default.Save();
-        }
-        public static object GetCurrentUser(string key, object value)
+            Set(section, MainForm.curUsr.Profile.Table_Number.ToString() + key, value);
+        }        
+        public static object GetForCurrentUser(string section, string key, object value)
         {
             if (MainForm.curUsr == null)
                 return null;
-            return Get(MainForm.curUsr.Profile.Table_Number.ToString() + key);
+            return Get(section, MainForm.curUsr.Profile.Table_Number.ToString() + key);
         }
-        public static object Get(string key)
+        public static object Get(string section, string key)
         {
-            return Properties.Settings.Default[key];
+            return settings.IniReadValue(section, key);
         }
-        public static void SetAndSave(string key, object value)
-        {
-            Set(key, value);
-            Properties.Settings.Default.Save();
-        }
+        
         public static object[] EmptyArray(int size)
         {
             var temp = new object[size];
@@ -71,7 +63,9 @@ namespace TimeSheet
         }
         public static void Log(string msg,params object[] args)
         {
-            Console.WriteLine(string.Format(msg, args));
+            #if DEBUG
+                Console.WriteLine(string.Format(msg, args));
+            #endif
         }
         public static string FormatSpan(TimeSpan span)
         {

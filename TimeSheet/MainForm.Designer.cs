@@ -51,10 +51,6 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new TimeSheet.MyDataGridView();
-            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
@@ -62,14 +58,23 @@
             this.btnNewRow = new System.Windows.Forms.Button();
             this.btnTimeSheetList = new System.Windows.Forms.Button();
             this.postBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnExportToExcel = new System.Windows.Forms.Button();
+            this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.dgTimeSheet = new TimeSheet.MyDataGridView();
+            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -143,7 +148,6 @@
             this.tbAuthPass.PasswordChar = '*';
             this.tbAuthPass.Size = new System.Drawing.Size(112, 20);
             this.tbAuthPass.TabIndex = 4;
-            this.tbAuthPass.Text = "admin";
             // 
             // tbAuthLogin
             // 
@@ -233,6 +237,7 @@
             this.pTimeSheetEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.pTimeSheetEditor.Controls.Add(this.btnExportToExcel);
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
             this.pTimeSheetEditor.Controls.Add(this.btnNewRow);
@@ -292,8 +297,102 @@
             this.tbCurrentDepartment.Size = new System.Drawing.Size(189, 20);
             this.tbCurrentDepartment.TabIndex = 0;
             // 
+            // cmsDaysMenu
+            // 
+            this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem,
+            this.miAddMore,
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem,
+            this.toolStripMenuItem1,
+            this.miEditPersonal,
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem});
+            this.cmsDaysMenu.Name = "cmsDaysMenu";
+            this.cmsDaysMenu.Size = new System.Drawing.Size(269, 120);
+            // 
+            // miAddMore
+            // 
+            this.miAddMore.Name = "miAddMore";
+            this.miAddMore.Size = new System.Drawing.Size(268, 22);
+            this.miAddMore.Text = "Добавить дополнительную ячейку";
+            this.miAddMore.ToolTipText = "Space";
+            this.miAddMore.Click += new System.EventHandler(this.miAddMore_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(265, 6);
+            // 
+            // miEditPersonal
+            // 
+            this.miEditPersonal.Name = "miEditPersonal";
+            this.miEditPersonal.Size = new System.Drawing.Size(268, 22);
+            this.miEditPersonal.Text = "Редактировать данные сотрудника";
+            this.miEditPersonal.ToolTipText = "Shift + Enter";
+            this.miEditPersonal.Click += new System.EventHandler(this.miEditPersonal_Click);
+            // 
+            // btnNewRow
+            // 
+            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
+            this.btnNewRow.Name = "btnNewRow";
+            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
+            this.btnNewRow.TabIndex = 3;
+            this.btnNewRow.Text = "Добавить запись";
+            this.btnNewRow.UseVisualStyleBackColor = true;
+            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
+            // 
+            // btnTimeSheetList
+            // 
+            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
+            this.btnTimeSheetList.Name = "btnTimeSheetList";
+            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
+            this.btnTimeSheetList.TabIndex = 1;
+            this.btnTimeSheetList.Text = "Табели";
+            this.btnTimeSheetList.UseVisualStyleBackColor = true;
+            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
+            // 
+            // удалитьВыделеннуюЗаписьToolStripMenuItem
+            // 
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem.Name = "удалитьВыделеннуюЗаписьToolStripMenuItem";
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem.Text = "Удалить выделенную ячейку";
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem.ToolTipText = "Delete";
+            this.удалитьВыделеннуюЗаписьToolStripMenuItem.Click += new System.EventHandler(this.удалитьВыделеннуюЗаписьToolStripMenuItem_Click);
+            // 
+            // удалитьЗаписиЭтогоСотрудникаToolStripMenuItem
+            // 
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Name = "удалитьЗаписиЭтогоСотрудникаToolStripMenuItem";
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Text = "Удалить запись сотрудника";
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.ToolTipText = "Shift + Delete";
+            this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Click += new System.EventHandler(this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click);
+            // 
+            // редактироватьВыделеннуюЗаписьToolStripMenuItem
+            // 
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem.Name = "редактироватьВыделеннуюЗаписьToolStripMenuItem";
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem.Size = new System.Drawing.Size(268, 22);
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem.Text = "Редактировать выделенную ячейку";
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem.ToolTipText = "Enter";
+            this.редактироватьВыделеннуюЗаписьToolStripMenuItem.Click += new System.EventHandler(this.редактироватьВыделеннуюЗаписьToolStripMenuItem_Click);
+            // 
+            // btnExportToExcel
+            // 
+            this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnExportToExcel.Location = new System.Drawing.Point(153, 275);
+            this.btnExportToExcel.Name = "btnExportToExcel";
+            this.btnExportToExcel.Size = new System.Drawing.Size(132, 23);
+            this.btnExportToExcel.TabIndex = 5;
+            this.btnExportToExcel.Text = "Экспорт в Excel";
+            this.btnExportToExcel.UseVisualStyleBackColor = true;
+            this.btnExportToExcel.Click += new System.EventHandler(this.btnExportToExcel_Click);
+            // 
+            // dlgSaveFile
+            // 
+            this.dlgSaveFile.Filter = "Книга Excel|*.xlsx";
+            // 
             // dgTimeSheet
             // 
+            this.dgTimeSheet.AllowUserToAddRows = false;
             this.dgTimeSheet.AllowUserToDeleteRows = false;
             this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
@@ -336,55 +435,6 @@
             this.cRate.ReadOnly = true;
             this.cRate.Width = 68;
             // 
-            // cmsDaysMenu
-            // 
-            this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.miAddMore,
-            this.toolStripMenuItem1,
-            this.miEditPersonal});
-            this.cmsDaysMenu.Name = "cmsDaysMenu";
-            this.cmsDaysMenu.Size = new System.Drawing.Size(265, 54);
-            // 
-            // miAddMore
-            // 
-            this.miAddMore.Name = "miAddMore";
-            this.miAddMore.Size = new System.Drawing.Size(264, 22);
-            this.miAddMore.Text = "Добавить дополнительную запись";
-            this.miAddMore.Click += new System.EventHandler(this.miAddMore_Click);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(261, 6);
-            // 
-            // miEditPersonal
-            // 
-            this.miEditPersonal.Name = "miEditPersonal";
-            this.miEditPersonal.Size = new System.Drawing.Size(264, 22);
-            this.miEditPersonal.Text = "Редактировать данные персонала";
-            this.miEditPersonal.Click += new System.EventHandler(this.miEditPersonal_Click);
-            // 
-            // btnNewRow
-            // 
-            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 275);
-            this.btnNewRow.Name = "btnNewRow";
-            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
-            this.btnNewRow.TabIndex = 3;
-            this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;
-            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
-            // 
-            // btnTimeSheetList
-            // 
-            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
-            this.btnTimeSheetList.Name = "btnTimeSheetList";
-            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
-            this.btnTimeSheetList.TabIndex = 1;
-            this.btnTimeSheetList.Text = "Табели";
-            this.btnTimeSheetList.UseVisualStyleBackColor = true;
-            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -395,7 +445,7 @@
             this.Controls.Add(this.pLPUSelection);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
-            this.Text = "TimeSheet Manager v 1.0";
+            this.Text = "Менеджер табелей";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.pLPUSelection.ResumeLayout(false);
@@ -407,9 +457,9 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.cmsDaysMenu.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.postBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -448,6 +498,11 @@
         private System.Windows.Forms.ToolStripMenuItem miAddMore;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem miEditPersonal;
+        private System.Windows.Forms.ToolStripMenuItem удалитьВыделеннуюЗаписьToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem удалитьЗаписиЭтогоСотрудникаToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem редактироватьВыделеннуюЗаписьToolStripMenuItem;
+        private System.Windows.Forms.Button btnExportToExcel;
+        private System.Windows.Forms.SaveFileDialog dlgSaveFile;
 
 
 

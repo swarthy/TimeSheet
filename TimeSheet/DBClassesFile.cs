@@ -357,6 +357,9 @@ namespace TimeSheet
         {
             {"Departments", new Link("LPU_ID", typeof(Department))}            
         };
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            {"MainDoc", new Link("MAINDOC",typeof(Personal))}
+        };
         public override string ToString()
         {
             return Name;
@@ -378,6 +381,17 @@ namespace TimeSheet
             get
             {
                 return HM<Department>("Departments");
+            }
+        }
+        public Personal MainDoc
+        {
+            get
+            {
+                return BT<Personal>("MainDoc");
+            }
+            set
+            {
+                this["MainDoc"] = value;
             }
         }
         #endregion
@@ -478,8 +492,15 @@ namespace TimeSheet
         public override string ToString()
         {
             return Name.Name;
-        }
+        }        
         #region Properties
+        public DBList<Calendar_Content> Months
+        {
+            get
+            {
+                return HM<Calendar_Content>("Content");
+            }
+        }
         public Calendar_Name Name
         {
             get
@@ -502,6 +523,7 @@ namespace TimeSheet
                 this["CYear"] = value;
             }
         }        
+
         #endregion
         public Calendar()
             : base(typeof(Calendar))
@@ -587,12 +609,22 @@ namespace TimeSheet
     public class Calendar_Name : Domain
     {
         new public static string tableName = "CALENDAR_NAMES";
-        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                        
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено
+        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
+            {"Calendars", new Link("NAME_ID",typeof(Calendar))}
+        };                
         public override string ToString()
         {
             return Name;
         }
         #region Properties
+        public DBList<Calendar> Calendars
+        {
+            get
+            {
+                return HM<Calendar>("Calendars");
+            }
+        }
         public string Name
         {
             get
@@ -803,11 +835,12 @@ namespace TimeSheet
             var needRows = groups.Max(a => a.Count());
             result = new DataGridViewRow[needRows];
             var values = new object[needRows][];
+            var colCount = 4 + TimeSheet._DaysInMonth + 4;
             for (int i = 0; i < needRows; i++)
             {
                 result[i] = new DataGridViewRow();
                 result[i].CreateCells(dg);
-                values[i] = new object[3 + TimeSheet._DaysInMonth + 4];
+                values[i] = new object[colCount];
             }
             values[0][0] = this;
             values[0][1] = Personal.Table_Number;
@@ -817,14 +850,44 @@ namespace TimeSheet
             {
                 int i = 0;
                 foreach (var item in group)
+                {
+                    switch (item.Flag.Name)
+                    {
+                        case "ya":                            
+                            values[i][colCount - 4] = Convert.ToInt32(values[i][colCount - 4]) + 1;//дни явок
+                            values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего
+                            var sdate = MainForm.specialDays.Find(sd => sd.Spec_Date == item.Item_Date);
+                            if (sdate!=null && (sdate.State == 1 || sdate.State == 2))
+                                values[i][colCount - 1] = Convert.ToDouble(values[i][colCount - 1]) + item.Worked_Time.TotalHours;//часы - выходные
+                            break;
+                        case "n":
+                            values[i][colCount - 2] = Convert.ToDouble(values[i][colCount - 2]) + item.Worked_Time.TotalHours;//часы - ночные
+                            values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего
+                            break;
+                        case "v":
+                            if (item.Worked_Time.TotalHours > 0)
+                            {
+                                values[i][colCount - 1] = Convert.ToDouble(values[i][colCount - 1]) + item.Worked_Time.TotalHours;//часы - выходные
+                                values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего
+                            }
+                            break;
+                        case "rp":
+                            values[i][colCount - 4] = Convert.ToInt32(values[i][colCount - 4]) + 1;//дни явок
+                            values[i][colCount - 1] = Convert.ToDouble(values[i][colCount - 1]) + item.Worked_Time.TotalHours;//часы - выходные
+                            values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего   
+                            break;
+                    }
                     values[i++][group.Key.Day + 3] = item;
+                }
             }
             for (int i = 0; i < needRows; i++)
             {
                 result[i].SetValues(values[i]);                
             }
+            result[0].Cells[0].Tag = needRows;
             return result;
         }
+        
         /*
          *может быть... когда нибудь... а пока что так, как выше :)
         public List<DataRow> AddToTable(DataTable table)
@@ -874,7 +937,7 @@ namespace TimeSheet
         };
         public override string ToString()
         {
-            return Flag + " " + Worked_Time.ToString("hh':'mm");
+            return Flag + (Worked_Time.TotalHours == 0 ? "" : " " + Worked_Time.ToString("hh':'mm"));
         }
         #region Properties
         public Flag Flag
@@ -934,6 +997,13 @@ namespace TimeSheet
             Worked_Time = worked_time;
             Flag = flag;
         }
+        public TimeSheet_Day(DateTime date, TimeSpan worked_time, Flag flag)
+            : base(typeof(TimeSheet_Day))
+        {            
+            Item_Date = date;
+            Worked_Time = worked_time;
+            Flag = flag;
+        }
     }
     public class SpecialDay : Domain
     {
@@ -950,6 +1020,10 @@ namespace TimeSheet
             {
                 this["Spec_Date"] = value;
             }
+        }
+        public static SpecialDay myGet(DateTime date)
+        {
+            return SpecialDay.Find<SpecialDay>(new { spec_date = date });
         }
         public int State
         {

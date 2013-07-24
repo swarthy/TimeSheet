@@ -7,24 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
-using TimeSheet.Properties;
 using System.Globalization;
+using System.IO;
 
-/*
- * 
- * 
- * 
- * 
- * 
- * 
- *              TODO: Календарь переработать структуру, а то у календаря может быть названия 
- */
 namespace TimeSheet
 {
     public partial class MainForm : Form
-    {
-        //BindingSource timeSheetSource;
-        //DataTable timeSheetTable = new DataTable();
+    {        
         public static Color weekEndColor = Color.MistyRose;
         public static Color holyDayColor = Color.LightCoral;
         public static Color shortDayColor = Color.BurlyWood;
@@ -34,7 +23,7 @@ namespace TimeSheet
         public DBList<Post> Posts = new DBList<Post>();
         public DBList<Calendar> Calendars = new DBList<Calendar>();
         public DBList<Flag> Flags = new DBList<Flag>();
-        public DBList<SpecialDay> specialDays;
+        public static DBList<SpecialDay> specialDays;
         public LPU currentLPU { get; set; }
         public static User curUsr = null;
         public User currentUser
@@ -58,6 +47,8 @@ namespace TimeSheet
         public MainForm()
         {            
             InitializeComponent();
+            Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
+            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:c:/FBDB.FDB;Charset=NONE;", Helper.Get("server", "ip") ?? "127.0.0.1", Helper.Get("server", "file") ?? "c:/DBFB.fdb");
             #region DB Initialization
             User.Initialize<User>();
             Personal.Initialize<Personal>();
@@ -73,10 +64,7 @@ namespace TimeSheet
             TimeSheet_Day.Initialize<TimeSheet_Day>();
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
-            #endregion                                                                        
-            //timeSheetSource = new BindingSource();
-            //timeSheetSource.DataSource = timeSheetTable;
-            //dgTimeSheet.DataSource = timeSheetSource;
+            #endregion                                      
         }
         void HideAllShowThis(Panel p)
         {            
@@ -93,7 +81,7 @@ namespace TimeSheet
                     HideAllShowThis(pLPUSelection);
                     break;
                 case AppState.Auth:
-                    tbAuthLogin.Text = Helper.Get("lastLogin").ToString();
+                    tbAuthLogin.Text = Helper.Get("user", "lastLogin").ToString();
                     HideAllShowThis(pAuth);
                     break;
                 case AppState.Workspace:                    
@@ -110,14 +98,14 @@ namespace TimeSheet
                             return r1;
                     });
                     break;
-                case AppState.EditTimeSheet:
+                case AppState.EditTimeSheet:                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
-                    DrawTimeSheetContent();                    
+                    DrawTimeSheetContent();
                     pTimeSheetEditor.Show();
                     break;
             }
@@ -128,11 +116,7 @@ namespace TimeSheet
         {
             dgTimeSheet.Rows.Clear();
             currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row =>
-            {
-                /*var rows = row.AddToTable(timeSheetTable);
-                foreach (var r in rows)
-                    timeSheetTable.Rows.Add(r);*/
-                //для AddToTable
+            {   
                 var temp = row.Render(dgTimeSheet);
                 if (temp != null)
                     dgTimeSheet.Rows.AddRange(temp);
@@ -153,13 +137,14 @@ namespace TimeSheet
                 cbLPUList.Items.Add(lpu);
             Posts = Post.All<Post>();
             Flags = Flag.All<Flag>();            
-            //changeState(AppState.LPUselect);  //release
-            //DEBUG
+            changeState(AppState.LPUselect);  //release
+            #if DEBUG
             currentLPU = LPU.Get<LPU>(1);            
-            currentUser = User.Get<User>(29);
-            currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(18);
+            currentUser = User.Get<User>(22);
+            currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
             changeState(AppState.Workspace);//для сортировки списка табелей
-            changeState(AppState.EditTimeSheet);            
+            changeState(AppState.EditTimeSheet);
+            #endif
         }
 
         private void btnLPUChoiceEnter_Click(object sender, EventArgs e)
@@ -173,12 +158,12 @@ namespace TimeSheet
 
         private void btnLoginEnter_Click(object sender, EventArgs e)
         {
-            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, Helper.getMD5(tbAuthLogin.Text), currentLPU.ID);            
+            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, Helper.getMD5(tbAuthPass.Text), currentLPU.ID);            
             if (user == null)
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
-                Helper.SetAndSave("lastLogin", tbAuthLogin.Text);
+                Helper.Set("user", "lastLogin", tbAuthLogin.Text);
                 currentUser = user;                
                 changeState(AppState.Workspace);
             }
@@ -248,14 +233,31 @@ namespace TimeSheet
         private void dgTimeSheet_KeyDown(object sender, KeyEventArgs e)
         {
             flagForm = new FlagsForm(this);
-            if (e.KeyCode == Keys.Enter && dgTimeSheet.SelectedCells.Count > 0 && !Saving)
+            if (dgTimeSheet.SelectedCells.Count > 0 && !Saving)
             {
-                         
-            }            
+                switch (e.KeyCode)
+                {
+                    case Keys.Enter:
+                        if (e.Shift)
+                            miEditPersonal_Click(this, EventArgs.Empty);                        
+                        else
+                            редактироватьВыделеннуюЗаписьToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;                    
+                    case Keys.Delete:
+                        if (e.Shift)
+                            удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click(this, EventArgs.Empty);
+                        else
+                            удалитьВыделеннуюЗаписьToolStripMenuItem_Click(this, EventArgs.Empty);
+                        break;
+                    case Keys.Space:
+                        miAddMore_Click(this, EventArgs.Empty);
+                        break;
+                }                
+            }
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
-        {            
+        {
             currentUser = null;
             changeState(AppState.Auth);
         }
@@ -269,19 +271,22 @@ namespace TimeSheet
         private void dgTimeSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == -1 || e.RowIndex == -1)
-                return;            
+                return;
             var cell = dgTimeSheet[e.ColumnIndex, e.RowIndex];
             if (cell.OwningColumn.Tag!=null && cell.OwningColumn.Tag.GetType() == typeof(DateTime))
             {
                 if (currentTimeSheet.Content.Count == 0)
-                    return;                
-                var content = GetContentForDayByCell(cell);                
+                    return;
+                int contentPosition, contentOldCount;
+                var content = GetContentForDayByCell(cell, out contentPosition, out contentOldCount);
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    Enabled = false;
                     if (cell.Value == null)
                     {
-                        var newCell = new TimeSheet_Day(content, Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
+                        var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
+                        content.Days.Add(newCell);
                         newCell.Save();
                         cell.Value = newCell;
                     }
@@ -292,12 +297,19 @@ namespace TimeSheet
                         existCell.Worked_Time = ff.worked_time;
                         existCell.Save();
                     }
+                    DrawContent(content, contentPosition, contentOldCount);
+                    Enabled = true;
                 }
-                //if open cell editor window (preDay: cell.value)
-                //      saveNewDayItem
             }
         }
-        TimeSheet_Content GetContentForDayByCell(DataGridViewCell cell)
+        void DrawContent(TimeSheet_Content content, int rowStart, int rowCount)
+        {
+            var updatedrows = content.Render(dgTimeSheet);
+            for (int i = 0; i < rowCount; i++)
+                dgTimeSheet.Rows.RemoveAt(rowStart);
+            dgTimeSheet.Rows.InsertRange(rowStart, updatedrows);            
+        }
+        TimeSheet_Content GetContentForDayByCell(DataGridViewCell cell, out int rowPos, out int rowCount)
         {
             var contentRow = cell.OwningRow.Index;
             while (contentRow >= 0 && dgTimeSheet[0, contentRow].Value == null)
@@ -305,21 +317,28 @@ namespace TimeSheet
             if (contentRow < 0)
                 throw new Exception("Что-то пошло не так. Не могу найти к кому отношусь :(\r\nС Уважением, Ячейка Нажатая");
             var content = dgTimeSheet[0, contentRow].Value as TimeSheet_Content;
+            rowPos = contentRow;
+            rowCount = dgTimeSheet[0, contentRow].Tag == null ? 1 : Convert.ToInt32(dgTimeSheet[0, contentRow].Tag);
             return content;
         }
         private void miAddMore_Click(object sender, EventArgs e)
         {
-            if (dgTimeSheet.SelectedCells.Count == 1 &&  dgTimeSheet.SelectedCells[0].OwningColumn.Tag!=null && dgTimeSheet.SelectedCells[0].OwningColumn.Tag.GetType() == typeof(DateTime))
-            {
-                var cell = dgTimeSheet.SelectedCells[0];
-                var content = GetContentForDayByCell(cell);
+            if (dgTimeSheet.SelectedCells.Count == 1 && dgTimeSheet.SelectedCells[0].OwningColumn.Tag != null && dgTimeSheet.SelectedCells[0].OwningColumn.Tag.GetType() == typeof(DateTime) && !Saving)
+            {                
+                var cell = dgTimeSheet.SelectedCells[0];                
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {                    
-                    var newCell = new TimeSheet_Day(content, Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
-                    newCell.Save();
-                    DrawTimeSheetContent();    
+                {
+                    Enabled = false;
+                    int rowStart, rowCount;
+                    var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
+                    var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
+                    content.Days.Add(newCell);
+                    newCell.Save();                    
+                    DrawContent(content, rowStart, rowCount);
+                    Enabled = true;
                 }
+                
             }
         }
 
@@ -328,25 +347,160 @@ namespace TimeSheet
             if (dgTimeSheet.SelectedCells.Count == 1)
             {
                 var cell = dgTimeSheet.SelectedCells[0];
-                var content = GetContentForDayByCell(cell);
+                int rowStart, rowCount;
+                var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
                 var roweditor = new RowEditForm(this, content);
                 if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    roweditor.TSContent.Save();
-                    DrawTimeSheetContent();
+                    Enabled = false;
+                    roweditor.TSContent.Save();                    
+                    DrawContent(content, rowStart, rowCount);
+                    Enabled = true;
                 }
             }
         }
 
         private void btnNewRow_Click(object sender, EventArgs e)
         {
-            var roweditor = new RowEditForm(this);
+            var roweditor = new RowEditForm(this, null, true);
             if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                roweditor.TSContent.Save();
+                Enabled = false;
+                var newContent = roweditor.TSContent;
+                var cal = newContent.Calendar.Months.Find(m => m.CMonth == currentTimeSheet.TS_Month);
+                double avg = 0;
+                if (cal != null)
+                    avg = cal.Hours / cal.Days;
+                newContent.Save();
+                if (roweditor.defaultval)
+                {
+                    for (int i = 0; i < currentTimeSheet._DaysInMonth; i++)   
+                    {
+                        var date = new DateTime(currentTimeSheet.TS_Year, currentTimeSheet.TS_Month, i + 1);
+                        var sp = specialDays.Find(sd => sd.Spec_Date == date);
+                        Flag flag = Flags.Find(f => f.Name == "ya");//default
+                        TimeSpan worked = TimeSpan.FromHours(avg);
+                        if (sp != null)
+                        {
+                            switch (sp.State)
+                            {
+                                case 1://выходной
+                                case 2://праздник
+                                    flag = Flags.Find(f => f.Name == "v");
+                                    worked = TimeSpan.Zero;
+                                    break;
+                                case 3://сокращенный                                    
+                                    worked = worked.Subtract(TimeSpan.FromHours(1));
+                                    break;
+                            }
+                        }
+                        newContent.Days.Add(new TimeSheet_Day(date, worked, flag));
+                    }
+                    newContent.Save();                    
+                }
                 DrawTimeSheetContent();
+                Enabled = true;
+            }            
+        }
+
+        private void удалитьВыделеннуюЗаписьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dgTimeSheet.SelectedCells.Count == 0 || Saving)
+                return;
+            Enabled = false;
+            var firstCell = dgTimeSheet.SelectedCells[0];
+            int rowStart, rowCount;
+            var content = GetContentForDayByCell(firstCell, out rowStart, out rowCount);
+            foreach (DataGridViewCell cell in dgTimeSheet.SelectedCells)
+            {
+                if (cell.Value != null && cell.OwningColumn.Tag != null && cell.OwningColumn.Tag.GetType() == typeof(DateTime))
+                {
+                    var day = cell.Value as TimeSheet_Day;
+                    content.Days.Remove(day, true);                    
+                }
+            }
+            DrawContent(content, rowStart, rowCount);
+            Enabled = true;
+        }
+
+        private void удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dgTimeSheet.SelectedCells.Count == 1 && MessageBox.Show("Вы уверены, что хотите удалить выделенную запись?","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
+            {
+                Enabled = false;
+                var cell = dgTimeSheet.SelectedCells[0];                
+                int rowStart, rowCount;
+                var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
+                content.Delete();
+                for (int i = 0; i < rowCount; i++)
+                    dgTimeSheet.Rows.RemoveAt(rowStart);
+                Enabled = true;
             }
         }
+
+        private void редактироватьВыделеннуюЗаписьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dgTimeSheet.SelectedCells.Count > 0 && !Saving)
+            {
+                var firstCell = dgTimeSheet.SelectedCells[0];
+                int contentPosition, contentOldCount;
+                var content = GetContentForDayByCell(firstCell, out contentPosition, out contentOldCount);
+                FlagsForm ff = new FlagsForm(this);
+                if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    Enabled = false;
+                    foreach (DataGridViewCell cell in dgTimeSheet.SelectedCells)
+                    {
+                        if (cell.OwningColumn.Tag == null || cell.OwningColumn.Tag.GetType() != typeof(DateTime))
+                            continue;
+                        if (cell.Value == null)
+                        {
+                            var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
+                            content.Days.Add(newCell);
+                            newCell.Save();
+                            cell.Value = newCell;
+                        }
+                        else
+                        {
+                            var existCell = cell.Value as TimeSheet_Day;
+                            existCell.Flag = ff.flag;
+                            existCell.Worked_Time = ff.worked_time;
+                            existCell.Save();
+                        }                        
+                    }
+                    DrawContent(content, contentPosition, contentOldCount);
+                    Enabled = true;
+                }
+            }
+        }
+
+        private void btnExportToExcel_Click(object sender, EventArgs e)
+        {
+            dlgSaveFile.FileName = string.Format("{0} - {1}", currentTimeSheet.Department.Name, currentTimeSheet._GetDate.ToString("MMMM yyyy"));
+            if (currentTimeSheet.Content.Count > 0 && dlgSaveFile.ShowDialog()==System.Windows.Forms.DialogResult.OK)
+            {
+                var tempPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.xlsx";
+                if (!File.Exists(tempPath))
+                {
+                    MessageBox.Show("Файл шаблона temp.xlsx не найден!", "Ошибка экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                Enabled = false;
+                try
+                {
+                    ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.xlsx", dlgSaveFile.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Ошибка экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    Enabled = true;
+                }
+                Enabled = true;
+            }
+        }        
     }
     public enum AppState
     {

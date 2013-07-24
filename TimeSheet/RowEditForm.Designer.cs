@@ -38,6 +38,7 @@
             this.btnAdd = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.cbCalendar = new System.Windows.Forms.ComboBox();
+            this.cbDefaultValues = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -112,7 +113,7 @@
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdd.Location = new System.Drawing.Point(237, 109);
+            this.btnAdd.Location = new System.Drawing.Point(237, 133);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 6;
@@ -140,11 +141,23 @@
             this.cbCalendar.Size = new System.Drawing.Size(150, 21);
             this.cbCalendar.TabIndex = 3;
             // 
+            // cbDefaultValues
+            // 
+            this.cbDefaultValues.AutoSize = true;
+            this.cbDefaultValues.Location = new System.Drawing.Point(15, 139);
+            this.cbDefaultValues.Name = "cbDefaultValues";
+            this.cbDefaultValues.Size = new System.Drawing.Size(218, 17);
+            this.cbDefaultValues.TabIndex = 7;
+            this.cbDefaultValues.Text = "Заполнить значениями по умолчанию";
+            this.cbDefaultValues.UseVisualStyleBackColor = true;
+            this.cbDefaultValues.Visible = false;
+            // 
             // RowEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 144);
+            this.ClientSize = new System.Drawing.Size(324, 168);
+            this.Controls.Add(this.cbDefaultValues);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.tbRate);
@@ -178,5 +191,6 @@
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbCalendar;
+        private System.Windows.Forms.CheckBox cbDefaultValues;
     }
 }

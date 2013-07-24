@@ -21,7 +21,7 @@ namespace TimeSheet
 
         private void TimeSheets_Load(object sender, EventArgs e)
         {
-            lbTimeSheets.Items.Clear();
+            lbTimeSheets.Items.Clear();            
             mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
         }
 

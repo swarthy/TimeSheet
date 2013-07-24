@@ -38,7 +38,7 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.Location = new System.Drawing.Point(170, 119);
+            this.btnOk.Location = new System.Drawing.Point(170, 130);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(75, 23);
             this.btnOk.TabIndex = 1;
@@ -49,7 +49,7 @@
             // tbMinutes
             // 
             this.tbMinutes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tbMinutes.Location = new System.Drawing.Point(67, 121);
+            this.tbMinutes.Location = new System.Drawing.Point(67, 132);
             this.tbMinutes.Name = "tbMinutes";
             this.tbMinutes.Size = new System.Drawing.Size(47, 20);
             this.tbMinutes.TabIndex = 5;
@@ -59,7 +59,7 @@
             // 
             this.lbValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbValue.AutoSize = true;
-            this.lbValue.Location = new System.Drawing.Point(12, 124);
+            this.lbValue.Location = new System.Drawing.Point(12, 135);
             this.lbValue.Name = "lbValue";
             this.lbValue.Size = new System.Drawing.Size(49, 13);
             this.lbValue.TabIndex = 5;
@@ -68,7 +68,7 @@
             // tbHours
             // 
             this.tbHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tbHours.Location = new System.Drawing.Point(67, 95);
+            this.tbHours.Location = new System.Drawing.Point(67, 106);
             this.tbHours.Name = "tbHours";
             this.tbHours.Size = new System.Drawing.Size(47, 20);
             this.tbHours.TabIndex = 4;
@@ -78,7 +78,7 @@
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 98);
+            this.label1.Location = new System.Drawing.Point(12, 109);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 5;
@@ -88,13 +88,15 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(257, 151);
+            this.AutoSize = true;
+            this.ClientSize = new System.Drawing.Size(257, 162);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbHours);
             this.Controls.Add(this.lbValue);
             this.Controls.Add(this.tbMinutes);
             this.Controls.Add(this.btnOk);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MinimumSize = new System.Drawing.Size(0, 190);
             this.Name = "FlagsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Показатели";
