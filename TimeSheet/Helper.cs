@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Reflection;
 using System.ComponentModel;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public static class Helper
     {

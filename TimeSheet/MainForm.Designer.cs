@@ -1,4 +1,4 @@
-﻿namespace TimeSheet
+﻿namespace TimeSheetManger
 {
     partial class MainForm
     {
@@ -63,7 +63,7 @@
             this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnExportToExcel = new System.Windows.Forms.Button();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
-            this.dgTimeSheet = new TimeSheet.MyDataGridView();
+            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
             this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();

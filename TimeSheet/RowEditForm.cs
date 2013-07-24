@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public partial class RowEditForm : Form
     {
@@ -67,7 +67,7 @@ namespace TimeSheet
             defaultval = cbDefaultValues.Checked;
             if (isNew)
                 mainForm.currentTimeSheet.Content.Add(TSContent);
-            //TSContent.TimeSheet = mainForm.currentTimeSheet;
+            //TSContent.TimeSheetManger = mainForm.currentTimeSheet;
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }

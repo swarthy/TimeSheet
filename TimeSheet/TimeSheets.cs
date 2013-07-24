@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public partial class TimeSheets : Form
     {

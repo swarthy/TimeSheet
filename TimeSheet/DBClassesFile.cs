@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     //Все классы должны быть инициализированны при создании формы (см MainForm.MainForm())
     public class User : Domain
@@ -750,7 +750,7 @@ namespace TimeSheet
             {"Personal", new Link("Personal_ID",typeof(Personal))},
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
             {"Post", new Link("POST_ID",typeof(Post))},
-            {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
+            {"TimeSheetManger", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
         public override string ToString()
         {
@@ -764,15 +764,15 @@ namespace TimeSheet
                 return HM<TimeSheet_Day>("Days");
             }
         }
-        public TimeSheetInstance TimeSheet
+        public TimeSheetInstance TimeSheetManger
         {
             get
             {
-                return BT<TimeSheetInstance>("TimeSheet");
+                return BT<TimeSheetInstance>("TimeSheetManger");
             }
             set
             {
-                this["TimeSheet"] = value;
+                this["TimeSheetManger"] = value;
             }
         }
         public Calendar Calendar
@@ -835,7 +835,7 @@ namespace TimeSheet
             var needRows = groups.Max(a => a.Count());
             result = new DataGridViewRow[needRows];
             var values = new object[needRows][];
-            var colCount = 4 + TimeSheet._DaysInMonth + 4;
+            var colCount = 4 + TimeSheetManger._DaysInMonth + 4;
             for (int i = 0; i < needRows; i++)
             {
                 result[i] = new DataGridViewRow();
@@ -922,7 +922,7 @@ namespace TimeSheet
             : base(typeof(TimeSheet_Content))
         {
             Personal = personal;
-            TimeSheet = timeSheet;
+            TimeSheetManger = timeSheet;
             Post = post;
             Rate = rate;
         }

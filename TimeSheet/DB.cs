@@ -7,7 +7,7 @@ using System.Windows.Forms;
 ///     Developer: Alexander Mochalin
 ///     License: GNU LGPL
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public static class DB
     {

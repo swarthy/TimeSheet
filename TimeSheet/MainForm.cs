@@ -9,8 +9,9 @@ using System.Windows.Forms;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
+using TimeSheetManger;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public partial class MainForm : Form
     {        
@@ -47,6 +48,7 @@ namespace TimeSheet
         public MainForm()
         {            
             InitializeComponent();
+            //DBFmanager.Test();
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:c:/FBDB.FDB;Charset=NONE;", Helper.Get("server", "ip") ?? "127.0.0.1", Helper.Get("server", "file") ?? "c:/DBFB.fdb");
             #region DB Initialization

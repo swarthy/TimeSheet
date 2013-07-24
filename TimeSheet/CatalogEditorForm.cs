@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using FirebirdSql.Data.FirebirdClient;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public partial class CatalogEditorForm : Form
     {

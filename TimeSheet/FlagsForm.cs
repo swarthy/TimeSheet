@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public partial class FlagsForm : Form
     {

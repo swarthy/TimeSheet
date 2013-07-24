@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // Управление общими сведениями о сборке осуществляется с помощью 
 // набора атрибутов. Измените значения этих атрибутов, чтобы изменить сведения,
 // связанные со сборкой.
-[assembly: AssemblyTitle("TimeSheet")]
+[assembly: AssemblyTitle("TimeSheetManger")]
 [assembly: AssemblyDescription("Программа для управления табелями учета использования рабочего времени и расчета заработной платы")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ГБУЗ Саракташская ЦРБ")]
-[assembly: AssemblyProduct("TimeSheet Manager")]
+[assembly: AssemblyProduct("TimeSheetManger Manager")]
 [assembly: AssemblyCopyright("Автор: Мочалин Александр. Лицензия: GNU LGPL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

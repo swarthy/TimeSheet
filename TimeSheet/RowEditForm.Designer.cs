@@ -1,4 +1,4 @@
-﻿namespace TimeSheet
+﻿namespace TimeSheetManger
 {
     partial class RowEditForm
     {

@@ -1,4 +1,4 @@
-﻿namespace TimeSheet
+﻿namespace TimeSheetManger
 {
     partial class CatalogEditorForm
     {
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgTable = new TimeSheet.MyDataGridView();
+            this.dgTable = new TimeSheetManger.MyDataGridView();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgTable)).BeginInit();

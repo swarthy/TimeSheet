@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Runtime.InteropServices;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     public class IniFile
     {

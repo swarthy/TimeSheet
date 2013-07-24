@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace TimeSheet
+namespace TimeSheetManger
 {
     static class Program
     {
