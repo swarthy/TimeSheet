@@ -226,13 +226,7 @@ namespace TimeSheetManger
         public object this[string key]
         {
             get
-            {                
-                //if (GetBelongsTo(GetType()).ContainsKey(key) || GetHasMany(GetType()).ContainsKey(key) || GetHasOne(GetType()).ContainsKey(key))
-                    //throw new Exception("You can't get \"Domain\" type field from here. Use BT/H1/HM(\"domain_field_name\") method for this type of fields");
-                //Для повышения производительности 
-                //
-                // TODO: Раскомментировать для production
-                //
+            {   
                 return Fields.ContainsKey(key) ? Fields[key] : null;
             }
             set
@@ -240,8 +234,7 @@ namespace TimeSheetManger
                 Fields[key] = value;
                 _Changed = true;
                 if (value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
-                    BTfetched[key] = true;
-                    //Fields[belongs_to[key].FieldInDB] = (value as Domain).ID;
+                    BTfetched[key] = true;                    
             }
         }
         public T BT<T>(string key, bool getFromServer = false) where T : Domain, new()
@@ -314,7 +307,7 @@ namespace TimeSheetManger
                 !pi.PropertyType.IsGenericType &&
                 !pi.PropertyType.IsSubclassOf(typeof(Domain))).ToList().ForEach(pi => field_names.Add(pi.Name));
             GetBelongsTo(type).Values.ToList().ForEach(k => { field_names.Add(k.FieldInDB); });
-        }        
+        }
         protected T FetchBelongsTo<T>(string key, bool refetch = false) where T: Domain, new()
         {
             Dictionary<string, Link> belongsto = GetBelongsTo(GetType());
@@ -710,6 +703,7 @@ namespace TimeSheetManger
             FbCommand command = new FbCommand(string.Format("select count(*) from {0} where {1};", tableName, where_str), DB.Connection);
             return (int)command.ExecuteScalar();            
         }
+        
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldInDBName] = ID;

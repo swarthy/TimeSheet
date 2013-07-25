@@ -333,5 +333,51 @@ namespace TimeSheetManger
         {
             cHolydayCalendar.SetDate(dtpHolydayMonthPicker.Value.Month, dtpHolydayMonthPicker.Value.Year);
         }
+
+        DBList<User> users;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            users = User.All<User>();
+            grid.Columns.Clear();
+            grid.AutoGenerateColumns = false;
+
+            DataGridViewTextBoxColumn login = new DataGridViewTextBoxColumn();
+            login.DataPropertyName = "Login";
+            login.HeaderText = "Логин";
+            grid.Columns.Add(login);
+
+            DataGridViewTextBoxColumn pass = new DataGridViewTextBoxColumn();
+            pass.DataPropertyName = "Pass";
+            pass.HeaderText = "Пароль";
+            grid.Columns.Add(pass);
+
+            DataGridViewComboBoxColumn lpu = new DataGridViewComboBoxColumn();
+            lpu.ValueMember = "_Self";
+            lpu.DataPropertyName = "LPU";
+            lpu.DisplayMember = "Name";
+            lpu.HeaderText = "ЛПУ";
+            lpu.DataSource = LPU.All<LPU>();
+            grid.Columns.Add(lpu);
+
+            DataGridViewComboBoxColumn profile = new DataGridViewComboBoxColumn();
+            profile.ValueMember = "_Self";
+            profile.DataPropertyName = "Profile";
+            profile.DisplayMember = "_ShortName";
+            profile.HeaderText = "Профиль";
+            profile.DataSource = Personal.All<Personal>();
+            grid.Columns.Add(profile);
+
+            DataGridViewTextBoxColumn role = new DataGridViewTextBoxColumn();
+            role.DataPropertyName = "Role";
+            role.HeaderText = "Роль";
+            grid.Columns.Add(role);
+
+            grid.DataSource = users;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            users.ForEach(u => u.Save());
+        }
     }
 }

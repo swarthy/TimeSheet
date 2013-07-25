@@ -62,13 +62,16 @@
             this.cbPCalendar = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
-            this.cHolydayCalendar = new SwarthyComponents.CalendarView();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
             this.rbShortDay = new System.Windows.Forms.RadioButton();
             this.rbHolyDay = new System.Windows.Forms.RadioButton();
             this.rbWeekEnd = new System.Windows.Forms.RadioButton();
             this.rbUsualDay = new System.Windows.Forms.RadioButton();
+            this.button1 = new System.Windows.Forms.Button();
+            this.grid = new System.Windows.Forms.DataGridView();
+            this.button2 = new System.Windows.Forms.Button();
+            this.cHolydayCalendar = new SwarthyComponents.CalendarView();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -77,6 +80,7 @@
             this.gbValues.SuspendLayout();
             this.gbAddYear.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
             // 
             // tbContent
@@ -95,6 +99,9 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button2);
+            this.tabPage1.Controls.Add(this.grid);
+            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.btnEditCatalog);
             this.tabPage1.Controls.Add(this.cbCatalogs);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -446,13 +453,13 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.dtpHolydayMonthPicker);
-            this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Controls.Add(this.pbGeneratingWeekEnds);
             this.tabPage3.Controls.Add(this.btnGenerateWeekEnds);
             this.tabPage3.Controls.Add(this.rbShortDay);
             this.tabPage3.Controls.Add(this.rbHolyDay);
             this.tabPage3.Controls.Add(this.rbWeekEnd);
             this.tabPage3.Controls.Add(this.rbUsualDay);
+            this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(461, 258);
@@ -469,24 +476,6 @@
             this.dtpHolydayMonthPicker.Size = new System.Drawing.Size(154, 20);
             this.dtpHolydayMonthPicker.TabIndex = 5;
             this.dtpHolydayMonthPicker.ValueChanged += new System.EventHandler(this.dtpHolydayMonthPicker_ValueChanged);
-            // 
-            // cHolydayCalendar
-            // 
-            this.cHolydayCalendar.DayPadding = 1;
-            this.cHolydayCalendar.DaySize = new System.Drawing.Size(20, 20);
-            this.cHolydayCalendar.Location = new System.Drawing.Point(9, 32);
-            this.cHolydayCalendar.MarginDays = new System.Drawing.Point(0, 20);
-            this.cHolydayCalendar.MarginDaysOfWeek = new System.Drawing.Point(0, 0);
-            this.cHolydayCalendar.MarginTitle = new System.Drawing.Point(0, 0);
-            this.cHolydayCalendar.Month = 7;
-            this.cHolydayCalendar.Name = "cHolydayCalendar";
-            this.cHolydayCalendar.OnSelectedDateChanged = null;
-            this.cHolydayCalendar.SelectedDate = new System.DateTime(((long)(0)));
-            this.cHolydayCalendar.ShowDayOfWeek = true;
-            this.cHolydayCalendar.ShowTitle = false;
-            this.cHolydayCalendar.Size = new System.Drawing.Size(154, 133);
-            this.cHolydayCalendar.TabIndex = 4;
-            this.cHolydayCalendar.Year = 2013;
             // 
             // pbGeneratingWeekEnds
             // 
@@ -556,6 +545,56 @@
             this.rbUsualDay.UseVisualStyleBackColor = true;
             this.rbUsualDay.CheckedChanged += new System.EventHandler(this.rbUsualDay_CheckedChanged);
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 33);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // grid
+            // 
+            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.Location = new System.Drawing.Point(6, 62);
+            this.grid.MultiSelect = false;
+            this.grid.Name = "grid";
+            this.grid.Size = new System.Drawing.Size(449, 190);
+            this.grid.TabIndex = 3;            
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(87, 33);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 4;
+            this.button2.Text = "save";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // cHolydayCalendar
+            // 
+            this.cHolydayCalendar.DayPadding = 1;
+            this.cHolydayCalendar.DaySize = new System.Drawing.Size(20, 20);
+            this.cHolydayCalendar.Location = new System.Drawing.Point(9, 32);
+            this.cHolydayCalendar.MarginDays = new System.Drawing.Point(0, 20);
+            this.cHolydayCalendar.MarginDaysOfWeek = new System.Drawing.Point(0, 0);
+            this.cHolydayCalendar.MarginTitle = new System.Drawing.Point(0, 0);
+            this.cHolydayCalendar.Month = 7;
+            this.cHolydayCalendar.Name = "cHolydayCalendar";
+            this.cHolydayCalendar.OnSelectedDateChanged = null;
+            this.cHolydayCalendar.SelectedDate = new System.DateTime(((long)(0)));
+            this.cHolydayCalendar.ShowDayOfWeek = true;
+            this.cHolydayCalendar.ShowTitle = false;
+            this.cHolydayCalendar.Size = new System.Drawing.Size(154, 133);
+            this.cHolydayCalendar.TabIndex = 4;
+            this.cHolydayCalendar.Year = 2013;
+            // 
             // AdminPanelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -580,6 +619,7 @@
             this.gbAddYear.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -627,5 +667,8 @@
         private System.Windows.Forms.Button btnHideName;
         private SwarthyComponents.CalendarView cHolydayCalendar;
         private System.Windows.Forms.DateTimePicker dtpHolydayMonthPicker;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.DataGridView grid;
+        private System.Windows.Forms.Button button2;
     }
 }
