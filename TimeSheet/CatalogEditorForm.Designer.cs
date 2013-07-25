@@ -28,25 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.dgTable = new TimeSheetManger.MyDataGridView();
             this.btnSave = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTable)).BeginInit();
+            this.grid = new TimeSheetManger.MyDataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
-            // 
-            // dgTable
-            // 
-            this.dgTable.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgTable.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.dgTable.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgTable.Location = new System.Drawing.Point(12, 12);
-            this.dgTable.Name = "dgTable";
-            this.dgTable.Size = new System.Drawing.Size(544, 271);
-            this.dgTable.TabIndex = 0;
-            this.dgTable.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.dgTable_UserDeletingRow);
             // 
             // btnSave
             // 
@@ -69,7 +56,6 @@
             this.btnUpdate.TabIndex = 2;
             this.btnUpdate.Text = "Обновить";
             this.btnUpdate.UseVisualStyleBackColor = true;
-            this.btnUpdate.Click += new System.EventHandler(this.btnUpdate_Click);
             // 
             // btnCancel
             // 
@@ -82,6 +68,18 @@
             this.btnCancel.Text = "Закрыть";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
+            // grid
+            // 
+            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.Location = new System.Drawing.Point(12, 12);
+            this.grid.Name = "grid";
+            this.grid.Size = new System.Drawing.Size(544, 271);
+            this.grid.TabIndex = 0;
+            // 
             // CatalogEditorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -92,17 +90,18 @@
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnUpdate);
             this.Controls.Add(this.btnSave);
-            this.Controls.Add(this.dgTable);
+            this.Controls.Add(this.grid);
             this.Name = "CatalogEditorForm";
             this.Text = "Справочник";
-            ((System.ComponentModel.ISupportInitialize)(this.dgTable)).EndInit();
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private MyDataGridView dgTable;
+        private MyDataGridView grid;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnUpdate;
         private System.Windows.Forms.Button btnCancel;

@@ -416,7 +416,8 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
-            {"Departments", new Link("LPU_ID", typeof(Department))}            
+            {"Departments", new Link("LPU_ID", typeof(Department))},
+            {"Users", new Link("LPU_ID", typeof(User))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"MainDoc", new Link("MAINDOC",typeof(Personal))}
@@ -449,6 +450,13 @@ namespace TimeSheetManger
             get
             {
                 return HM<Department>("Departments");
+            }
+        }
+        public DBList<User> Users
+        {
+            get
+            {
+                return HM<User>("Users");
             }
         }
         public Personal MainDoc

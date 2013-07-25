@@ -9,6 +9,16 @@ using System.Windows.Forms;
 
 namespace TimeSheetManger
 {
+    public static class Extensions
+    {
+        public static DBList<T> ToDBList<T>(this IEnumerable<T> ien) where T: Domain, new()
+        {
+            DBList<T> res = new DBList<T>();
+            foreach (T item in ien)
+                res.Add(item);
+            return res;
+        }
+    }
     public static class DB
     {
         private static FbConnection connection = GetNewConnection;
@@ -96,7 +106,7 @@ namespace TimeSheetManger
         }
     }
     public class DBList<T> : List<T> where T: Domain, new()
-    {
+    {        
         public DBList(string FieldInDB = "")
             : base()
         {
@@ -114,7 +124,7 @@ namespace TimeSheetManger
                 if (OnChange != null)
                     OnChange(this, new DBEventArgs<T>(base[i], FieldInDB));
             }
-        }
+        }        
         public DBList<T> Except(DBList<T> ex)
         {
             DBList<T> res = new DBList<T>();            
