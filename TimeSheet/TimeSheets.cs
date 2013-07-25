@@ -21,8 +21,11 @@ namespace TimeSheetManger
 
         private void TimeSheets_Load(object sender, EventArgs e)
         {
-            lbTimeSheets.Items.Clear();            
-            mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
+            lbTimeSheets.Items.Clear();
+            if (mainForm.currentUser._IS_ADMIN)
+                TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
+            else
+                mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
         }
 
         private void lbTimeSheets_SelectedIndexChanged(object sender, EventArgs e)

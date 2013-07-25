@@ -44,7 +44,7 @@ namespace TimeSheetManger
             //personals = Personal.FindAll<Personal>("DEPARTMENT_ID = '{0}' and TIMESHEET_MANAGER = '{1}'", mainform.currentTimeSheet.Department.ID, mainform.currentUser.ID);
             personals = mainform.currentUser.PersonalLink.Where(p => p.Department.ID == mainform.currentTimeSheet.Department.ID).ToList();
             lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;
-            personals.Sort((p1,p2)=>p1.Name.CompareTo(p2.Name));
+            personals.Sort((p1, p2) => p1.LastName.CompareTo(p2.LastName));
             DrawPersonal(personals);
         }
 

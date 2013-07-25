@@ -48,7 +48,7 @@ namespace TimeSheetManger
             lbPersonal.Items.Clear();
             personals = mainform.currentTimeSheet.Department.PersonalOfDepartment.Where(pd => pl.personals.FindIndex(p => p.ID == pd.ID) == -1).ToList();
             lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;
-            personals.Sort((p1, p2) => p1.Name.CompareTo(p2.Name));
+            personals.Sort((p1, p2) => p1.LastName.CompareTo(p2.LastName));
             personals.ForEach(p => lbPersonal.Items.Add(p));
         }
     }

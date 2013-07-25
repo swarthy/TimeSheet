@@ -71,5 +71,21 @@ namespace TimeSheetManger
         {
             return string.Format("{0:00}:{1:00}", Math.Truncate(span.TotalHours), span.Minutes);
         }
+        public static string ServerIP
+        {
+            get
+            {
+                var adr = Get("server", "ip");
+                return adr == null ? "127.0.0.1" : adr.ToString();
+            }
+        }
+        public static string ServerFile
+        {
+            get
+            {
+                var adr = Get("server", "file");
+                return adr == null ? "c:\\FBDB.fdb" : adr.ToString();
+            }
+        }
     }
 }

@@ -36,6 +36,7 @@
             this.удалитьИзЭтогоСпискаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.llbAddPersonal = new System.Windows.Forms.LinkLabel();
             this.btnSelectPersonal = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.cmsItem.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,7 +67,7 @@
             this.lbPersonal.FormattingEnabled = true;
             this.lbPersonal.Location = new System.Drawing.Point(12, 38);
             this.lbPersonal.Name = "lbPersonal";
-            this.lbPersonal.Size = new System.Drawing.Size(289, 290);
+            this.lbPersonal.Size = new System.Drawing.Size(289, 277);
             this.lbPersonal.TabIndex = 2;
             this.lbPersonal.SelectedIndexChanged += new System.EventHandler(this.lbPersonal_SelectedIndexChanged);
             this.lbPersonal.DoubleClick += new System.EventHandler(this.lbPersonal_DoubleClick);
@@ -90,7 +91,7 @@
             // 
             this.llbAddPersonal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.llbAddPersonal.AutoSize = true;
-            this.llbAddPersonal.Location = new System.Drawing.Point(9, 346);
+            this.llbAddPersonal.Location = new System.Drawing.Point(9, 344);
             this.llbAddPersonal.Name = "llbAddPersonal";
             this.llbAddPersonal.Size = new System.Drawing.Size(191, 13);
             this.llbAddPersonal.TabIndex = 3;
@@ -102,7 +103,7 @@
             // 
             this.btnSelectPersonal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSelectPersonal.Enabled = false;
-            this.btnSelectPersonal.Location = new System.Drawing.Point(216, 341);
+            this.btnSelectPersonal.Location = new System.Drawing.Point(216, 339);
             this.btnSelectPersonal.Name = "btnSelectPersonal";
             this.btnSelectPersonal.Size = new System.Drawing.Size(85, 23);
             this.btnSelectPersonal.TabIndex = 4;
@@ -110,19 +111,31 @@
             this.btnSelectPersonal.UseVisualStyleBackColor = true;
             this.btnSelectPersonal.Click += new System.EventHandler(this.btnSelectPersonal_Click);
             // 
+            // btnCancel
+            // 
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(216, 368);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(85, 23);
+            this.btnCancel.TabIndex = 5;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
             // PersonalListForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(313, 376);
+            this.ClientSize = new System.Drawing.Size(313, 403);
+            this.ControlBox = false;
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSelectPersonal);
-            this.Controls.Add(this.llbAddPersonal);
             this.Controls.Add(this.lbPersonal);
+            this.Controls.Add(this.llbAddPersonal);
             this.Controls.Add(this.lbDepartmentName);
             this.Controls.Add(this.lbDepartmentLabel);
             this.Name = "PersonalListForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Favorite сотрудники";
+            this.Text = "Сотрудники пользователя";
             this.Load += new System.EventHandler(this.PersonalListForm_Load);
             this.cmsItem.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -139,5 +152,6 @@
         private System.Windows.Forms.Button btnSelectPersonal;
         private System.Windows.Forms.ContextMenuStrip cmsItem;
         private System.Windows.Forms.ToolStripMenuItem удалитьИзЭтогоСпискаToolStripMenuItem;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

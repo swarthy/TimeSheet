@@ -33,6 +33,7 @@
             this.dtpTS_Date = new System.Windows.Forms.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
             this.btCreate = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // cbDepartment
@@ -78,7 +79,7 @@
             // btCreate
             // 
             this.btCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btCreate.Location = new System.Drawing.Point(197, 66);
+            this.btCreate.Location = new System.Drawing.Point(116, 66);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(75, 23);
             this.btCreate.TabIndex = 3;
@@ -86,11 +87,25 @@
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
             // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(197, 66);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 4;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
             // AddTimeSheetInstanceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(284, 101);
+            this.ControlBox = false;
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.dtpTS_Date);
             this.Controls.Add(this.label2);
@@ -112,5 +127,6 @@
         private System.Windows.Forms.DateTimePicker dtpTS_Date;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btCreate;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

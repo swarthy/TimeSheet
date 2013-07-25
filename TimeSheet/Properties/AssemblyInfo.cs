@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Программа для управления табелями учета использования рабочего времени и расчета заработной платы")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ГБУЗ Саракташская ЦРБ")]
-[assembly: AssemblyProduct("TimeSheetManger Manager")]
+[assembly: AssemblyProduct("TimeSheetManger")]
 [assembly: AssemblyCopyright("Автор: Мочалин Александр. Лицензия: GNU LGPL")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

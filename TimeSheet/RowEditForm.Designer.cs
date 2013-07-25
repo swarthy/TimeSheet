@@ -39,6 +39,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.cbCalendar = new System.Windows.Forms.ComboBox();
             this.cbDefaultValues = new System.Windows.Forms.CheckBox();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -66,17 +67,17 @@
             this.tbName.Location = new System.Drawing.Point(81, 22);
             this.tbName.Name = "tbName";
             this.tbName.ReadOnly = true;
-            this.tbName.Size = new System.Drawing.Size(150, 20);
+            this.tbName.Size = new System.Drawing.Size(253, 20);
             this.tbName.TabIndex = 1;
             // 
             // btnSelectPersonal
             // 
             this.btnSelectPersonal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectPersonal.Location = new System.Drawing.Point(237, 20);
+            this.btnSelectPersonal.Location = new System.Drawing.Point(340, 20);
             this.btnSelectPersonal.Name = "btnSelectPersonal";
-            this.btnSelectPersonal.Size = new System.Drawing.Size(75, 23);
+            this.btnSelectPersonal.Size = new System.Drawing.Size(75, 22);
             this.btnSelectPersonal.TabIndex = 2;
-            this.btnSelectPersonal.Text = "Выбрать";
+            this.btnSelectPersonal.Text = "Список";
             this.btnSelectPersonal.UseVisualStyleBackColor = true;
             this.btnSelectPersonal.Click += new System.EventHandler(this.btnSelectPersonal_Click);
             // 
@@ -88,7 +89,7 @@
             this.cbPost.FormattingEnabled = true;
             this.cbPost.Location = new System.Drawing.Point(81, 50);
             this.cbPost.Name = "cbPost";
-            this.cbPost.Size = new System.Drawing.Size(150, 21);
+            this.cbPost.Size = new System.Drawing.Size(334, 21);
             this.cbPost.TabIndex = 3;
             // 
             // tbRate
@@ -97,7 +98,7 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tbRate.Location = new System.Drawing.Point(81, 112);
             this.tbRate.Name = "tbRate";
-            this.tbRate.Size = new System.Drawing.Size(150, 20);
+            this.tbRate.Size = new System.Drawing.Size(334, 20);
             this.tbRate.TabIndex = 4;
             this.tbRate.Text = "1,0";
             // 
@@ -113,7 +114,7 @@
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdd.Location = new System.Drawing.Point(237, 133);
+            this.btnAdd.Location = new System.Drawing.Point(259, 138);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
             this.btnAdd.TabIndex = 6;
@@ -138,7 +139,7 @@
             this.cbCalendar.FormattingEnabled = true;
             this.cbCalendar.Location = new System.Drawing.Point(81, 80);
             this.cbCalendar.Name = "cbCalendar";
-            this.cbCalendar.Size = new System.Drawing.Size(150, 21);
+            this.cbCalendar.Size = new System.Drawing.Size(334, 21);
             this.cbCalendar.TabIndex = 3;
             // 
             // cbDefaultValues
@@ -152,11 +153,25 @@
             this.cbDefaultValues.UseVisualStyleBackColor = true;
             this.cbDefaultValues.Visible = false;
             // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(340, 138);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 8;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
             // RowEditForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(324, 168);
+            this.CancelButton = this.btnCancel;
+            this.ClientSize = new System.Drawing.Size(427, 171);
+            this.ControlBox = false;
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.cbDefaultValues);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.label3);
@@ -192,5 +207,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox cbCalendar;
         private System.Windows.Forms.CheckBox cbDefaultValues;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

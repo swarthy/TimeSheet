@@ -75,6 +75,9 @@
     <Compile Include="AdminPanelForm.Designer.cs">
       <DependentUpon>AdminPanelForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="CalendarView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CatalogEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>

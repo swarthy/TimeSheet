@@ -18,13 +18,14 @@ namespace TimeSheetManger
         static int rowCount = 0;
         static int personalCount = 0;        
         static ExcelWorksheet worksheet;
+        public static EventHandler OnProgress = null, OnSavingStart = null, OnExportEnd = null;
         public static void ExportContent(TimeSheetInstance timeSheet, string templatePath, string newFilePath)
         {
             FileInfo templateFile = new FileInfo(templatePath);
             FileInfo newFile = new FileInfo(newFilePath);
             lastRow = 30;
             rowCount = 0;
-            personalCount = 0;
+            personalCount = 0;            
             using (ExcelPackage package = new ExcelPackage(newFile, templateFile))
             {
                 worksheet = package.Workbook.Worksheets.First();
@@ -45,7 +46,7 @@ namespace TimeSheetManger
                         var insertPos = lastRow;
                         AddRow();
                         worksheet.Cells[insertPos, 1].Value = ++personalCount;
-                        worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal.Name, content.Post.Name);
+                        worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                         worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
                         continue;
                     }
@@ -67,7 +68,7 @@ namespace TimeSheetManger
                         AddRow();
                     #region Заполнение ПП, ФИО и Табельного номера
                     worksheet.Cells[rangeStart, 1].Value = personalCount;
-                    worksheet.Cells[rangeStart, 2].Value = string.Format("{0} - {1}", content.Personal.Name, content.Post.Name);
+                    worksheet.Cells[rangeStart, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                     worksheet.Cells[rangeStart, 3].Value = content.Personal.Table_Number;
                     #endregion
                     #region Заполнение дней                    
@@ -181,13 +182,18 @@ namespace TimeSheetManger
                         worksheet.Cells[rangeStart + i * 4 + 3, 23].Value = holydayHoursCount[i].BottomRow;
                     }
                     #endregion                    
-                }               
-                worksheet.Cells[lastRow + 1, 14].Value = timeSheet.Department.DepartmentManager.Name;
-                worksheet.Cells[lastRow + 3, 14].Value = MainForm.curUsr.Profile.Name;                
+                    if (OnProgress != null)
+                        OnProgress(null, new ProgressEventArgs(personalCount));
+                }
+                worksheet.Cells[lastRow + 1, 14].Value = timeSheet.Department.DepartmentManager._ShortName;
+                worksheet.Cells[lastRow + 3, 14].Value = MainForm.curUsr.Profile._ShortName;                
                 template.Value = "";
                 template.StyleName = "Normal";
+                if (OnSavingStart != null)
+                    OnSavingStart(null, EventArgs.Empty);
                 package.Save();
-                MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (OnExportEnd != null)
+                    OnExportEnd(null, EventArgs.Empty);
             }
         }
         static ExcelRange template
@@ -227,6 +233,15 @@ namespace TimeSheetManger
                     return TopRow + BottomRow;
                 }
             }
+        }
+    }
+    public class ProgressEventArgs : EventArgs
+    {
+        public int Value { get; private set; }
+        public ProgressEventArgs(int val)
+            : base()
+        {
+            Value = val;
         }
     }
 }

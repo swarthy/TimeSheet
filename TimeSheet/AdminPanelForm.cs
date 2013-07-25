@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using SwarthyComponents;
 
 namespace TimeSheetManger
 {
@@ -23,11 +24,15 @@ namespace TimeSheetManger
 
 
         DBList<Calendar_Name> AllCalNames;
-
+        StyleSettings weekEnd, holyDay, shortDay;
         public AdminPanelForm(MainForm mainform)
         {
             mainForm = mainform;
             InitializeComponent();
+            weekEnd = new StyleSettings(MainForm.weekEndColor, Color.Silver);
+            holyDay = new StyleSettings(MainForm.holyDayColor, Color.Silver);
+            shortDay = new StyleSettings(MainForm.shortDayColor, Color.Silver);
+            cHolydayCalendar.OnSelectedDateChanged += new EventHandler(cHolydayCalendar_DateChanged);
         }
         private void AdminPanelForm_Load(object sender, EventArgs e)
         {
@@ -41,25 +46,41 @@ namespace TimeSheetManger
             if (cbCatalogs.SelectedIndex == -1)
                 return;
             CatalogEditorForm form = new CatalogEditorForm(mainForm, tableNames[cbCatalogs.SelectedIndex], cbCatalogs.SelectedItem.ToString());
-            form.Show();
+            form.ShowDialog();
         }
         #endregion
         #region Праздничные, выходные, сокращенные дни
         void UpdateSpecialDaysFromServer(int year)
         {
             Enabled = false;
-            lastYear = year;
+            lastYear = year;            
             specialDays = SpecialDay.GetAllForYear(year);
-            calHolydays.BoldedDates = specialDays.Select<SpecialDay, DateTime>(sd => sd.Spec_Date).ToArray();
-            calHolydays.UpdateBoldedDates();
+            cHolydayCalendar.FormatedDate.Clear();
+            specialDays.ForEach(sd => {
+                switch (sd.State)
+                {
+                    case 1:
+                        cHolydayCalendar.FormatedDate.Add(sd.Spec_Date, weekEnd);
+                        break;
+                    case 2:
+                        cHolydayCalendar.FormatedDate.Add(sd.Spec_Date, holyDay);
+                        break;
+                    case 3:
+                        cHolydayCalendar.FormatedDate.Add(sd.Spec_Date, shortDay);
+                        break;
+                }                
+            });
+            //cHolydayCalendar.FormatedDate.Add(
+            //calHolydays.BoldedDates = specialDays.Select<SpecialDay, DateTime>(sd => sd.Spec_Date).ToArray();
+            //calHolydays.UpdateBoldedDates();
             Enabled = true;
         }
 
-        private void calHolydays_DateChanged(object sender, DateRangeEventArgs e)
+        private void cHolydayCalendar_DateChanged(object sender, EventArgs e)
         {
-            if (lastYear != e.Start.Year)
-                UpdateSpecialDaysFromServer(e.Start.Year);
-            currentSelected = specialDays.FindOrCreate(new { Spec_Date = e.Start });            
+            if (lastYear != cHolydayCalendar.SelectedDate.Year)
+                UpdateSpecialDaysFromServer(cHolydayCalendar.SelectedDate.Year);
+            currentSelected = specialDays.FindOrCreate(new { Spec_Date = cHolydayCalendar.SelectedDate });            
             programChanges = true;
             switch (currentSelected.State)
             {
@@ -82,55 +103,55 @@ namespace TimeSheetManger
         private void rbUsualDay_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked)
+            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?","Подтверждение изменений",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
             {
                 currentSelected.State = 0;
                 currentSelected.Delete();
-                calHolydays.RemoveBoldedDate(currentSelected.Spec_Date);
-                calHolydays.UpdateBoldedDates();
+                cHolydayCalendar.FormatedDate.Remove(currentSelected.Spec_Date);
+                cHolydayCalendar.Refresh();
             }                
         }
 
         private void rbWeekEnd_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked)
+            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?","Подтверждение изменений",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
             {
                 currentSelected.State = 1;
-                currentSelected.Save();                
-                calHolydays.AddBoldedDate(currentSelected.Spec_Date);
-                calHolydays.UpdateBoldedDates();
+                currentSelected.Save();
+                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = weekEnd;
+                cHolydayCalendar.Refresh();
             }
         }
 
         private void rbHolyDay_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked)
+            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?", "Подтверждение изменений", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 currentSelected.State = 2;
                 currentSelected.Save();
-                calHolydays.AddBoldedDate(currentSelected.Spec_Date);
-                calHolydays.UpdateBoldedDates();
+                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = holyDay;
+                cHolydayCalendar.Refresh();
             }
         }
 
         private void rbShortDay_CheckedChanged(object sender, EventArgs e)
         {
             RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked)
+            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?", "Подтверждение изменений", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
             {
                 currentSelected.State = 3;
                 currentSelected.Save();
-                calHolydays.AddBoldedDate(currentSelected.Spec_Date);
-                calHolydays.UpdateBoldedDates();
+                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = shortDay;
+                cHolydayCalendar.Refresh();
             }
         }
 
         private void btnGenerateWeekEnds_Click(object sender, EventArgs e)
         {
             if (MessageBox.Show("Вы уверены? Предыдущие настройки для Сб и Вс будут сброшены.\r\nЗадание новых настроек может занять некоторое время.", "Подтверждение сброса настроек", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-                GenerateWeekEnd(calHolydays.SelectionStart.Year, WeekEnd);
+                GenerateWeekEnd(cHolydayCalendar.SelectedDate.Year, WeekEnd);
             
         }
         void GenerateWeekEnd(int year, params DayOfWeek[] weekend)
@@ -138,7 +159,7 @@ namespace TimeSheetManger
             Enabled = false;
             pbGeneratingWeekEnds.Visible = true;
             pbGeneratingWeekEnds.Value = 0;
-            var exists = SpecialDay.FindAll<SpecialDay>("spec_date >= '{0}' and spec_date <= '{1}'", new DateTime(calHolydays.SelectionStart.Year, 1, 1).ToShortDateString(), new DateTime(calHolydays.SelectionStart.Year, 12, 31).ToShortDateString());
+            var exists = SpecialDay.FindAll<SpecialDay>("spec_date >= '{0}' and spec_date <= '{1}'", new DateTime(year, 1, 1).ToShortDateString(), new DateTime(year, 12, 31).ToShortDateString());
             int daysInYear = DateTime.IsLeapYear(year) ? 366 : 365;
             var start = new DateTime(year, 1, 1);
             for(int i=0;i<daysInYear;i++)
@@ -306,6 +327,11 @@ namespace TimeSheetManger
         private void btnHideMonth_Click(object sender, EventArgs e)
         {
             gbAddMonth.Hide();
+        }
+
+        private void dtpHolydayMonthPicker_ValueChanged(object sender, EventArgs e)
+        {
+            cHolydayCalendar.SetDate(dtpHolydayMonthPicker.Value.Month, dtpHolydayMonthPicker.Value.Year);
         }
     }
 }

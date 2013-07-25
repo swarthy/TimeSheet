@@ -12,7 +12,7 @@ namespace TimeSheetManger
     public static class DB
     {
         private static FbConnection connection = GetNewConnection;
-        public static string ConnectionString = "";
+        public static string ConnectionString = "";        
         internal static FbConnection Connection
         {
             get
@@ -181,7 +181,8 @@ namespace TimeSheetManger
         public Type Type;
     }
     public class Domain
-    {        
+    {
+        public static EventHandler OnFindBegin = null, OnFindEnd = null;
         /// <summary>
         /// Словарь, содержащий пары [Поле|Значение]
         /// </summary>
@@ -470,6 +471,8 @@ namespace TimeSheetManger
         /// <returns>Список объектов</returns>
         private static DBList<T> F_All<T>(string where_str = "", bool single = false, Type customType = null) where T : Domain, new()
         {
+            if (OnFindBegin != null)
+                OnFindBegin(null, EventArgs.Empty);
             DBList<T> result = new DBList<T>();
             Type type = customType == null ? typeof(T) : customType;
             string tableName = GetTableName(type);
@@ -494,10 +497,14 @@ namespace TimeSheetManger
             {
                 MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            if (OnFindEnd != null)
+                OnFindEnd(null, EventArgs.Empty);
             return result;
         }
         private static DBList<T> F_All<T>(object restrictions, bool single = false, Type customType = null, bool Distinct = false) where T : Domain, new()
         {
+            if (OnFindBegin != null)
+                OnFindBegin(null, EventArgs.Empty);
             var rest = Helper.AnonymousObjectToDictionary(restrictions);
             DBList<T> result = new DBList<T>();
             Type type = customType == null ? typeof(T) : customType;
@@ -528,6 +535,8 @@ namespace TimeSheetManger
             {
                 MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+            if (OnFindEnd != null)
+                OnFindEnd(null, EventArgs.Empty);
             return result;
         }
         /// <summary>

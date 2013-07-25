@@ -13,7 +13,7 @@ namespace TimeSheetManger
             OleDbConnection conn = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;DataSource=c:\\dbf\\;Extended Properties=dBASE IV;User ID=Admin;Password=;");
             conn.Open();
             OleDbCommand create = conn.CreateCommand();
-            create.CommandText = "CREATE TABLE Clients.dbf (Id numeric (8), Name char(254), Feature numeric(1), Address)law char(254));";
+            create.CommandText = "CREATE TABLE Clients.dbf (Id numeric (8), Name char(254), Feature numeric(1), Address_law char(254));";
             create.ExecuteNonQuery();
         }
     }

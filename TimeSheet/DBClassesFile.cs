@@ -269,7 +269,7 @@ namespace TimeSheetManger
     public class Personal : Domain
     {
         new public static string tableName = "PERSONAL";
-        new public static string OrderBy = "Name";
+        new public static string OrderBy = "LastName";
         new public static List<string> FieldNames = new List<string>();
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
             {"Post", new Link("POST_ID",typeof(Post)) },
@@ -278,18 +278,56 @@ namespace TimeSheetManger
         };
         public override string ToString()
         {
-            return Name;
+            return _ShortName;
         }
         #region Properties
-        public string Name
+        public string _ShortName
         {
             get
             {
-                return this["name"] == null ? "" : this["name"].ToString();
+                if (FirstName.Length == 0 || MiddleName.Length==0)
+                    return LastName;
+                return string.Format("{0} {1}.{2}.", LastName, FirstName[0], MiddleName[0]);
+            }
+        }
+        public string _FullName
+        {
+            get
+            {
+                return string.Format("{0} {1} {2}",LastName, FirstName, MiddleName);
+            }
+        }
+        public string FirstName
+        {
+            get
+            {
+                return this["FirstName"] == null ? "" : this["FirstName"].ToString();
             }
             set
             {
-                this["name"] = value;
+                this["FirstName"] = value;
+            }
+        }
+        public string MiddleName
+        {
+            get
+            {
+                return this["MiddleName"] == null ? "" : this["MiddleName"].ToString();
+            }
+            set
+            {
+                this["MiddleName"] = value;
+            }
+        }
+        public string LastName
+        {
+            get
+            {
+                return this["LastName"] == null ? "" : this["LastName"].ToString();
+            }
+            set
+            {
+                this["LastName"] = value;
             }
         }
         public int Table_Number
@@ -341,10 +379,12 @@ namespace TimeSheetManger
             : base(typeof(Personal))
         {
         }
-        public Personal(Department department, string name, Post post)
+        public Personal(Department department, string lastName, string firstName, string middleName, Post post)
             : base(typeof(Personal))
         {
-            Name = name;
+            FirstName = firstName;
+            MiddleName = middleName;
+            LastName = lastName;
             Department = department;
             Post = post;
         }
@@ -650,6 +690,7 @@ namespace TimeSheetManger
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
+        new public static string OrderBy = "TS_YEAR";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("TimeSheet_ID",typeof(TimeSheet_Content))}

@@ -33,15 +33,11 @@
             this.btnEditCatalog = new System.Windows.Forms.Button();
             this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.gbAddName = new System.Windows.Forms.GroupBox();
             this.gbAddMonth = new System.Windows.Forms.GroupBox();
             this.btnHideMonth = new System.Windows.Forms.Button();
             this.dtpPCMonth = new System.Windows.Forms.DateTimePicker();
-            this.gbAddYear = new System.Windows.Forms.GroupBox();
-            this.btnHideYear = new System.Windows.Forms.Button();
-            this.dtpPCYear = new System.Windows.Forms.DateTimePicker();
-            this.btnAddNewPCYear = new System.Windows.Forms.Button();
             this.btnAddNewPCMonth = new System.Windows.Forms.Button();
+            this.gbAddName = new System.Windows.Forms.GroupBox();
             this.btnHideName = new System.Windows.Forms.Button();
             this.btnAddNewPCName = new System.Windows.Forms.Button();
             this.tbNewPCName = new System.Windows.Forms.TextBox();
@@ -51,6 +47,10 @@
             this.tbDays = new System.Windows.Forms.TextBox();
             this.lbDays = new System.Windows.Forms.Label();
             this.btnSave = new System.Windows.Forms.Button();
+            this.gbAddYear = new System.Windows.Forms.GroupBox();
+            this.btnHideYear = new System.Windows.Forms.Button();
+            this.dtpPCYear = new System.Windows.Forms.DateTimePicker();
+            this.btnAddNewPCYear = new System.Windows.Forms.Button();
             this.btnAddPCMonth = new System.Windows.Forms.Button();
             this.btnAddPCYear = new System.Windows.Forms.Button();
             this.btnAddPCalName = new System.Windows.Forms.Button();
@@ -61,20 +61,21 @@
             this.cbPYear = new System.Windows.Forms.ComboBox();
             this.cbPCalendar = new System.Windows.Forms.ComboBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
+            this.cHolydayCalendar = new SwarthyComponents.CalendarView();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
             this.rbShortDay = new System.Windows.Forms.RadioButton();
             this.rbHolyDay = new System.Windows.Forms.RadioButton();
             this.rbWeekEnd = new System.Windows.Forms.RadioButton();
             this.rbUsualDay = new System.Windows.Forms.RadioButton();
-            this.calHolydays = new System.Windows.Forms.MonthCalendar();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
-            this.gbAddName.SuspendLayout();
             this.gbAddMonth.SuspendLayout();
-            this.gbAddYear.SuspendLayout();
+            this.gbAddName.SuspendLayout();
             this.gbValues.SuspendLayout();
+            this.gbAddYear.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,7 +100,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(461, 248);
+            this.tabPage1.Size = new System.Drawing.Size(461, 258);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -107,7 +108,7 @@
             // btnEditCatalog
             // 
             this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditCatalog.Location = new System.Drawing.Point(290, 6);
+            this.btnEditCatalog.Location = new System.Drawing.Point(357, 6);
             this.btnEditCatalog.Name = "btnEditCatalog";
             this.btnEditCatalog.Size = new System.Drawing.Size(98, 23);
             this.btnEditCatalog.TabIndex = 1;
@@ -130,7 +131,7 @@
             "ЛПУ"});
             this.cbCatalogs.Location = new System.Drawing.Point(6, 6);
             this.cbCatalogs.Name = "cbCatalogs";
-            this.cbCatalogs.Size = new System.Drawing.Size(278, 21);
+            this.cbCatalogs.Size = new System.Drawing.Size(345, 21);
             this.cbCatalogs.TabIndex = 0;
             // 
             // tabPage2
@@ -154,19 +155,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Производственные календари";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // gbAddName
-            // 
-            this.gbAddName.Controls.Add(this.btnHideName);
-            this.gbAddName.Controls.Add(this.btnAddNewPCName);
-            this.gbAddName.Controls.Add(this.tbNewPCName);
-            this.gbAddName.Location = new System.Drawing.Point(173, 89);
-            this.gbAddName.Name = "gbAddName";
-            this.gbAddName.Size = new System.Drawing.Size(285, 50);
-            this.gbAddName.TabIndex = 6;
-            this.gbAddName.TabStop = false;
-            this.gbAddName.Text = "Добавление названия календаря";
-            this.gbAddName.Visible = false;
             // 
             // gbAddMonth
             // 
@@ -201,49 +189,6 @@
             this.dtpPCMonth.Size = new System.Drawing.Size(76, 20);
             this.dtpPCMonth.TabIndex = 5;
             // 
-            // gbAddYear
-            // 
-            this.gbAddYear.Controls.Add(this.btnHideYear);
-            this.gbAddYear.Controls.Add(this.dtpPCYear);
-            this.gbAddYear.Controls.Add(this.btnAddNewPCYear);
-            this.gbAddYear.Location = new System.Drawing.Point(173, 145);
-            this.gbAddYear.Name = "gbAddYear";
-            this.gbAddYear.Size = new System.Drawing.Size(166, 50);
-            this.gbAddYear.TabIndex = 6;
-            this.gbAddYear.TabStop = false;
-            this.gbAddYear.Text = "Добавление года";
-            this.gbAddYear.Visible = false;
-            // 
-            // btnHideYear
-            // 
-            this.btnHideYear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnHideYear.Location = new System.Drawing.Point(138, 16);
-            this.btnHideYear.Name = "btnHideYear";
-            this.btnHideYear.Size = new System.Drawing.Size(22, 23);
-            this.btnHideYear.TabIndex = 4;
-            this.btnHideYear.Text = "X";
-            this.btnHideYear.UseVisualStyleBackColor = true;
-            this.btnHideYear.Click += new System.EventHandler(this.btnHideYear_Click);
-            // 
-            // dtpPCYear
-            // 
-            this.dtpPCYear.CustomFormat = "yyyy";
-            this.dtpPCYear.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpPCYear.Location = new System.Drawing.Point(6, 19);
-            this.dtpPCYear.Name = "dtpPCYear";
-            this.dtpPCYear.Size = new System.Drawing.Size(76, 20);
-            this.dtpPCYear.TabIndex = 5;
-            // 
-            // btnAddNewPCYear
-            // 
-            this.btnAddNewPCYear.Location = new System.Drawing.Point(88, 16);
-            this.btnAddNewPCYear.Name = "btnAddNewPCYear";
-            this.btnAddNewPCYear.Size = new System.Drawing.Size(47, 23);
-            this.btnAddNewPCYear.TabIndex = 4;
-            this.btnAddNewPCYear.Text = "Ок";
-            this.btnAddNewPCYear.UseVisualStyleBackColor = true;
-            this.btnAddNewPCYear.Click += new System.EventHandler(this.btnAddNewPCYear_Click);
-            // 
             // btnAddNewPCMonth
             // 
             this.btnAddNewPCMonth.Location = new System.Drawing.Point(88, 16);
@@ -253,6 +198,19 @@
             this.btnAddNewPCMonth.Text = "Ок";
             this.btnAddNewPCMonth.UseVisualStyleBackColor = true;
             this.btnAddNewPCMonth.Click += new System.EventHandler(this.btnAddNewPCMonth_Click);
+            // 
+            // gbAddName
+            // 
+            this.gbAddName.Controls.Add(this.btnHideName);
+            this.gbAddName.Controls.Add(this.btnAddNewPCName);
+            this.gbAddName.Controls.Add(this.tbNewPCName);
+            this.gbAddName.Location = new System.Drawing.Point(173, 89);
+            this.gbAddName.Name = "gbAddName";
+            this.gbAddName.Size = new System.Drawing.Size(285, 50);
+            this.gbAddName.TabIndex = 6;
+            this.gbAddName.TabStop = false;
+            this.gbAddName.Text = "Добавление названия календаря";
+            this.gbAddName.Visible = false;
             // 
             // btnHideName
             // 
@@ -345,6 +303,49 @@
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = true;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
+            // 
+            // gbAddYear
+            // 
+            this.gbAddYear.Controls.Add(this.btnHideYear);
+            this.gbAddYear.Controls.Add(this.dtpPCYear);
+            this.gbAddYear.Controls.Add(this.btnAddNewPCYear);
+            this.gbAddYear.Location = new System.Drawing.Point(173, 145);
+            this.gbAddYear.Name = "gbAddYear";
+            this.gbAddYear.Size = new System.Drawing.Size(166, 50);
+            this.gbAddYear.TabIndex = 6;
+            this.gbAddYear.TabStop = false;
+            this.gbAddYear.Text = "Добавление года";
+            this.gbAddYear.Visible = false;
+            // 
+            // btnHideYear
+            // 
+            this.btnHideYear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnHideYear.Location = new System.Drawing.Point(138, 16);
+            this.btnHideYear.Name = "btnHideYear";
+            this.btnHideYear.Size = new System.Drawing.Size(22, 23);
+            this.btnHideYear.TabIndex = 4;
+            this.btnHideYear.Text = "X";
+            this.btnHideYear.UseVisualStyleBackColor = true;
+            this.btnHideYear.Click += new System.EventHandler(this.btnHideYear_Click);
+            // 
+            // dtpPCYear
+            // 
+            this.dtpPCYear.CustomFormat = "yyyy";
+            this.dtpPCYear.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpPCYear.Location = new System.Drawing.Point(6, 19);
+            this.dtpPCYear.Name = "dtpPCYear";
+            this.dtpPCYear.Size = new System.Drawing.Size(76, 20);
+            this.dtpPCYear.TabIndex = 5;
+            // 
+            // btnAddNewPCYear
+            // 
+            this.btnAddNewPCYear.Location = new System.Drawing.Point(88, 16);
+            this.btnAddNewPCYear.Name = "btnAddNewPCYear";
+            this.btnAddNewPCYear.Size = new System.Drawing.Size(47, 23);
+            this.btnAddNewPCYear.TabIndex = 4;
+            this.btnAddNewPCYear.Text = "Ок";
+            this.btnAddNewPCYear.UseVisualStyleBackColor = true;
+            this.btnAddNewPCYear.Click += new System.EventHandler(this.btnAddNewPCYear_Click);
             // 
             // btnAddPCMonth
             // 
@@ -444,36 +445,64 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.dtpHolydayMonthPicker);
+            this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Controls.Add(this.pbGeneratingWeekEnds);
             this.tabPage3.Controls.Add(this.btnGenerateWeekEnds);
             this.tabPage3.Controls.Add(this.rbShortDay);
             this.tabPage3.Controls.Add(this.rbHolyDay);
             this.tabPage3.Controls.Add(this.rbWeekEnd);
             this.tabPage3.Controls.Add(this.rbUsualDay);
-            this.tabPage3.Controls.Add(this.calHolydays);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(461, 248);
+            this.tabPage3.Size = new System.Drawing.Size(461, 258);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Праздники/Выходные";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dtpHolydayMonthPicker
+            // 
+            this.dtpHolydayMonthPicker.CustomFormat = "MMMM yyyy";
+            this.dtpHolydayMonthPicker.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+            this.dtpHolydayMonthPicker.Location = new System.Drawing.Point(9, 9);
+            this.dtpHolydayMonthPicker.Name = "dtpHolydayMonthPicker";
+            this.dtpHolydayMonthPicker.Size = new System.Drawing.Size(154, 20);
+            this.dtpHolydayMonthPicker.TabIndex = 5;
+            this.dtpHolydayMonthPicker.ValueChanged += new System.EventHandler(this.dtpHolydayMonthPicker_ValueChanged);
+            // 
+            // cHolydayCalendar
+            // 
+            this.cHolydayCalendar.DayPadding = 1;
+            this.cHolydayCalendar.DaySize = new System.Drawing.Size(20, 20);
+            this.cHolydayCalendar.Location = new System.Drawing.Point(9, 32);
+            this.cHolydayCalendar.MarginDays = new System.Drawing.Point(0, 20);
+            this.cHolydayCalendar.MarginDaysOfWeek = new System.Drawing.Point(0, 0);
+            this.cHolydayCalendar.MarginTitle = new System.Drawing.Point(0, 0);
+            this.cHolydayCalendar.Month = 7;
+            this.cHolydayCalendar.Name = "cHolydayCalendar";
+            this.cHolydayCalendar.OnSelectedDateChanged = null;
+            this.cHolydayCalendar.SelectedDate = new System.DateTime(((long)(0)));
+            this.cHolydayCalendar.ShowDayOfWeek = true;
+            this.cHolydayCalendar.ShowTitle = false;
+            this.cHolydayCalendar.Size = new System.Drawing.Size(154, 133);
+            this.cHolydayCalendar.TabIndex = 4;
+            this.cHolydayCalendar.Year = 2013;
             // 
             // pbGeneratingWeekEnds
             // 
             this.pbGeneratingWeekEnds.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pbGeneratingWeekEnds.Location = new System.Drawing.Point(9, 224);
+            this.pbGeneratingWeekEnds.Location = new System.Drawing.Point(3, 237);
             this.pbGeneratingWeekEnds.MarqueeAnimationSpeed = 10;
             this.pbGeneratingWeekEnds.Maximum = 366;
             this.pbGeneratingWeekEnds.Name = "pbGeneratingWeekEnds";
-            this.pbGeneratingWeekEnds.Size = new System.Drawing.Size(366, 15);
+            this.pbGeneratingWeekEnds.Size = new System.Drawing.Size(455, 18);
             this.pbGeneratingWeekEnds.TabIndex = 3;
             this.pbGeneratingWeekEnds.Visible = false;
             // 
             // btnGenerateWeekEnds
             // 
-            this.btnGenerateWeekEnds.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGenerateWeekEnds.Location = new System.Drawing.Point(207, 177);
+            this.btnGenerateWeekEnds.Location = new System.Drawing.Point(182, 124);
             this.btnGenerateWeekEnds.Name = "btnGenerateWeekEnds";
             this.btnGenerateWeekEnds.Size = new System.Drawing.Size(168, 41);
             this.btnGenerateWeekEnds.TabIndex = 2;
@@ -484,7 +513,7 @@
             // rbShortDay
             // 
             this.rbShortDay.AutoSize = true;
-            this.rbShortDay.Location = new System.Drawing.Point(207, 78);
+            this.rbShortDay.Location = new System.Drawing.Point(182, 78);
             this.rbShortDay.Name = "rbShortDay";
             this.rbShortDay.Size = new System.Drawing.Size(168, 17);
             this.rbShortDay.TabIndex = 1;
@@ -495,7 +524,7 @@
             // rbHolyDay
             // 
             this.rbHolyDay.AutoSize = true;
-            this.rbHolyDay.Location = new System.Drawing.Point(207, 55);
+            this.rbHolyDay.Location = new System.Drawing.Point(182, 55);
             this.rbHolyDay.Name = "rbHolyDay";
             this.rbHolyDay.Size = new System.Drawing.Size(75, 17);
             this.rbHolyDay.TabIndex = 1;
@@ -506,7 +535,7 @@
             // rbWeekEnd
             // 
             this.rbWeekEnd.AutoSize = true;
-            this.rbWeekEnd.Location = new System.Drawing.Point(207, 32);
+            this.rbWeekEnd.Location = new System.Drawing.Point(182, 32);
             this.rbWeekEnd.Name = "rbWeekEnd";
             this.rbWeekEnd.Size = new System.Drawing.Size(75, 17);
             this.rbWeekEnd.TabIndex = 1;
@@ -518,7 +547,7 @@
             // 
             this.rbUsualDay.AutoSize = true;
             this.rbUsualDay.Checked = true;
-            this.rbUsualDay.Location = new System.Drawing.Point(207, 9);
+            this.rbUsualDay.Location = new System.Drawing.Point(182, 9);
             this.rbUsualDay.Name = "rbUsualDay";
             this.rbUsualDay.Size = new System.Drawing.Size(99, 17);
             this.rbUsualDay.TabIndex = 1;
@@ -527,21 +556,15 @@
             this.rbUsualDay.UseVisualStyleBackColor = true;
             this.rbUsualDay.CheckedChanged += new System.EventHandler(this.rbUsualDay_CheckedChanged);
             // 
-            // calHolydays
-            // 
-            this.calHolydays.Location = new System.Drawing.Point(9, 9);
-            this.calHolydays.MaxSelectionCount = 1;
-            this.calHolydays.Name = "calHolydays";
-            this.calHolydays.ShowWeekNumbers = true;
-            this.calHolydays.TabIndex = 0;
-            this.calHolydays.DateChanged += new System.Windows.Forms.DateRangeEventHandler(this.calHolydays_DateChanged);
-            // 
             // AdminPanelForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(493, 308);
             this.Controls.Add(this.tbContent);
+            this.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "AdminPanelForm";
             this.Text = "Панель администратора";
             this.Load += new System.EventHandler(this.AdminPanelForm_Load);
@@ -549,12 +572,12 @@
             this.tabPage1.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.gbAddMonth.ResumeLayout(false);
             this.gbAddName.ResumeLayout(false);
             this.gbAddName.PerformLayout();
-            this.gbAddMonth.ResumeLayout(false);
-            this.gbAddYear.ResumeLayout(false);
             this.gbValues.ResumeLayout(false);
             this.gbValues.PerformLayout();
+            this.gbAddYear.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
@@ -569,7 +592,6 @@
         private System.Windows.Forms.Button btnEditCatalog;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.MonthCalendar calHolydays;
         private System.Windows.Forms.RadioButton rbShortDay;
         private System.Windows.Forms.RadioButton rbHolyDay;
         private System.Windows.Forms.RadioButton rbWeekEnd;
@@ -603,5 +625,7 @@
         private System.Windows.Forms.Button btnHideMonth;
         private System.Windows.Forms.Button btnHideYear;
         private System.Windows.Forms.Button btnHideName;
+        private SwarthyComponents.CalendarView cHolydayCalendar;
+        private System.Windows.Forms.DateTimePicker dtpHolydayMonthPicker;
     }
 }

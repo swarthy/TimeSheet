@@ -30,7 +30,7 @@ namespace TimeSheetManger
             if (per_sel.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 TSContent.Personal = per_sel.SelectedPersonal;
-                tbName.Text = per_sel.SelectedPersonal.Name;
+                tbName.Text = per_sel.SelectedPersonal._ShortName;
                 cbPost.SelectedItem = per_sel.SelectedPersonal.Post;                
             }
         }
@@ -72,8 +72,8 @@ namespace TimeSheetManger
             Close();
         }
         void DrawPRow(TimeSheet_Content content)
-        {            
-            tbName.Text = content.Personal != null ? content.Personal.Name : "";
+        {
+            tbName.Text = content.Personal != null ? content.Personal._ShortName : "";
             tbRate.Text = content.Rate.ToString();
             cbPost.SelectedItem = content.Post;
             cbCalendar.SelectedItem = content.Calendar;

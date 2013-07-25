@@ -15,7 +15,7 @@ namespace TimeSheetManger
         MainForm mainForm;
         DataTable tbl;
         FbDataAdapter adapter;
-        //FbTransaction transaction;
+        
         public CatalogEditorForm(MainForm mainform, string table, string caption="")
         {
             mainForm = mainform;            

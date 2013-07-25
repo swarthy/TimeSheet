@@ -32,13 +32,14 @@
             this.lbPersonal = new System.Windows.Forms.ListBox();
             this.lbDepartmentName = new System.Windows.Forms.Label();
             this.lbDepartmentLabel = new System.Windows.Forms.Label();
+            this.btnCancel = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnSelectPersonal
             // 
             this.btnSelectPersonal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSelectPersonal.Enabled = false;
-            this.btnSelectPersonal.Location = new System.Drawing.Point(496, 334);
+            this.btnSelectPersonal.Location = new System.Drawing.Point(415, 334);
             this.btnSelectPersonal.Name = "btnSelectPersonal";
             this.btnSelectPersonal.Size = new System.Drawing.Size(85, 23);
             this.btnSelectPersonal.TabIndex = 9;
@@ -77,11 +78,25 @@
             this.lbDepartmentLabel.TabIndex = 5;
             this.lbDepartmentLabel.Text = "Отделение:";
             // 
+            // btnCancel
+            // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(506, 334);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 23);
+            this.btnCancel.TabIndex = 10;
+            this.btnCancel.Text = "Отмена";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            // 
             // AddUserToFavoriteForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(593, 369);
+            this.ControlBox = false;
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSelectPersonal);
             this.Controls.Add(this.lbPersonal);
             this.Controls.Add(this.lbDepartmentName);
@@ -101,5 +116,6 @@
         private System.Windows.Forms.ListBox lbPersonal;
         private System.Windows.Forms.Label lbDepartmentName;
         private System.Windows.Forms.Label lbDepartmentLabel;
+        private System.Windows.Forms.Button btnCancel;
     }
 }

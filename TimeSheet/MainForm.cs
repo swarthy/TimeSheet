@@ -10,6 +10,8 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using TimeSheetManger;
+using System.Diagnostics;
+using System.Threading;
 
 namespace TimeSheetManger
 {
@@ -41,16 +43,46 @@ namespace TimeSheetManger
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
 
+        public string StatusLeft
+        {
+            get
+            {
+                return tsslStatusLeft.Text;
+            }
+            set
+            {
+                tsslStatusLeft.Text = value;
+            }
+        }
+        public string StatusRight
+        {
+            get
+            {
+                return tsslStatusRight.Text;
+            }
+            set
+            {
+                tsslStatusRight.Text = value;
+            }
+        }
+
         FlagsForm flagForm;        
 
         public bool Saving = false;
 
         public MainForm()
         {            
-            InitializeComponent();
+            InitializeComponent();            
             //DBFmanager.Test();
+            ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
+            ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
+            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; })); };
+
+            Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
+            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
+
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
-            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:c:/FBDB.FDB;Charset=NONE;", Helper.Get("server", "ip") ?? "127.0.0.1", Helper.Get("server", "file") ?? "c:/DBFB.fdb");
+            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             #region DB Initialization
             User.Initialize<User>();
             Personal.Initialize<Personal>();
@@ -75,6 +107,14 @@ namespace TimeSheetManger
                     c.Hide();            
             p.Show();
         }
+        public void Ready()
+        {
+            StatusLeft = "Готово";
+        }
+        public void ReadyR()
+        {
+            StatusRight = "";
+        }
         void changeState(AppState newstate)
         {
             switch (newstate)
@@ -83,11 +123,15 @@ namespace TimeSheetManger
                     HideAllShowThis(pLPUSelection);
                     break;
                 case AppState.Auth:
+                    lbAuthSelectedLPU.Text = currentLPU.Name;
                     tbAuthLogin.Text = Helper.Get("user", "lastLogin").ToString();
                     HideAllShowThis(pAuth);
                     break;
                 case AppState.Workspace:                    
                     HideAllShowThis(pWorkspace);
+                    btnAdminPanel.Show();
+                    pTimeSheetEditor.Hide();
+                    lbCurrentTimeSheetName.Text = "";
                     currentUser.TimeSheets.Sort((t1, t2) =>
                     {
                         var r1 = t1.Department.Name.CompareTo(t2.Department.Name);
@@ -103,9 +147,10 @@ namespace TimeSheetManger
                 case AppState.EditTimeSheet:                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);
+                    btnAdminPanel.Hide();
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
-                    tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager.Name;
+                    tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager._FullName;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     DrawTimeSheetContent();
                     pTimeSheetEditor.Show();
@@ -146,6 +191,7 @@ namespace TimeSheetManger
             currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
             changeState(AppState.Workspace);//для сортировки списка табелей
             changeState(AppState.EditTimeSheet);
+            btnAdminPanel_Click(this, EventArgs.Empty);
             #endif
         }
 
@@ -178,9 +224,8 @@ namespace TimeSheetManger
 
         private void btnTimeSheetList_Click(object sender, EventArgs e)
         {
-            TimeSheets tsForm = new TimeSheets(this);
-            var temp = tsForm.ShowDialog();
-            if (temp == System.Windows.Forms.DialogResult.OK)            
+            TimeSheets tsForm = new TimeSheets(this);            
+            if (tsForm.ShowDialog() == System.Windows.Forms.DialogResult.OK)            
                 changeState(AppState.EditTimeSheet);            
         }
 
@@ -191,7 +236,9 @@ namespace TimeSheetManger
             var fio = dgTimeSheet.Columns.Add("cFIO", "ФИО");
             dgTimeSheet.Columns[fio].Frozen = true;
             dgTimeSheet.Columns[fio].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cTimeSheetNumber", "Т/н")].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            var tn = dgTimeSheet.Columns.Add("cTimeSheetNumber", "Т/н");
+            dgTimeSheet.Columns[tn].Frozen = true;
+            dgTimeSheet.Columns[tn].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             dgTimeSheet.Columns.Add("cPost", "Должность");
             dgTimeSheet.Columns[dgTimeSheet.Columns.Add("cRate", "Ставка")].AutoSizeMode = DataGridViewAutoSizeColumnMode.ColumnHeader;
             var date = ts._GetDate;
@@ -215,6 +262,7 @@ namespace TimeSheetManger
                     }
                 }                
                 dgTimeSheet.Columns[ind].MinimumWidth = 55;
+                dgTimeSheet.Columns[ind].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
                 dgTimeSheet.Columns[ind].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
                 dgTimeSheet.Columns[ind].Tag = date;
                 date = date.AddDays(1);
@@ -267,7 +315,7 @@ namespace TimeSheetManger
         private void btnAdminPanel_Click(object sender, EventArgs e)
         {
             AdminPanelForm admin = new AdminPanelForm(this);
-            admin.Show();
+            admin.ShowDialog();
         }
         
         private void dgTimeSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -409,6 +457,8 @@ namespace TimeSheetManger
         {
             if (dgTimeSheet.SelectedCells.Count == 0 || Saving)
                 return;
+            if (MessageBox.Show(string.Format("Вы действительно хотите удалить выделенн{0} запис{1}?", dgTimeSheet.SelectedCells.Count > 1 ? "ые" : "ую", dgTimeSheet.SelectedCells.Count > 1 ? "и" : "ь"), "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                return;
             Enabled = false;
             var firstCell = dgTimeSheet.SelectedCells[0];
             int rowStart, rowCount;
@@ -481,7 +531,11 @@ namespace TimeSheetManger
             dlgSaveFile.FileName = string.Format("{0} - {1}", currentTimeSheet.Department.Name, currentTimeSheet._GetDate.ToString("MMMM yyyy"));
             if (currentTimeSheet.Content.Count > 0 && dlgSaveFile.ShowDialog()==System.Windows.Forms.DialogResult.OK)
             {
-                var tempPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.xlsx";
+                StatusLeft = "Заполнение шаблона...";
+                tspbProgress.Value = 0;
+                tspbProgress.Maximum = currentTimeSheet.Content.Count;
+                tspbProgress.Visible = true;
+                var tempPath = System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx";
                 if (!File.Exists(tempPath))
                 {
                     MessageBox.Show("Файл шаблона temp.xlsx не найден!", "Ошибка экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -490,7 +544,9 @@ namespace TimeSheetManger
                 Enabled = false;
                 try
                 {
-                    ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\temp.xlsx", dlgSaveFile.FileName);
+                    Thread exprt = new Thread(a => ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx", dlgSaveFile.FileName));
+                    exprt.Start();
+                    //MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {
@@ -499,10 +555,16 @@ namespace TimeSheetManger
                 finally
                 {
                     Enabled = true;
-                }
-                Enabled = true;
+                }                
             }
-        }        
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (MessageBox.Show("Завершить работу с программой?", "Подтверждение выхода", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+                e.Cancel = true;
+        }
+
     }
     public enum AppState
     {
