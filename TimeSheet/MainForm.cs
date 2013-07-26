@@ -127,7 +127,10 @@ namespace TimeSheetManger
         {
             switch (newstate)
             {
-                case AppState.LPUselect:
+                case AppState.LPUselect:                    
+                    var lastOpened = Convert.ToInt32(Helper.Get("LPU", "lastOpened"));
+                    if (lastOpened != 0)
+                        cbLPUList.SelectedItem = LPUlist.Find(l => l.ID == lastOpened);
                     HideAllShowThis(pLPUSelection);
                     break;
                 case AppState.Auth:
@@ -211,6 +214,7 @@ namespace TimeSheetManger
             if (cbLPUList.SelectedIndex != -1)
             {
                 currentLPU = (LPU)cbLPUList.SelectedItem;
+                Helper.Set("LPU", "lastOpened", currentLPU.ID);
                 changeState(AppState.Auth);
             }
         }

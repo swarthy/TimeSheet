@@ -13,6 +13,7 @@ namespace TimeSheetManger
         [STAThread]
         static void Main()
         {
+            AppDomain.CurrentDomain.AppendPrivatePath("lib");            
             if (System.Diagnostics.Process.GetProcessesByName(System.Diagnostics.Process.GetCurrentProcess().ProcessName).Length > 1)
             {
                 MessageBox.Show("Приложение уже запущено", "Ограничение доступа", MessageBoxButtons.OK, MessageBoxIcon.Information);
