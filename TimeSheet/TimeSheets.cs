@@ -21,37 +21,32 @@ namespace TimeSheetManger
 
         private void TimeSheets_Load(object sender, EventArgs e)
         {
-            lbTimeSheets.Items.Clear();
+            if (!mainForm.currentUser._IS_ADMIN)
+                clmUser.Visible = false;
+            grid.Rows.Clear();
+            
             if (mainForm.currentUser._IS_ADMIN)
-                TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
+                TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
             else
-                mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => lbTimeSheets.Items.Add(ts.Department.Name + " - " + ts._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture)));
+                mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
         }
 
-        private void lbTimeSheets_SelectedIndexChanged(object sender, EventArgs e)
+        void OpenTimeSheet(int ID)
         {
-            btnOpen.Enabled = btnDelete.Enabled = lbTimeSheets.SelectedIndex != -1;            
-        }
-
-        private void lbTimeSheets_DoubleClick(object sender, EventArgs e)
-        {
-            OpenTimeSheet(lbTimeSheets.SelectedIndex);
-        }
-        void OpenTimeSheet(int index)
-        {
-            if (index != -1)
+            if (ID > 0)
             {
-                mainForm.currentTimeSheet = mainForm.currentUser.TimeSheets[index];
+                var ts = mainForm.currentUser.TimeSheets.Find(t => t.ID == ID);
+                if (ts == null)
+                {
+                    MessageBox.Show("Вы не создатель этого табеля. Вы не можете его открыть.", "Ошибка открытия", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+                mainForm.currentTimeSheet = ts;
                 this.DialogResult = DialogResult.OK;
                 Close();
             }
         }
-
-        private void btnOpen_Click(object sender, EventArgs e)
-        {
-            lbTimeSheets_DoubleClick(this, EventArgs.Empty);
-        }
-
+        
         private void btnNew_Click(object sender, EventArgs e)
         {
             var createForm = new AddTimeSheetInstanceForm(mainForm);
@@ -60,21 +55,30 @@ namespace TimeSheetManger
             {
                 mainForm.currentUser.TimeSheets.Add(createForm.TimeSheetIns);
                 createForm.TimeSheetIns.Save();
-                lbTimeSheets.Items.Add(createForm.TimeSheetIns.Department.Name + " - " + createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture));
+                grid.Rows.Add(createForm.TimeSheetIns.Department.Name, createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy"), createForm.TimeSheetIns.User.Profile, createForm.TimeSheetIns.ID);
             }
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (lbTimeSheets.SelectedIndex != -1)
+            if (grid.SelectedRows.Count == 1 && MessageBox.Show("Вы действительно хотите удалить табель?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
             {
-                if (MessageBox.Show("Вы действительно хотите удалить табель?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
-                {
-                    var ind = lbTimeSheets.SelectedIndex;
-                    lbTimeSheets.Items.RemoveAt(ind);
-                    mainForm.currentUser.TimeSheets[ind].Delete();
-                }
-            }
+                var id = Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value);
+                mainForm.currentUser.TimeSheets.Find(t=>t.ID==id).Delete();
+            }            
         }
+
+        private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            OpenTimeSheet(Convert.ToInt32(grid.Rows[e.RowIndex].Cells["clmID"].Value));
+        }
+
+        private void btnOpen_Click(object sender, EventArgs e)
+        {
+            if (grid.SelectedRows.Count != 1)
+                return;
+            OpenTimeSheet(Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value));
+        }
+
     }
 }

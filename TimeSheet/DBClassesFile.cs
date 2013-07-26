@@ -788,6 +788,10 @@ namespace TimeSheetManger
             {"User",new Link("User_ID",typeof(User))},            
             {"Department",new Link("DEPARTMENT_ID",typeof(Department))},
         };
+        public override string ToString()
+        {
+            return string.Format("{0} - {1}", Department.Name, _GetDate.ToString("MMMM yyyy"));
+        }
         public TimeSheetInstance _Self
         {
             get

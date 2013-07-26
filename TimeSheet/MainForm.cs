@@ -72,7 +72,8 @@ namespace TimeSheetManger
 
         public MainForm()
         {   
-            InitializeComponent();                        
+            InitializeComponent();
+            dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
             ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; })); };
@@ -81,6 +82,7 @@ namespace TimeSheetManger
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
 
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
+
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             #region DB Initialization
             User.Initialize<User>();
@@ -98,6 +100,13 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             #endregion                                      
+        }
+        Color GetColor(string key)
+        {
+            var saved = Helper.GetForCurrentUser("user", "color_" + key) ?? Helper.Get("user", "color_" + key);
+            if (saved.ToString()=="")
+                return key == "weekend" ? Color.MistyRose : key == "holyday" ? Color.LightCoral : key == "shortday" ? Color.BurlyWood : Color.Black;
+            return Color.FromArgb(Convert.ToInt32(saved));
         }
         void HideAllShowThis(Panel p)
         {            
@@ -126,7 +135,10 @@ namespace TimeSheetManger
                     tbAuthLogin.Text = Helper.Get("user", "lastLogin").ToString();
                     HideAllShowThis(pAuth);
                     break;
-                case AppState.Workspace:                    
+                case AppState.Workspace:                             
+                    cpWeekEnd.BackColor =  weekEndColor = GetColor("weekend");
+                    cpHolyday.BackColor = holyDayColor = GetColor("holyday");
+                    cpShortDay.BackColor = shortDayColor = GetColor("shortday");
                     HideAllShowThis(pWorkspace);
                     btnAdminPanel.Show();
                     pTimeSheetEditor.Hide();
@@ -564,6 +576,44 @@ namespace TimeSheetManger
                 e.Cancel = true;
         }
 
+        private void cpWeekEnd_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpWeekEnd.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpWeekEnd.BackColor = cdDayColors.Color;
+                Helper.SetForCurrentUser("user","color_weekend",cdDayColors.Color.ToArgb());
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void cpHolyday_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpHolyday.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpHolyday.BackColor = cdDayColors.Color;
+                Helper.SetForCurrentUser("user", "color_holyday", cdDayColors.Color.ToArgb());
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void cpShortDay_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpShortDay.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpShortDay.BackColor = cdDayColors.Color;
+                Helper.SetForCurrentUser("user", "color_shortday", cdDayColors.Color.ToArgb());
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void tbAuthPass_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)            
+                btnLoginEnter_Click(this, EventArgs.Empty);            
+        }
     }
     public enum AppState
     {

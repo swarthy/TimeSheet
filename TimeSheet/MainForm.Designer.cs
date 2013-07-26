@@ -47,16 +47,19 @@
             this.btnAdminPanel = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
+            this.pColors = new System.Windows.Forms.Panel();
+            this.lbweekend = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cpWeekEnd = new System.Windows.Forms.Panel();
+            this.cpShortDay = new System.Windows.Forms.Panel();
+            this.cpHolyday = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnExportToExcel = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
-            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,14 +75,20 @@
             this.tspbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.tsslSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.cdDayColors = new System.Windows.Forms.ColorDialog();
+            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
+            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
+            this.pColors.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -164,6 +173,7 @@
             this.tbAuthPass.PasswordChar = '*';
             this.tbAuthPass.Size = new System.Drawing.Size(126, 20);
             this.tbAuthPass.TabIndex = 4;
+            this.tbAuthPass.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAuthPass_KeyDown);
             // 
             // tbAuthLogin
             // 
@@ -171,6 +181,7 @@
             this.tbAuthLogin.Name = "tbAuthLogin";
             this.tbAuthLogin.Size = new System.Drawing.Size(126, 20);
             this.tbAuthLogin.TabIndex = 3;
+            this.tbAuthLogin.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAuthPass_KeyDown);
             // 
             // lbPassword
             // 
@@ -253,6 +264,7 @@
             this.pTimeSheetEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.pTimeSheetEditor.Controls.Add(this.pColors);
             this.pTimeSheetEditor.Controls.Add(this.btnExportToExcel);
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
@@ -263,10 +275,75 @@
             this.pTimeSheetEditor.TabIndex = 4;
             this.pTimeSheetEditor.Visible = false;
             // 
+            // pColors
+            // 
+            this.pColors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.pColors.Controls.Add(this.lbweekend);
+            this.pColors.Controls.Add(this.label3);
+            this.pColors.Controls.Add(this.cpWeekEnd);
+            this.pColors.Controls.Add(this.cpShortDay);
+            this.pColors.Controls.Add(this.cpHolyday);
+            this.pColors.Controls.Add(this.label2);
+            this.pColors.Location = new System.Drawing.Point(3, 302);
+            this.pColors.Name = "pColors";
+            this.pColors.Size = new System.Drawing.Size(158, 59);
+            this.pColors.TabIndex = 8;
+            // 
+            // lbweekend
+            // 
+            this.lbweekend.AutoSize = true;
+            this.lbweekend.Location = new System.Drawing.Point(3, 0);
+            this.lbweekend.Name = "lbweekend";
+            this.lbweekend.Size = new System.Drawing.Size(89, 13);
+            this.lbweekend.TabIndex = 7;
+            this.lbweekend.Text = "Выходные дни - ";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(3, 38);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(109, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Сокращенные дни - ";
+            // 
+            // cpWeekEnd
+            // 
+            this.cpWeekEnd.Location = new System.Drawing.Point(115, 0);
+            this.cpWeekEnd.Name = "cpWeekEnd";
+            this.cpWeekEnd.Size = new System.Drawing.Size(32, 13);
+            this.cpWeekEnd.TabIndex = 6;
+            this.cpWeekEnd.DoubleClick += new System.EventHandler(this.cpWeekEnd_DoubleClick);
+            // 
+            // cpShortDay
+            // 
+            this.cpShortDay.Location = new System.Drawing.Point(115, 38);
+            this.cpShortDay.Name = "cpShortDay";
+            this.cpShortDay.Size = new System.Drawing.Size(32, 13);
+            this.cpShortDay.TabIndex = 6;
+            this.cpShortDay.DoubleClick += new System.EventHandler(this.cpShortDay_DoubleClick);
+            // 
+            // cpHolyday
+            // 
+            this.cpHolyday.Location = new System.Drawing.Point(115, 19);
+            this.cpHolyday.Name = "cpHolyday";
+            this.cpHolyday.Size = new System.Drawing.Size(32, 13);
+            this.cpHolyday.TabIndex = 6;
+            this.cpHolyday.DoubleClick += new System.EventHandler(this.cpHolyday_DoubleClick);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 19);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(106, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Праздничные дни - ";
+            // 
             // btnExportToExcel
             // 
             this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExportToExcel.Location = new System.Drawing.Point(153, 306);
+            this.btnExportToExcel.Location = new System.Drawing.Point(153, 273);
             this.btnExportToExcel.Name = "btnExportToExcel";
             this.btnExportToExcel.Size = new System.Drawing.Size(132, 23);
             this.btnExportToExcel.TabIndex = 5;
@@ -281,7 +358,7 @@
             this.pDepartment.Controls.Add(this.lbCurrentDepartment);
             this.pDepartment.Controls.Add(this.tbCurrentDepartmentManager);
             this.pDepartment.Controls.Add(this.tbCurrentDepartment);
-            this.pDepartment.Location = new System.Drawing.Point(297, 306);
+            this.pDepartment.Location = new System.Drawing.Point(297, 273);
             this.pDepartment.Name = "pDepartment";
             this.pDepartment.Size = new System.Drawing.Size(364, 56);
             this.pDepartment.TabIndex = 4;
@@ -323,51 +400,6 @@
             this.tbCurrentDepartment.ReadOnly = true;
             this.tbCurrentDepartment.Size = new System.Drawing.Size(211, 20);
             this.tbCurrentDepartment.TabIndex = 0;
-            // 
-            // dgTimeSheet
-            // 
-            this.dgTimeSheet.AllowUserToAddRows = false;
-            this.dgTimeSheet.AllowUserToDeleteRows = false;
-            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.cFIO,
-            this.cPost,
-            this.cRate});
-            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
-            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
-            this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.ReadOnly = true;
-            this.dgTimeSheet.Size = new System.Drawing.Size(658, 297);
-            this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
-            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
-            // 
-            // cFIO
-            // 
-            this.cFIO.HeaderText = "ФИО";
-            this.cFIO.Name = "cFIO";
-            this.cFIO.ReadOnly = true;
-            this.cFIO.Width = 59;
-            // 
-            // cPost
-            // 
-            this.cPost.HeaderText = "Должность";
-            this.cPost.Name = "cPost";
-            this.cPost.ReadOnly = true;
-            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.cPost.Width = 90;
-            // 
-            // cRate
-            // 
-            this.cRate.HeaderText = "Ставка";
-            this.cRate.Name = "cRate";
-            this.cRate.ReadOnly = true;
-            this.cRate.Width = 68;
             // 
             // cmsDaysMenu
             // 
@@ -429,7 +461,7 @@
             // btnNewRow
             // 
             this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 306);
+            this.btnNewRow.Location = new System.Drawing.Point(3, 273);
             this.btnNewRow.Name = "btnNewRow";
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;
@@ -488,6 +520,56 @@
             this.tsslStatusRight.Name = "tsslStatusRight";
             this.tsslStatusRight.Size = new System.Drawing.Size(0, 17);
             // 
+            // cdDayColors
+            // 
+            this.cdDayColors.AnyColor = true;
+            this.cdDayColors.FullOpen = true;
+            // 
+            // dgTimeSheet
+            // 
+            this.dgTimeSheet.AllowUserToAddRows = false;
+            this.dgTimeSheet.AllowUserToDeleteRows = false;
+            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cFIO,
+            this.cPost,
+            this.cRate});
+            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
+            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
+            this.dgTimeSheet.Name = "dgTimeSheet";
+            this.dgTimeSheet.ReadOnly = true;
+            this.dgTimeSheet.Size = new System.Drawing.Size(658, 264);
+            this.dgTimeSheet.TabIndex = 2;
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
+            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
+            // 
+            // cFIO
+            // 
+            this.cFIO.HeaderText = "ФИО";
+            this.cFIO.Name = "cFIO";
+            this.cFIO.ReadOnly = true;
+            this.cFIO.Width = 59;
+            // 
+            // cPost
+            // 
+            this.cPost.HeaderText = "Должность";
+            this.cPost.Name = "cPost";
+            this.cPost.ReadOnly = true;
+            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.cPost.Width = 90;
+            // 
+            // cRate
+            // 
+            this.cRate.HeaderText = "Ставка";
+            this.cRate.Name = "cRate";
+            this.cRate.ReadOnly = true;
+            this.cRate.Width = 68;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -498,6 +580,7 @@
             this.Controls.Add(this.pAuth);
             this.Controls.Add(this.pLPUSelection);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MinimumSize = new System.Drawing.Size(710, 475);
             this.Name = "MainForm";
             this.Text = "Менеджер табелей";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -511,12 +594,14 @@
             this.pWorkspace.ResumeLayout(false);
             this.pWorkspace.PerformLayout();
             this.pTimeSheetEditor.ResumeLayout(false);
+            this.pColors.ResumeLayout(false);
+            this.pColors.PerformLayout();
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.cmsDaysMenu.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -566,6 +651,14 @@
         private System.Windows.Forms.ToolStripProgressBar tspbProgress;
         private System.Windows.Forms.ToolStripStatusLabel tsslSpace;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusRight;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel cpShortDay;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Panel cpHolyday;
+        private System.Windows.Forms.Label lbweekend;
+        private System.Windows.Forms.Panel cpWeekEnd;
+        private System.Windows.Forms.ColorDialog cdDayColors;
+        private System.Windows.Forms.Panel pColors;
 
 
 

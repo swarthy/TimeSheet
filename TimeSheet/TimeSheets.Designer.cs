@@ -28,25 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lbTimeSheets = new System.Windows.Forms.ListBox();
             this.btnNew = new System.Windows.Forms.Button();
             this.btnOpen = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.grid = new System.Windows.Forms.DataGridView();
+            this.clmDepartment = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
-            // 
-            // lbTimeSheets
-            // 
-            this.lbTimeSheets.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbTimeSheets.FormattingEnabled = true;
-            this.lbTimeSheets.Location = new System.Drawing.Point(12, 12);
-            this.lbTimeSheets.Name = "lbTimeSheets";
-            this.lbTimeSheets.Size = new System.Drawing.Size(387, 277);
-            this.lbTimeSheets.TabIndex = 0;
-            this.lbTimeSheets.SelectedIndexChanged += new System.EventHandler(this.lbTimeSheets_SelectedIndexChanged);
-            this.lbTimeSheets.DoubleClick += new System.EventHandler(this.lbTimeSheets_DoubleClick);
             // 
             // btnNew
             // 
@@ -86,12 +78,60 @@
             // btnCancel
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Location = new System.Drawing.Point(324, 300);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Отмена";
             this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // grid
+            // 
+            this.grid.AllowUserToAddRows = false;
+            this.grid.AllowUserToDeleteRows = false;
+            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.clmDepartment,
+            this.clmDate,
+            this.clmUser,
+            this.clmID});
+            this.grid.Location = new System.Drawing.Point(12, 12);
+            this.grid.MultiSelect = false;
+            this.grid.Name = "grid";
+            this.grid.ReadOnly = true;
+            this.grid.RowHeadersVisible = false;
+            this.grid.Size = new System.Drawing.Size(387, 282);
+            this.grid.TabIndex = 5;
+            this.grid.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.grid_CellDoubleClick);
+            // 
+            // clmDepartment
+            // 
+            this.clmDepartment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.clmDepartment.HeaderText = "Отделение";
+            this.clmDepartment.Name = "clmDepartment";
+            this.clmDepartment.ReadOnly = true;
+            // 
+            // clmDate
+            // 
+            this.clmDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.clmDate.HeaderText = "Период";
+            this.clmDate.Name = "clmDate";
+            this.clmDate.ReadOnly = true;
+            // 
+            // clmUser
+            // 
+            this.clmUser.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.clmUser.HeaderText = "Табельщик";
+            this.clmUser.Name = "clmUser";
+            this.clmUser.ReadOnly = true;
+            // 
+            // clmID
+            // 
+            this.clmID.HeaderText = "ID";
+            this.clmID.Name = "clmID";
+            this.clmID.ReadOnly = true;
+            this.clmID.Visible = false;
             // 
             // TimeSheets
             // 
@@ -100,25 +140,30 @@
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(411, 335);
             this.ControlBox = false;
+            this.Controls.Add(this.grid);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnOpen);
             this.Controls.Add(this.btnNew);
-            this.Controls.Add(this.lbTimeSheets);
             this.Name = "TimeSheets";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Табели";
             this.Load += new System.EventHandler(this.TimeSheets_Load);
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private System.Windows.Forms.ListBox lbTimeSheets;
         private System.Windows.Forms.Button btnNew;
         private System.Windows.Forms.Button btnOpen;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.DataGridView grid;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmDepartment;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmDate;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmID;
     }
 }

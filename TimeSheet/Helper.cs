@@ -5,6 +5,7 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Reflection;
 using System.ComponentModel;
+using System.Drawing;
 
 namespace TimeSheetManger
 {
@@ -31,7 +32,7 @@ namespace TimeSheetManger
                 return;
             Set(section, MainForm.curUsr.Profile.Table_Number.ToString() + key, value);
         }        
-        public static object GetForCurrentUser(string section, string key, object value)
+        public static object GetForCurrentUser(string section, string key)
         {
             if (MainForm.curUsr == null)
                 return null;
@@ -86,6 +87,6 @@ namespace TimeSheetManger
                 var adr = Get("server", "file");
                 return adr == null ? "c:\\FBDB.fdb" : adr.ToString();
             }
-        }
+        }        
     }
 }
