@@ -32,6 +32,13 @@ namespace TimeSheetManger
         {
             return Login;
         }
+        public string _LoginAndProfile
+        {
+            get
+            {
+                return string.Format("{0} ({1})", Login, Profile._ShortName);
+            }
+        }
         #region Properties
         public string Login
         {
@@ -517,6 +524,17 @@ namespace TimeSheetManger
             set
             {
                 this["Ru_Name"] = value;
+            }
+        }
+        public string Description
+        {
+            get
+            {
+                return this["Description"] == null ? "" : this["Description"].ToString();
+            }
+            set
+            {
+                this["Description"] = value;
             }
         }
         #endregion

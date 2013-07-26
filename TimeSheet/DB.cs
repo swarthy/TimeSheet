@@ -9,9 +9,22 @@ using System.Windows.Forms;
 
 namespace TimeSheetManger
 {
+    public class DBBindingSource<T> : BindingSource where T:Domain, new()
+    {
+        public DBBindingSource()
+            : base()
+        {
+        }
+        public void Remove(T item, bool delete_on_remove = false)
+        {
+            if (delete_on_remove)
+                item.Delete();
+            base.Remove(item);
+        }        
+    }
     public static class Extensions
     {
-        public static DBList<T> ToDBList<T>(this IEnumerable<T> ien) where T: Domain, new()
+        public static DBList<T> ToDBList<T>(this IEnumerable<T> ien) where T : Domain, new()
         {
             DBList<T> res = new DBList<T>();
             foreach (T item in ien)
@@ -105,11 +118,13 @@ namespace TimeSheetManger
             }
         }
     }
-    public class DBList<T> : List<T> where T: Domain, new()
-    {        
+    public class DBList<T> : List<T> where T : Domain, new()
+    {
+        public bool DeleteFromServerOnRemove = false;
         public DBList(string FieldInDB = "")
             : base()
         {
+            
             this.FieldInDB = FieldInDB;            
         }
         new public T this[int i]
@@ -136,6 +151,11 @@ namespace TimeSheetManger
             }
             return res;
         }
+        public void SaveList(bool hardSave = false)
+        {
+            foreach (T item in this)
+                item.Save(hardSave);
+        }
         public T FindOrCreate(object match)
         {
             var rest = Helper.AnonymousObjectToDictionary(match);
@@ -150,8 +170,7 @@ namespace TimeSheetManger
         }
         new public void RemoveAt(int i)
         {
-            Remove(this[i]);
-            base.RemoveAt(i);
+            Remove(this[i]);            
         }
         public string FieldInDB = "";
         public event EventHandler<DBEventArgs<T>> OnAdd, OnRemove, OnChange;        
@@ -176,9 +195,9 @@ namespace TimeSheetManger
             if (OnRemove != null)
                 OnRemove(this, new DBEventArgs<T>(item, FieldInDB, true));//true для удалени персонала из списка favorite 
             base.Remove(item);
-            if (delete_removable_object)
+            if (delete_removable_object || DeleteFromServerOnRemove)
                 item.Delete();            
-        }     
+        }        
     }
     public struct Link
     {

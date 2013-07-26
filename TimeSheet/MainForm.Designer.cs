@@ -450,7 +450,7 @@
             // dlgSaveFile
             // 
             this.dlgSaveFile.Filter = "Книга Excel|*.xlsx";
-            this.dlgSaveFile.InitialDirectory = "export";
+            this.dlgSaveFile.Title = "Экспорт табеля";
             // 
             // statusStrip1
             // 

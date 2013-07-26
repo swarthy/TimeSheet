@@ -54,6 +54,18 @@ namespace TimeSheetManger
                 case "Персонал":
                     form.OpenPersonals();
                     break;
+                case "ЛПУ":
+                    form.OpenLPU();
+                    break;
+                case "Должности":
+                    form.OpenPosts();
+                    break;
+                case "Отделения":
+                    form.OpenDepartments();
+                    break;
+                case "Показатели":
+                    form.OpenFlags();
+                    break;
             }
             form.ShowDialog();
         }

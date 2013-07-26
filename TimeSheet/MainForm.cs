@@ -71,9 +71,8 @@ namespace TimeSheetManger
         public bool Saving = false;
 
         public MainForm()
-        {            
-            InitializeComponent();            
-            //DBFmanager.Test();
+        {   
+            InitializeComponent();                        
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
             ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; })); };
@@ -188,9 +187,9 @@ namespace TimeSheetManger
             #if DEBUG
             currentLPU = LPU.Get<LPU>(1);            
             currentUser = User.Get<User>(22);
-            currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
+            //currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
             changeState(AppState.Workspace);//для сортировки списка табелей
-            changeState(AppState.EditTimeSheet);
+            //changeState(AppState.EditTimeSheet);
             btnAdminPanel_Click(this, EventArgs.Empty);
             #endif
         }

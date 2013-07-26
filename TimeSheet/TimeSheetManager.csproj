@@ -109,7 +109,9 @@
     <Compile Include="AddUserToFavoriteForm.Designer.cs">
       <DependentUpon>AddUserToFavoriteForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="DB.cs" />
+    <Compile Include="DB.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
