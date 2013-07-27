@@ -10,24 +10,17 @@ namespace TimeSheetManger
 {
     public static class SelfUpdater
     {
-        public static EventHandler OnDownloadUpdatesBegin = null, OnDownloadUpdatesEnd = null;
-        public static string UpdatePath
-        {
-            get
-            {
-                return Helper.ServerUpdatePath + Path.GetFileName(Application.ExecutablePath);
-            }
-        }
+        public static EventHandler OnDownloadUpdatesBegin = null, OnDownloadUpdatesEnd = null;        
         public static bool NeedUpdate
         {
             get
             {
-                if (!File.Exists(UpdatePath))
+                if (!Directory.Exists(Helper.ServerUpdatePath))
                     return false;
-                var serverVersion = Helper.GetFileVersion(UpdatePath);
-                var selfVersion = Helper.GetFileVersion(Application.ExecutablePath);
-                if (serverVersion != selfVersion)
-                    return true;
+                //var serverVersion = Helper.GetFileVersion(UpdatePath);
+                //var selfVersion = Helper.GetFileVersion(Application.ExecutablePath);
+                //if (serverVersion != selfVersion)
+                    //return true;
                 return false;
             }
         }        
@@ -37,10 +30,10 @@ namespace TimeSheetManger
             if (OnDownloadUpdatesBegin != null)
                 OnDownloadUpdatesBegin(null, EventArgs.Empty);
             var tempname = Path.GetDirectoryName(Application.ExecutablePath) + "\\Updated_" + Path.GetFileName(Application.ExecutablePath);            
-            File.Copy(UpdatePath, tempname, true);            
+            //File.Copy(UpdatePath, tempname, true);            
             if (OnDownloadUpdatesEnd != null)
                 OnDownloadUpdatesEnd(null, EventArgs.Empty);
-            ProcessStartInfo si = new ProcessStartInfo("cmd", "/C ping 127.0.0.1 -n 4 -w 3000 > nul && "+tempname);
+            ProcessStartInfo si = new ProcessStartInfo("cmd", "/C ping 127.0.0.1 -n 2 > nul && "+tempname);
             si.CreateNoWindow = false;
             si.WindowStyle = ProcessWindowStyle.Hidden;
             Process.Start(si);

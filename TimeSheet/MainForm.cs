@@ -76,8 +76,8 @@ namespace TimeSheetManger
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
             //ping 1.1.1.1 -n 1 -w 3000 > nul
             //System.Diagnostics.Process.Start("notepad.exe");            
-            SelfUpdater.Update();
-            Environment.Exit(0);         
+            //SelfUpdater.Update();
+            //Environment.Exit(0);         
 
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
@@ -129,14 +129,20 @@ namespace TimeSheetManger
         {
             StatusRight = "";
         }
+        bool wantChangeLPU = false;
         void changeState(AppState newstate)
         {
             switch (newstate)
             {
                 case AppState.LPUselect:                    
                     var lastOpened = Convert.ToInt32(Helper.Get("LPU", "lastOpened"));
-                    if (lastOpened != 0)
-                        cbLPUList.SelectedItem = LPUlist.Find(l => l.ID == lastOpened);
+                    if (lastOpened != 0 && !wantChangeLPU)
+                    {
+                        //cbLPUList.SelectedItem = LPUlist.Find(l => l.ID == lastOpened);
+                        currentLPU = LPU.Get<LPU>(lastOpened);
+                        changeState(AppState.Auth);
+                        return;
+                    }
                     HideAllShowThis(pLPUSelection);
                     break;
                 case AppState.Auth:
@@ -240,6 +246,7 @@ namespace TimeSheetManger
 
         private void btnLPUSelect_Click(object sender, EventArgs e)
         {
+            wantChangeLPU = true;
             changeState(AppState.LPUselect);
         }
 

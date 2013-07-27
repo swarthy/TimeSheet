@@ -7,6 +7,7 @@ using System.Reflection;
 using System.ComponentModel;
 using System.Drawing;
 using System.Diagnostics;
+using System.IO;
 
 namespace TimeSheetManger
 {
@@ -77,7 +78,7 @@ namespace TimeSheetManger
         {
             get
             {
-                var adr = Get("server", "ip");
+                var adr = Get("server", "host");
                 return adr == "" ? "127.0.0.1" : adr;
             }
         }
@@ -86,16 +87,18 @@ namespace TimeSheetManger
             get
             {
                 var file = Get("server", "file");
-                return string.IsNullOrEmpty(file) ? "c:\\FBDB.fdb" : file;
+                return string.IsNullOrEmpty(file) ? "c:\\Tabel.fdb" : file;
             }
         }
         public static string ServerUpdatePath
         {
             get
             {
-                var updates = Get("server", "updates");
-                var dir = string.IsNullOrEmpty(updates) ? "TMUpdates" : updates;
-                return string.Format("\\\\{0}\\{1}\\", ServerIP, dir);
+                var updates = Get("server", "updatesPath");
+                var dir = string.IsNullOrEmpty(updates) ? @"TabelUpdates\" : updates;
+                if (dir.Last() != '\\')
+                    dir += "\\";
+                return Path.Combine(string.Format("\\\\{0}\\{1}\\", ServerIP), dir);
             }
         }
         public static string GetFileVersion(string filePath)

@@ -59,9 +59,10 @@ namespace TimeSheetManger
         {
             get
             {
-                FbConnection c = new FbConnection("UserID=SYSDBA;Password=masterkey;" +
+                /*FbConnection c = new FbConnection("UserID=SYSDBA;Password=masterkey;" +
                                   "Database=c:/FBDB.FDB;" +                                   
-                                  "DataSource=localhost;Charset=NONE;");                
+                                  "DataSource=localhost;Charset=NONE;");                */
+                FbConnection c = new FbConnection(ConnectionString);                
                 c.StateChange += new System.Data.StateChangeEventHandler((sender, args) => {
                     switch (args.CurrentState)
                     {
