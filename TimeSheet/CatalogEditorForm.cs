@@ -229,13 +229,8 @@ namespace TimeSheetManger
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Вы действительно хотите удалить запись?","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
+            if (MessageBox.Show("Вы действительно хотите удалить запись?\r\nЭто может повлечь за собой необратимое нарушение целостности данных.","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
                 bs.Remove(bs.Current as Domain, true);
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
         }
     }    
 }

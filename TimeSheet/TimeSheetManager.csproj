@@ -132,6 +132,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="SelfUpdater.cs" />
     <Compile Include="TimeSheets.cs">
       <SubType>Form</SubType>
     </Compile>

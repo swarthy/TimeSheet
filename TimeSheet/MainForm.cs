@@ -73,6 +73,12 @@ namespace TimeSheetManger
         public MainForm()
         {   
             InitializeComponent();
+            Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
+            //ping 1.1.1.1 -n 1 -w 3000 > nul
+            //System.Diagnostics.Process.Start("notepad.exe");            
+            SelfUpdater.Update();
+            Environment.Exit(0);         
+
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
@@ -81,7 +87,7 @@ namespace TimeSheetManger
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
 
-            Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
+            
 
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             #region DB Initialization
@@ -100,7 +106,7 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             #endregion                                      
-        }
+        }        
         Color GetColor(string key)
         {
             var saved = Helper.GetForCurrentUser("user", "color_" + key) ?? Helper.Get("user", "color_" + key);

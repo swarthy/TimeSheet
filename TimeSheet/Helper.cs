@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Reflection;
 using System.ComponentModel;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace TimeSheetManger
 {
@@ -32,13 +33,13 @@ namespace TimeSheetManger
                 return;
             Set(section, MainForm.curUsr.Profile.Table_Number.ToString() + key, value);
         }        
-        public static object GetForCurrentUser(string section, string key)
+        public static string GetForCurrentUser(string section, string key)
         {
             if (MainForm.curUsr == null)
                 return null;
             return Get(section, MainForm.curUsr.Profile.Table_Number.ToString() + key);
         }
-        public static object Get(string section, string key)
+        public static string Get(string section, string key)
         {
             return settings.IniReadValue(section, key);
         }
@@ -77,16 +78,29 @@ namespace TimeSheetManger
             get
             {
                 var adr = Get("server", "ip");
-                return adr == null ? "127.0.0.1" : adr.ToString();
+                return adr == "" ? "127.0.0.1" : adr;
             }
         }
         public static string ServerFile
         {
             get
             {
-                var adr = Get("server", "file");
-                return adr == null ? "c:\\FBDB.fdb" : adr.ToString();
+                var file = Get("server", "file");
+                return string.IsNullOrEmpty(file) ? "c:\\FBDB.fdb" : file;
             }
-        }        
+        }
+        public static string ServerUpdatePath
+        {
+            get
+            {
+                var updates = Get("server", "updates");
+                var dir = string.IsNullOrEmpty(updates) ? "TMUpdates" : updates;
+                return string.Format("\\\\{0}\\{1}\\", ServerIP, dir);
+            }
+        }
+        public static string GetFileVersion(string filePath)
+        {                        
+            return FileVersionInfo.GetVersionInfo(filePath).FileVersion;       
+        }
     }
 }
