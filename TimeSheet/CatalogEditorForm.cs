@@ -20,7 +20,17 @@ namespace TimeSheetManger
         DBList<Flag> flags;
         DBBindingSource<Domain> bs = new DBBindingSource<Domain>();
         MainForm mainForm;
-                        
+        DBList<Personal> personalsOfLPU(LPU lpu)
+        {
+            return lpu.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
+        }
+        DBList<Personal> LPUPersonals
+        {
+            get
+            {
+                return personalsOfLPU(mainForm.currentLPU);
+            }
+        }
         public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
             mainForm = mainform;
@@ -56,7 +66,7 @@ namespace TimeSheetManger
             profile.DataPropertyName = "Profile";
             profile.DisplayMember = "_ShortNameAndNumber";
             profile.HeaderText = "Профиль";
-            profile.DataSource = Personal.All<Personal>();
+            profile.DataSource = LPUPersonals;
             grid.Columns.Add(profile);
 
             DataGridViewTextBoxColumn role = new DataGridViewTextBoxColumn();
@@ -70,7 +80,7 @@ namespace TimeSheetManger
 
         public void OpenPersonals()
         {
-            personals = mainForm.currentLPU.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();                        
+            personals = LPUPersonals;
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn tn = new DataGridViewTextBoxColumn();
@@ -117,6 +127,12 @@ namespace TimeSheetManger
             tsmanager.DataSource = mainForm.currentLPU.Users;
             grid.Columns.Add(tsmanager);
 
+
+            DataGridViewTextBoxColumn priority = new DataGridViewTextBoxColumn();
+            priority.DataPropertyName = "Priority";
+            priority.HeaderText = "Приоритет";
+            grid.Columns.Add(priority);
+
             personals.Sort((x, y) => x._FullName.CompareTo(y._FullName));
 
             bs.DataSource = personals;
@@ -138,7 +154,7 @@ namespace TimeSheetManger
             maindoc.DataPropertyName = "MainDoc";
             maindoc.DisplayMember = "_ShortNameAndNumber";
             maindoc.HeaderText = "Главный врач";
-            maindoc.DataSource = mainForm.currentLPU.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
+            maindoc.DataSource = Personal.All<Personal>();
             grid.Columns.Add(maindoc);
 
             bs.DataSource = lpuList;

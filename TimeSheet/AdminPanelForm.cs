@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using SwarthyComponents;
+using System.Globalization;
 
 namespace TimeSheetManger
 {
@@ -17,8 +18,7 @@ namespace TimeSheetManger
         public static DayOfWeek[] WeekEnd = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
         MainForm mainForm;
         int lastYear;
-        DBList<SpecialDay> specialDays;
-        bool programChanges = false;
+        DBList<SpecialDay> specialDays;        
         SpecialDay currentSelected = null;
         TabPage currentOpened = null;
         bool needFreezeOtherTabs = false;
@@ -32,14 +32,16 @@ namespace TimeSheetManger
         public AdminPanelForm(MainForm mainform)
         {
             mainForm = mainform;
-            InitializeComponent();
+            InitializeComponent();            
             weekEnd = new StyleSettings(MainForm.weekEndColor, Color.Silver);
             holyDay = new StyleSettings(MainForm.holyDayColor, Color.Silver);
             shortDay = new StyleSettings(MainForm.shortDayColor, Color.Silver);
             cpWeekEnd.BackColor = MainForm.weekEndColor;
             cpHolyday.BackColor = MainForm.holyDayColor;
             cpShortDay.BackColor = MainForm.shortDayColor;
+            gbAddMonth.Location = gbAddYear.Location = gbAddName.Location;
             cHolydayCalendar.OnSelectedDateChanged += new EventHandler(cHolydayCalendar_DateChanged);
+            cHolydayCalendar.SelectedDate = DateTime.Today;
             if (mainform.currentUser._IS_ADMIN)
             {
                 foreach (var item in SuperAdminCatalogs)
@@ -118,8 +120,7 @@ namespace TimeSheetManger
         {
             if (lastYear != cHolydayCalendar.SelectedDate.Year)
                 UpdateSpecialDaysFromServer(cHolydayCalendar.SelectedDate.Year);
-            currentSelected = specialDays.FindOrCreate(new { Spec_Date = cHolydayCalendar.SelectedDate });            
-            programChanges = true;
+            currentSelected = specialDays.FindOrCreate(new { Spec_Date = cHolydayCalendar.SelectedDate });
             switch (currentSelected.State)
             {
                 case 0://обычный
@@ -134,56 +135,7 @@ namespace TimeSheetManger
                 case 3://сокращенный рабочий день
                     rbShortDay.Checked = true;
                     break;
-            }
-            programChanges = false;
-        }
-
-        private void rbUsualDay_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?","Подтверждение изменений",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
-            {
-                currentSelected.State = 0;
-                currentSelected.Delete();
-                cHolydayCalendar.FormatedDate.Remove(currentSelected.Spec_Date);
-                cHolydayCalendar.Refresh();
-            }                
-        }
-
-        private void rbWeekEnd_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?","Подтверждение изменений",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
-            {
-                currentSelected.State = 1;
-                currentSelected.Save();
-                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = weekEnd;
-                cHolydayCalendar.Refresh();
-            }
-        }
-
-        private void rbHolyDay_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?", "Подтверждение изменений", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-            {
-                currentSelected.State = 2;
-                currentSelected.Save();
-                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = holyDay;
-                cHolydayCalendar.Refresh();
-            }
-        }
-
-        private void rbShortDay_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton rb = sender as RadioButton;
-            if (!programChanges && rb != null && rb.Checked && MessageBox.Show("Вы действительно хотите изменить тип дня?", "Подтверждение изменений", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
-            {
-                currentSelected.State = 3;
-                currentSelected.Save();
-                cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = shortDay;
-                cHolydayCalendar.Refresh();
-            }
+            }            
         }
 
         private void btnGenerateWeekEnds_Click(object sender, EventArgs e)
@@ -223,6 +175,7 @@ namespace TimeSheetManger
 
         void RenderPCalendars()
         {
+            dgAllMonthData.Rows.Clear();
             currentContent = null;
             currentCalendar = null;
             currentCalendarName = null;
@@ -241,6 +194,8 @@ namespace TimeSheetManger
             if (currentCalendarName != null)
             {
                 cbPYear.Items.Clear();
+                cbPMonth.Items.Clear();
+                tbDays.Text = tbHours.Text = "";
                 currentCalendarName.Calendars.ForEach(c => cbPYear.Items.Add(c.CYear));
             }
         }
@@ -249,21 +204,24 @@ namespace TimeSheetManger
         private void cbPYear_SelectedValueChanged(object sender, EventArgs e)
         {
             if (cbPYear.SelectedIndex != -1)
-                currentCalendar = currentCalendarName.Calendars[cbPYear.SelectedIndex];
-            if (cbPCalendar != null)
             {
-                cbPMonth.Items.Clear();
-                currentCalendar.Months.ForEach(m => cbPMonth.Items.Add(new DateTime(currentCalendar.CYear, m.CMonth, 1).ToString("MMMM")));
+                currentCalendar = currentCalendarName.Calendars[cbPYear.SelectedIndex];
+                RenderAllMonthData();
             }
+            //if (cbPCalendar != null)
+            //{
+                cbPMonth.Items.Clear();                
+                tbDays.Text = tbHours.Text = "";
+                currentCalendar.Months.ForEach(m => cbPMonth.Items.Add(new DateTime(currentCalendar.CYear, m.CMonth, 1).ToString("MMMM")));                
+            //}
         }
-
-        #endregion
 
         private void btnAddPCalName_Click(object sender, EventArgs e)
         {
             gbAddName.Show();
             gbAddMonth.Hide();
             gbAddYear.Hide();
+            needFreezeOtherTabs = true;
         }
 
         private void cbPMonth_SelectedValueChanged(object sender, EventArgs e)
@@ -275,13 +233,31 @@ namespace TimeSheetManger
                 tbDays.Text = currentContent.Days.ToString();
                 tbHours.Text = currentContent.Hours.ToString();
             }
-        
         }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
+        bool editing = false;
+        private void btnEditSaveDaysHours_Click(object sender, EventArgs e)
+        {   
             if (currentContent != null)
             {
+                editing = !editing;
+                if (editing)
+                {
+                    needFreezeOtherTabs = true;
+                    btnEditSaveDaysHours.Image = Properties.Resources.Save_16x16;
+                    btnEditSaveDaysHours.Text = "Сохранить";
+                    tbHours.Enabled = tbDays.Enabled = true;
+                    groupPanelSelectControls.Enabled = gbAddYear.Enabled = gbAddName.Enabled = gbAddMonth.Enabled = dgAllMonthData.Enabled = false;
+                    return;
+                }
+                else
+                {
+                    needFreezeOtherTabs = false;
+                    btnEditSaveDaysHours.Image = Properties.Resources.Edit_16x16;
+                    btnEditSaveDaysHours.Text = "Редактировать";
+                    tbHours.Enabled = tbDays.Enabled = false;
+                    groupPanelSelectControls.Enabled = gbAddYear.Enabled = gbAddName.Enabled = gbAddMonth.Enabled = dgAllMonthData.Enabled = true;
+                }
+
                 double hours;
                 int days;
                 if (!double.TryParse(tbHours.Text, out hours))
@@ -297,38 +273,49 @@ namespace TimeSheetManger
                 currentContent.Hours = hours;
                 currentContent.Days = days;
                 currentContent.Save();
+                RenderAllMonthData();
             }
         }
 
         private void btnAddNewPCName_Click(object sender, EventArgs e)
         {
-            if (tbNewPCName.Text.Trim().Length == 0)
+            if (tbPNewCName.Text.Trim().Length == 0)
             {
                 gbAddName.Hide();
                 return;
             }
-            var cn = new Calendar_Name(tbNewPCName.Text);
+            var cn = new Calendar_Name(tbPNewCName.Text);
             cn.Save();
             RenderPCalendars();
-            gbAddName.Hide();
+            gbAddName.Hide();            
         }
 
         private void btnAddNewPCYear_Click(object sender, EventArgs e)
         {            
-            Calendar c = new Calendar(currentCalendarName, dtpPCYear.Value.Year);            
+            int year;
+            if (!int.TryParse(tbPYear.Text, out year))
+            {
+                MessageBox.Show("Год введен неверно.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Calendar c = new Calendar(currentCalendarName, year);
             currentCalendarName.Calendars.Add(c);
             currentCalendarName.Save();
-            RenderPCalendars();
-            gbAddYear.Hide();
+            currentCalendarName.Calendars.Sort((x, y) => x.CYear.CompareTo(y.CYear));
+            cbPCalendar_SelectedValueChanged(sender, e);
+            //RenderPCalendars();
+            gbAddYear.Hide();            
         }
 
         private void btnAddNewPCMonth_Click(object sender, EventArgs e)
         {
-            Calendar_Content c = new Calendar_Content(currentCalendar, dtpPCMonth.Value.Month, 7 * DateTime.DaysInMonth(currentCalendar.CYear, dtpPCMonth.Value.Month), DateTime.DaysInMonth(currentCalendar.CYear, dtpPCMonth.Value.Month));
+            Calendar_Content c = new Calendar_Content(currentCalendar, cbPAddMonth.SelectedIndex + 1, 7 * DateTime.DaysInMonth(currentCalendar.CYear, cbPAddMonth.SelectedIndex + 1), DateTime.DaysInMonth(currentCalendar.CYear, cbPAddMonth.SelectedIndex + 1));
             currentCalendar.Months.Add(c);
             currentCalendar.Save();
-            RenderPCalendars();
-            gbAddMonth.Hide();
+            currentCalendar.Months.Sort((x, y) => x.CMonth.CompareTo(y.CMonth));
+            cbPYear_SelectedValueChanged(sender, e);
+            RenderAllMonthData();
+            gbAddMonth.Hide();                        
         }
 
         private void btnAddPCYear_Click(object sender, EventArgs e)
@@ -338,6 +325,7 @@ namespace TimeSheetManger
                 gbAddYear.Show();
                 gbAddName.Hide();
                 gbAddMonth.Hide();
+                needFreezeOtherTabs = true;
             }
         }
 
@@ -348,24 +336,43 @@ namespace TimeSheetManger
                 gbAddMonth.Show();
                 gbAddName.Hide();
                 gbAddYear.Hide();
+                needFreezeOtherTabs = true;
             }
         }
 
         private void btnHideName_Click(object sender, EventArgs e)
         {
-            gbAddName.Hide();
-            tbNewPCName.Text = "";
+            gbAddName.Hide();            
+            tbPNewCName.Text = "";
+            needFreezeOtherTabs = false;
         }
 
         private void btnHideYear_Click(object sender, EventArgs e)
         {
             gbAddYear.Hide();
+            needFreezeOtherTabs = false;
         }
 
         private void btnHideMonth_Click(object sender, EventArgs e)
         {
             gbAddMonth.Hide();
+            needFreezeOtherTabs = false;
         }
+
+        void RenderAllMonthData()
+        {
+            if (cbPYear.SelectedItem != null)
+            {
+                dgAllMonthData.Rows.Clear();
+                for(int i=0;i<DateTimeFormatInfo.CurrentInfo.MonthNames.Length-1;i++)
+                {
+                    var dbmonth = currentCalendar.Months.Find(m => m.CMonth == i + 1);
+                    dgAllMonthData.Rows.Add(new object[] { DateTimeFormatInfo.CurrentInfo.MonthNames[i], dbmonth == null ? 0 : dbmonth.Hours, dbmonth == null ? 0 : dbmonth.Days });
+                }                
+            }
+        }
+
+        #endregion
 
         private void dtpHolydayMonthPicker_ValueChanged(object sender, EventArgs e)
         {
@@ -414,6 +421,56 @@ namespace TimeSheetManger
             }
             else
                 currentOpened = e.TabPage;
+        }        
+        private void btnEditSaveDayType_Click(object sender, EventArgs e)
+        {
+            editing = !editing;
+            if (editing)
+            {
+                needFreezeOtherTabs = true;
+                btnEditSaveDayType.Image = Properties.Resources.Save_16x16;
+                btnEditSaveDayType.Text = "Сохранить";
+                tbHours.Enabled = tbDays.Enabled = true;
+                groupPandelDayTypes.Enabled = true;
+                dtpHolydayMonthPicker.Enabled = cHolydayCalendar.Enabled = btnGenerateWeekEnds.Enabled = false;
+                return;
+            }
+            else
+            {
+                needFreezeOtherTabs = false;
+                btnEditSaveDayType.Image = Properties.Resources.Edit_16x16;
+                btnEditSaveDayType.Text = "Редактировать";
+                groupPandelDayTypes.Enabled = false;
+                dtpHolydayMonthPicker.Enabled = cHolydayCalendar.Enabled = btnGenerateWeekEnds.Enabled = true;
+            }
+            if (rbUsualDay.Checked)
+            {
+                currentSelected.State = 0;
+                cHolydayCalendar.FormatedDate.Remove(currentSelected.Spec_Date);
+            }
+            else
+                if (rbWeekEnd.Checked)
+                {
+                    cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = weekEnd;
+                    currentSelected.State = 1;
+                }
+                else
+                    if (rbHolyDay.Checked)
+                    {
+                        cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = holyDay;
+                        currentSelected.State = 2;
+                    }
+                    else
+                        if (rbShortDay.Checked)
+                        {
+                            cHolydayCalendar.FormatedDate[currentSelected.Spec_Date] = shortDay;
+                            currentSelected.State = 3;
+                        }
+            if (currentSelected.State != 0)
+                currentSelected.Save();
+            else
+                currentSelected.Delete();
+            cHolydayCalendar.Refresh();
         }
     }
 }

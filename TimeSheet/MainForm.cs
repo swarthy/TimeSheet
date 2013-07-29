@@ -37,8 +37,14 @@ namespace TimeSheetManger
             }
             set
             {
-                curUsr = value;                
-                miAdminPanel.Visible = curUsr!=null && curUsr._IS_MODERATOR;
+                curUsr = value;
+                if (value != null)
+                {
+                    miCurrentUser.Text = value.Login;
+                    miAdminPanel.Visible = curUsr._IS_MODERATOR;
+                    if (value._IS_ADMIN)                    
+                        AdminAfterLoginCheck();                    
+                }
             }
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
@@ -107,7 +113,24 @@ namespace TimeSheetManger
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
             #endregion                                      
-        }        
+        }
+        void AdminAfterLoginCheck()
+        {
+            Enabled = false;
+
+            StatusLeft = "Проверка корректности БД.";
+
+            if (currentLPU.MainDoc==null)
+                MessageBox.Show("У данного ЛПУ не указан главный врач.\r\nВозможно нарушение отчетности.", "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            var invalidDepartments = currentLPU.Departments.FindAll(d => d.DepartmentManager == null);
+            if (invalidDepartments.Count != 0)
+                MessageBox.Show("У следующих отделений не указан руководитель: " +
+                    invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
+                    "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);            
+            Ready();
+
+            Enabled = true;
+        }
         Color GetColor(string key)
         {            
             var saved = DBSettings.Get("color_" + key);
@@ -117,9 +140,12 @@ namespace TimeSheetManger
         }
         void HideAllShowThis(Panel p)
         {            
-            foreach (Control c in Controls)            
+            foreach (Control c in Controls)
                 if (c.GetType() == typeof(Panel))
-                    c.Hide();            
+                {
+                    c.Hide();
+                    Helper.Log(c.Name);
+                }
             p.Show();
         }
         public void Ready()
@@ -153,11 +179,8 @@ namespace TimeSheetManger
                     msMainMenu.Hide();
                     HideAllShowThis(pAuth);
                     break;
-                case AppState.Workspace:                                                 
-                    HideAllShowThis(pWorkspace);                    
-                    pTimeSheetEditor.Hide();
-                    lbCurrentTimeSheetName.Text = "";
-                    msMainMenu.Show();
+                case AppState.Desktop:                    
+                    HideAllShowThis(pDesktop);
                     currentUser.TimeSheets.Sort((t1, t2) =>
                     {
                         var r1 = t1.Department.Name.CompareTo(t2.Department.Name);
@@ -169,7 +192,8 @@ namespace TimeSheetManger
                         else
                             return r1;
                     });
-                    break;
+                    msMainMenu.Show();
+                    break;                
                 case AppState.EditTimeSheet:                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);                    
@@ -178,7 +202,7 @@ namespace TimeSheetManger
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager._FullName;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     DrawTimeSheetContent();
-                    pTimeSheetEditor.Show();
+                    HideAllShowThis(pWorkspace);
                     break;
             }
             Helper.Log("Смена состояния: {0}", newstate);
@@ -187,7 +211,9 @@ namespace TimeSheetManger
         private void DrawTimeSheetContent()
         {
             dgTimeSheet.Rows.Clear();
-            currentTimeSheet.HM<TimeSheet_Content>("Content", true).ForEach(row =>
+            var content = currentTimeSheet.HM<TimeSheet_Content>("Content", true);
+            content.Sort((x, y) => x.Personal.Priority == y.Personal.Priority ? x.Personal.LastName.CompareTo(y.Personal.LastName) : y.Personal.Priority.CompareTo(x.Personal.Priority));
+            content.ForEach(row =>
             {   
                 var temp = row.Render(dgTimeSheet);
                 if (temp != null)
@@ -212,11 +238,8 @@ namespace TimeSheetManger
             changeState(AppState.LPUselect);  //release
             #if DEBUG
             currentLPU = LPU.Get<LPU>(1);            
-            currentUser = User.Get<User>(22);
-            //currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
-            changeState(AppState.Workspace);//для сортировки списка табелей
-            //changeState(AppState.EditTimeSheet);
-            HideAllShowThis(pDesktop);
+            currentUser = User.Get<User>(22);            
+            changeState(AppState.Desktop);            
             #endif
         }
 
@@ -232,14 +255,14 @@ namespace TimeSheetManger
 
         private void btnLoginEnter_Click(object sender, EventArgs e)
         {
-            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, tbAuthPass.Text, currentLPU.ID);            
+            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, tbAuthPass.Text, currentLPU.ID);                        
             if (user == null)
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
-            {
+            {                
                 Helper.Set("user", "lastLogin", tbAuthLogin.Text);
                 currentUser = user;                
-                changeState(AppState.Workspace);
+                changeState(AppState.Desktop);
                 tbAuthPass.Text = "";
             }
         }
@@ -616,13 +639,14 @@ namespace TimeSheetManger
         {            
             //MessageBox.Show(string.Format("Версия: {0}", Environment.Version), "Учет использования рабочего времени", MessageBoxButtons.OK, MessageBoxIcon.Information);
             AboutBox about = new AboutBox();
-            about.ShowDialog();
+            about.ShowDialog();            
         }
     }
     public enum AppState
     {
         LPUselect,
         Auth,
+        Desktop,
         Workspace,
         EditTimeSheet
     }

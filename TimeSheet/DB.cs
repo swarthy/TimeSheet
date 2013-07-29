@@ -59,9 +59,6 @@ namespace TimeSheetManger
         {
             get
             {
-                /*FbConnection c = new FbConnection("UserID=SYSDBA;Password=masterkey;" +
-                                  "Database=c:/FBDB.FDB;" +                                   
-                                  "DataSource=localhost;Charset=NONE;");                */
                 FbConnection c = new FbConnection(ConnectionString);                
                 c.StateChange += new System.Data.StateChangeEventHandler((sender, args) => {
                     switch (args.CurrentState)
@@ -74,7 +71,6 @@ namespace TimeSheetManger
                             }
                             break;                        
                     }
-
                 });
                 return c;
             }
@@ -198,7 +194,7 @@ namespace TimeSheetManger
             base.Remove(item);
             if (delete_removable_object || DeleteFromServerOnRemove)
                 item.Delete();            
-        }        
+        }
     }
     public struct Link
     {
@@ -594,11 +590,16 @@ namespace TimeSheetManger
         {
             if (!_Changed && !hard_save)
                 return;
-            GetBelongsTo(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k]!=null) {
-                var itm = (Fields[k] as Domain);                
-                itm.Save();
-                Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
-                changed = true; } });
+            GetBelongsTo(GetType()).Keys.ToList().ForEach(k =>
+            {
+                if (Fields.ContainsKey(k) && Fields[k] != null)
+                {
+                    var itm = (Fields[k] as Domain);
+                    itm.Save();
+                    Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
+                    changed = true;
+                }
+            });
             
             try
             {
@@ -608,7 +609,7 @@ namespace TimeSheetManger
                     Create();
             }
             catch (FbException ex)
-            {                
+            {
                 MessageBox.Show(ex.Message, "DataBase: Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             _Changed = false;
@@ -693,7 +694,7 @@ namespace TimeSheetManger
         public static DBList<T> All<T>() where T : Domain, new()
         {
             return F_All<T>("1=1");
-        }        
+        }
         /// <summary>
         /// Поиск одного элемента
         /// </summary>
@@ -710,7 +711,7 @@ namespace TimeSheetManger
         {
             var item = F_All<T>(restrictions, true);
             return item.Count > 0 ? item[0] : null;
-        }        
+        }
         /// <summary>
         /// Поиск элемента по ID
         /// </summary>
@@ -732,8 +733,7 @@ namespace TimeSheetManger
             string tableName = GetTableName(typeof(T));
             FbCommand command = new FbCommand(string.Format("select count(*) from {0} where {1};", tableName, where_str), DB.Connection);
             return (int)command.ExecuteScalar();            
-        }
-        
+        }        
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldInDBName] = ID;
@@ -768,5 +768,5 @@ namespace TimeSheetManger
         {
             return ID.GetHashCode();            
         }
-    }    
+    }
 }

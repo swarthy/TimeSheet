@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2D7F60B4-6296-4DC0-9CBC-D0A75B02217D}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TimeSheetManger</RootNamespace>
     <AssemblyName>Tabel</AssemblyName>
@@ -188,31 +188,18 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
-    <None Include="Resources\User.ico" />
-    <None Include="Resources\Upload.ico" />
-    <None Include="Resources\Text Document.ico" />
-    <None Include="Resources\Settings.ico" />
-    <None Include="Resources\Search.ico" />
-    <None Include="Resources\Save.ico" />
-    <None Include="Resources\Rename.ico" />
-    <None Include="Resources\Remove.ico" />
-    <None Include="Resources\Refresh.ico" />
-    <None Include="Resources\Properties.ico" />
-    <None Include="Resources\Print.ico" />
-    <None Include="Resources\Preview.ico" />
-    <None Include="Resources\Open.ico" />
-    <None Include="Resources\New.ico" />
-    <None Include="Resources\Log Out.ico" />
-    <None Include="Resources\Key.ico" />
-    <None Include="Resources\Information.ico" />
-    <None Include="Resources\Find.ico" />
-    <None Include="Resources\Favorites.ico" />
-    <None Include="Resources\Edit.ico" />
-    <None Include="Resources\Download.ico" />
-    <None Include="Resources\Delete.ico" />
-    <None Include="Resources\Calendar.ico" />
-    <None Include="Resources\Archive.ico" />
-    <None Include="Resources\Add.ico" />
+    <None Include="Resources\XLSX-16x16.png" />
+    <None Include="Resources\Calendar_32x32.png" />
+    <None Include="Resources\Calendar_16x16.png" />
+    <None Include="Resources\Check_16x16.png" />
+    <None Include="Resources\Cancel_16x16.png" />
+    <None Include="Resources\Save_16x16.png" />
+    <None Include="Resources\Add_16x16.png" />
+    <None Include="Resources\Edit_16x16.png" />
+    <None Include="Resources\Settings_16x16.png" />
+    <None Include="Resources\Log Out_16x16.png" />
+    <None Include="Resources\User_16x16.png" />
+    <None Include="Resources\Information_16x16.png" />
     <None Include="template\temp.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

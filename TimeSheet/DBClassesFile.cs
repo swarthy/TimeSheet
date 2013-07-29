@@ -307,7 +307,7 @@ namespace TimeSheetManger
         }
         public override string ToString()
         {
-            return _ShortNameAndNumber;
+            return _ShortName;
         }
         #region Properties
         public string _ShortName
@@ -378,6 +378,17 @@ namespace TimeSheetManger
             set
             {
                 this["Table_Number"] = value;
+            }
+        }
+        public int Priority
+        {
+            get
+            {
+                return this["Priority"] == null ? 0 : (int)this["Priority"];
+            }
+            set
+            {
+                this["Priority"] = value;
             }
         }
         public Post Post
@@ -601,6 +612,7 @@ namespace TimeSheetManger
     public class Calendar : Domain
     {
         new public static string tableName = "CALENDAR";
+        new public static string OrderBy = "CYear";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("CALENDAR_ID",typeof(Calendar_Content))}
@@ -618,7 +630,12 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return Name.Name;
-        }        
+        }
+        public void Generate12Months()
+        {
+            for (int i = 1; i <= 12; i++)            
+                Months.Add(new Calendar_Content(this, i, 0, 0));            
+        }
         #region Properties
         public DBList<Calendar_Content> Months
         {
@@ -659,12 +676,13 @@ namespace TimeSheetManger
             : base(typeof(Calendar))
         {
             Name = name;
-            CYear = year;
+            CYear = year;            
         }
     }
     public class Calendar_Content : Domain
     {
         new public static string tableName = "CALENDAR_CONTENT";
+        new public static string OrderBy = "CMonth";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar)) }
@@ -893,6 +911,7 @@ namespace TimeSheetManger
     public class TimeSheet_Content : Domain
     {
         new public static string tableName = "TIMESHEET_CONTENT";
+        new public static string OrderBy = "Personal_ID";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
@@ -1089,6 +1108,7 @@ namespace TimeSheetManger
     public class TimeSheet_Day : Domain
     {
         new public static string tableName = "TIMESHEET_DAYS";
+        new public static string OrderBy = "Item_Date";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"TimeSheetContent", new Link("TimeSheet_Content_ID",typeof(TimeSheet_Content))},

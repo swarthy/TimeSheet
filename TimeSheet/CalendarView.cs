@@ -32,7 +32,8 @@ namespace SwarthyComponents
         public bool ShowTitle { get; set; }
         public bool ShowDayOfWeek { get; set; }
         public DateTime OnMouseDate {get; private set;}
-        public DateTime SelectedDate { get; set; }
+        private DateTime selectedDate;
+        public DateTime SelectedDate { get { return selectedDate; } set { selectedDate = value; if (OnSelectedDateChanged != null) OnSelectedDateChanged(this, EventArgs.Empty); } }
         public StyleSettings HoverDay { get; set; }
         public StyleSettings SelectedDay { get; set; }
         Point MousePos= new Point(-1, -1);
@@ -49,6 +50,7 @@ namespace SwarthyComponents
             DefaultDayStyle = new StyleSettings(Color.Transparent, Color.Silver, Font, Brushes.Black);
             HoverDay = new StyleSettings(Color.DarkOrange, Color.Red);
             SelectedDay = new StyleSettings(Color.LightBlue, Color.Blue);
+            SelectedDate = DateTime.Today;
             month = DateTime.Today.Month;
             Year = DateTime.Today.Year;
             //CultureInfo.CurrentCulture.DateTimeFormat.AbbreviatedDayNames;
@@ -131,9 +133,7 @@ namespace SwarthyComponents
             if (OnMouseDate != DateTime.MinValue)
             {
                 SelectedDate = OnMouseDate;
-                Refresh();
-                if (OnSelectedDateChanged != null)
-                    OnSelectedDateChanged(this, EventArgs.Empty);
+                Refresh();                
             }
             base.OnMouseClick(e);
         }
