@@ -105,12 +105,13 @@ namespace TimeSheetManger
             TimeSheet_Day.Initialize<TimeSheet_Day>();
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
+            DBSettings.Initialize<DBSettings>();
             #endregion                                      
         }        
         Color GetColor(string key)
-        {
-            var saved = Helper.GetForCurrentUser("user", "color_" + key) ?? Helper.Get("user", "color_" + key);
-            if (saved.ToString()=="")
+        {            
+            var saved = DBSettings.Get("color_" + key);
+            if (saved=="")
                 return key == "weekend" ? Color.MistyRose : key == "holyday" ? Color.LightCoral : key == "shortday" ? Color.BurlyWood : Color.Black;
             return Color.FromArgb(Convert.ToInt32(saved));
         }
@@ -150,10 +151,7 @@ namespace TimeSheetManger
                     tbAuthLogin.Text = Helper.Get("user", "lastLogin").ToString();
                     HideAllShowThis(pAuth);
                     break;
-                case AppState.Workspace:                             
-                    cpWeekEnd.BackColor =  weekEndColor = GetColor("weekend");
-                    cpHolyday.BackColor = holyDayColor = GetColor("holyday");
-                    cpShortDay.BackColor = shortDayColor = GetColor("shortday");
+                case AppState.Workspace:                                                 
                     HideAllShowThis(pWorkspace);
                     btnAdminPanel.Show();
                     pTimeSheetEditor.Hide();
@@ -241,6 +239,7 @@ namespace TimeSheetManger
                 Helper.Set("user", "lastLogin", tbAuthLogin.Text);
                 currentUser = user;                
                 changeState(AppState.Workspace);
+                tbAuthPass.Text = "";
             }
         }
 
@@ -593,43 +592,23 @@ namespace TimeSheetManger
                 e.Cancel = true;
         }
 
-        private void cpWeekEnd_DoubleClick(object sender, EventArgs e)
-        {
-            cdDayColors.Color = cpWeekEnd.BackColor;
-            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                cpWeekEnd.BackColor = cdDayColors.Color;
-                Helper.SetForCurrentUser("user","color_weekend",cdDayColors.Color.ToArgb());
-                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
-        private void cpHolyday_DoubleClick(object sender, EventArgs e)
-        {
-            cdDayColors.Color = cpHolyday.BackColor;
-            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                cpHolyday.BackColor = cdDayColors.Color;
-                Helper.SetForCurrentUser("user", "color_holyday", cdDayColors.Color.ToArgb());
-                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-        }
-
         private void cpShortDay_DoubleClick(object sender, EventArgs e)
         {
-            cdDayColors.Color = cpShortDay.BackColor;
-            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                cpShortDay.BackColor = cdDayColors.Color;
-                Helper.SetForCurrentUser("user", "color_shortday", cdDayColors.Color.ToArgb());
-                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            
         }
 
         private void tbAuthPass_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)            
-                btnLoginEnter_Click(this, EventArgs.Empty);            
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.Handled = true;
+                btnLoginEnter_Click(this, EventArgs.Empty);                                
+            }
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
     public enum AppState

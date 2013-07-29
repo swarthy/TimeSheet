@@ -12,12 +12,16 @@ namespace TimeSheetManger
 {
     public partial class AdminPanelForm : Form
     {
+        public static string[] SuperAdminCatalogs = new string[] { "Пользователи", "Персонал", "Должности", "Отделения", "Показатели", "ЛПУ" };
+        public static string[] AdminCatalogs = new string[] { "Персонал", "Должности", "Отделения" };
         public static DayOfWeek[] WeekEnd = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
         MainForm mainForm;
         int lastYear;
         DBList<SpecialDay> specialDays;
         bool programChanges = false;
         SpecialDay currentSelected = null;
+        TabPage currentOpened = null;
+        bool needFreezeOtherTabs = false;
         string[] tableNames = new string[]{
             "USERS", "PERSONAL", "POSTS", "DEPARTMENT", "FLAGS", "LPU"
         };
@@ -32,7 +36,20 @@ namespace TimeSheetManger
             weekEnd = new StyleSettings(MainForm.weekEndColor, Color.Silver);
             holyDay = new StyleSettings(MainForm.holyDayColor, Color.Silver);
             shortDay = new StyleSettings(MainForm.shortDayColor, Color.Silver);
+            cpWeekEnd.BackColor = MainForm.weekEndColor;
+            cpHolyday.BackColor = MainForm.holyDayColor;
+            cpShortDay.BackColor = MainForm.shortDayColor;
             cHolydayCalendar.OnSelectedDateChanged += new EventHandler(cHolydayCalendar_DateChanged);
+            if (mainform.currentUser._IS_ADMIN)
+            {
+                foreach (var item in SuperAdminCatalogs)
+                    cbCatalogs.Items.Add(item);
+                gbColors.Show();
+            }
+            else
+                if (mainform.currentUser._IS_MODERATOR)
+                    foreach (var item in AdminCatalogs)
+                        cbCatalogs.Items.Add(item);
         }
         private void AdminPanelForm_Load(object sender, EventArgs e)
         {
@@ -45,7 +62,7 @@ namespace TimeSheetManger
         {
             if (cbCatalogs.SelectedIndex == -1)
                 return;
-            CatalogEditorForm form = new CatalogEditorForm(mainForm);
+            CatalogEditorForm form = new CatalogEditorForm(mainForm, cbCatalogs.Text);
             switch (cbCatalogs.Text)
             {
                 case "Пользователи":
@@ -353,6 +370,50 @@ namespace TimeSheetManger
         private void dtpHolydayMonthPicker_ValueChanged(object sender, EventArgs e)
         {
             cHolydayCalendar.SetDate(dtpHolydayMonthPicker.Value.Month, dtpHolydayMonthPicker.Value.Year);
+        }
+
+        private void cpWeekEnd_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpWeekEnd.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpWeekEnd.BackColor = MainForm.weekEndColor = cdDayColors.Color;                 
+                DBSettings.Set("color_weekend", cdDayColors.Color.ToArgb().ToString());
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void cpHolyday_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpHolyday.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpHolyday.BackColor = MainForm.holyDayColor = cdDayColors.Color;                 
+                DBSettings.Set("color_holyday", cdDayColors.Color.ToArgb().ToString());
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void cpShortDay_DoubleClick(object sender, EventArgs e)
+        {
+            cdDayColors.Color = cpShortDay.BackColor;
+            if (cdDayColors.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                cpShortDay.BackColor = MainForm.shortDayColor = cdDayColors.Color;                
+                DBSettings.Set("color_shortday", cdDayColors.Color.ToArgb().ToString());                
+                MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+        
+        private void tbContent_Selecting(object sender, TabControlCancelEventArgs e)
+        {
+            if (currentOpened != e.TabPage && needFreezeOtherTabs)
+            {
+                e.Cancel = true;
+                MessageBox.Show("Переключение вкладок отменено. Сначала завершите редактирование.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+                currentOpened = e.TabPage;
         }
     }
 }

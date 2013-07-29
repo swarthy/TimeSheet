@@ -36,7 +36,7 @@ namespace TimeSheetManger
         {
             get
             {
-                return string.Format("{0} ({1})", Login, Profile._ShortName);
+                return string.Format("{0} ({1})", Login, Profile._ShortNameAndNumber);
             }
         }
         #region Properties
@@ -306,18 +306,28 @@ namespace TimeSheetManger
         }
         public override string ToString()
         {
-            return _ShortName;
+            return _ShortNameAndNumber;
         }
         #region Properties
         public string _ShortName
         {
             get
             {
-                if (FirstName.Length == 0 || MiddleName.Length==0)
+                if (FirstName.Length == 0 || MiddleName.Length == 0)
                     return LastName;
                 return string.Format("{0} {1}.{2}.", LastName, FirstName[0], MiddleName[0]);
             }
         }
+        public string _ShortNameAndNumber
+        {
+            get
+            {
+                if (FirstName.Length == 0 || MiddleName.Length == 0)
+                    return LastName;
+                return string.Format("{0} {1}.{2}. ({3})", LastName, FirstName[0], MiddleName[0], Table_Number);
+            }
+        }
+
         public string _FullName
         {
             get
@@ -1212,6 +1222,67 @@ namespace TimeSheetManger
             : base(typeof(SpecialDay))
         {
             Spec_Date = date;
+        }
+    }
+    public class DBSettings : Domain
+    {
+        new public static string tableName = "SETTINGS";
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
+        #region Properties        
+        public string Setting_Key
+        {
+            get
+            {
+                return this["Setting_Key"] == null ? "" : this["Setting_Key"].ToString();
+            }
+            set
+            {
+                this["Setting_Key"] = value;
+            }
+        }
+        public string Setting_Value
+        {
+            get
+            {
+                return this["Setting_Value"] == null ? "" : this["Setting_Value"].ToString();
+            }
+            set
+            {
+                this["Setting_Value"] = value;
+            }
+        }        
+        #endregion
+        public static string Get(string key)
+        {
+            var search_result = DBSettings.Find<DBSettings>(new { Setting_Key = key });
+            return search_result == null ? "" : search_result.Setting_Value;
+        }
+        public static void Set(string key, string value)
+        {
+            var setting = DBSettings.Find<DBSettings>(new { Setting_Key = key });
+            if (setting == null)
+                setting = new DBSettings(key, value);
+            else
+                setting.Setting_Value = value;
+            setting.Save();
+        }
+        public DBSettings _Self
+        {
+            get
+            {
+                return this;
+            }
+        }
+        
+        public DBSettings()
+            : base(typeof(DBSettings))
+        {
+        }
+        public DBSettings(string key, string value)
+            : base(typeof(DBSettings))
+        {
+            Setting_Key = key;
+            Setting_Value = value;
         }
     }
 }

@@ -30,6 +30,12 @@
         {
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.lbweekend = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cpWeekEnd = new System.Windows.Forms.Panel();
+            this.cpShortDay = new System.Windows.Forms.Panel();
+            this.cpHolyday = new System.Windows.Forms.Panel();
+            this.label2 = new System.Windows.Forms.Label();
             this.btnEditCatalog = new System.Windows.Forms.Button();
             this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -68,6 +74,8 @@
             this.rbHolyDay = new System.Windows.Forms.RadioButton();
             this.rbWeekEnd = new System.Windows.Forms.RadioButton();
             this.rbUsualDay = new System.Windows.Forms.RadioButton();
+            this.cdDayColors = new System.Windows.Forms.ColorDialog();
+            this.gbColors = new System.Windows.Forms.GroupBox();
             this.cHolydayCalendar = new SwarthyComponents.CalendarView();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -77,6 +85,7 @@
             this.gbValues.SuspendLayout();
             this.gbAddYear.SuspendLayout();
             this.tabPage3.SuspendLayout();
+            this.gbColors.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbContent
@@ -92,9 +101,11 @@
             this.tbContent.SelectedIndex = 0;
             this.tbContent.Size = new System.Drawing.Size(469, 284);
             this.tbContent.TabIndex = 0;
+            this.tbContent.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tbContent_Selecting);
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.gbColors);
             this.tabPage1.Controls.Add(this.btnEditCatalog);
             this.tabPage1.Controls.Add(this.cbCatalogs);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
@@ -104,6 +115,57 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // lbweekend
+            // 
+            this.lbweekend.AutoSize = true;
+            this.lbweekend.Location = new System.Drawing.Point(6, 25);
+            this.lbweekend.Name = "lbweekend";
+            this.lbweekend.Size = new System.Drawing.Size(89, 13);
+            this.lbweekend.TabIndex = 7;
+            this.lbweekend.Text = "Выходные дни - ";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 63);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(109, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Сокращенные дни - ";
+            // 
+            // cpWeekEnd
+            // 
+            this.cpWeekEnd.Location = new System.Drawing.Point(118, 25);
+            this.cpWeekEnd.Name = "cpWeekEnd";
+            this.cpWeekEnd.Size = new System.Drawing.Size(32, 13);
+            this.cpWeekEnd.TabIndex = 6;
+            this.cpWeekEnd.DoubleClick += new System.EventHandler(this.cpWeekEnd_DoubleClick);
+            // 
+            // cpShortDay
+            // 
+            this.cpShortDay.Location = new System.Drawing.Point(118, 63);
+            this.cpShortDay.Name = "cpShortDay";
+            this.cpShortDay.Size = new System.Drawing.Size(32, 13);
+            this.cpShortDay.TabIndex = 6;
+            this.cpShortDay.DoubleClick += new System.EventHandler(this.cpShortDay_DoubleClick);
+            // 
+            // cpHolyday
+            // 
+            this.cpHolyday.Location = new System.Drawing.Point(118, 44);
+            this.cpHolyday.Name = "cpHolyday";
+            this.cpHolyday.Size = new System.Drawing.Size(32, 13);
+            this.cpHolyday.TabIndex = 6;
+            this.cpHolyday.DoubleClick += new System.EventHandler(this.cpHolyday_DoubleClick);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 44);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(106, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Праздничные дни - ";
             // 
             // btnEditCatalog
             // 
@@ -122,13 +184,6 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.cbCatalogs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCatalogs.FormattingEnabled = true;
-            this.cbCatalogs.Items.AddRange(new object[] {
-            "Пользователи",
-            "Персонал",
-            "Должности",
-            "Отделения",
-            "Показатели",
-            "ЛПУ"});
             this.cbCatalogs.Location = new System.Drawing.Point(6, 6);
             this.cbCatalogs.Name = "cbCatalogs";
             this.cbCatalogs.Size = new System.Drawing.Size(345, 21);
@@ -538,6 +593,22 @@
             this.rbUsualDay.UseVisualStyleBackColor = true;
             this.rbUsualDay.CheckedChanged += new System.EventHandler(this.rbUsualDay_CheckedChanged);
             // 
+            // gbColors
+            // 
+            this.gbColors.Controls.Add(this.lbweekend);
+            this.gbColors.Controls.Add(this.label3);
+            this.gbColors.Controls.Add(this.label2);
+            this.gbColors.Controls.Add(this.cpWeekEnd);
+            this.gbColors.Controls.Add(this.cpHolyday);
+            this.gbColors.Controls.Add(this.cpShortDay);
+            this.gbColors.Location = new System.Drawing.Point(6, 33);
+            this.gbColors.Name = "gbColors";
+            this.gbColors.Size = new System.Drawing.Size(168, 98);
+            this.gbColors.TabIndex = 10;
+            this.gbColors.TabStop = false;
+            this.gbColors.Text = "Настройка цветов";
+            this.gbColors.Visible = false;
+            // 
             // cHolydayCalendar
             // 
             this.cHolydayCalendar.DayPadding = 1;
@@ -580,6 +651,8 @@
             this.gbAddYear.ResumeLayout(false);
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
+            this.gbColors.ResumeLayout(false);
+            this.gbColors.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -627,5 +700,13 @@
         private System.Windows.Forms.Button btnHideName;
         private SwarthyComponents.CalendarView cHolydayCalendar;
         private System.Windows.Forms.DateTimePicker dtpHolydayMonthPicker;
+        private System.Windows.Forms.Label lbweekend;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Panel cpWeekEnd;
+        private System.Windows.Forms.Panel cpShortDay;
+        private System.Windows.Forms.Panel cpHolyday;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ColorDialog cdDayColors;
+        private System.Windows.Forms.GroupBox gbColors;
     }
 }

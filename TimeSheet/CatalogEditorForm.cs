@@ -21,11 +21,12 @@ namespace TimeSheetManger
         DBBindingSource<Domain> bs = new DBBindingSource<Domain>();
         MainForm mainForm;
                         
-        public CatalogEditorForm(MainForm mainform)
+        public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
             mainForm = mainform;
             InitializeComponent();
-            grid.AutoGenerateColumns = false;                 
+            grid.AutoGenerateColumns = false;
+            Text = string.Format("Справочник: {0}", catalogTitle);
         }
         public void OpenUsers()
         {
@@ -53,7 +54,7 @@ namespace TimeSheetManger
             DataGridViewComboBoxColumn profile = new DataGridViewComboBoxColumn();
             profile.ValueMember = "_Self";
             profile.DataPropertyName = "Profile";
-            profile.DisplayMember = "_ShortName";
+            profile.DisplayMember = "_ShortNameAndNumber";
             profile.HeaderText = "Профиль";
             profile.DataSource = Personal.All<Personal>();
             grid.Columns.Add(profile);
@@ -135,7 +136,7 @@ namespace TimeSheetManger
             DataGridViewComboBoxColumn maindoc = new DataGridViewComboBoxColumn();
             maindoc.ValueMember = "_Self";
             maindoc.DataPropertyName = "MainDoc";
-            maindoc.DisplayMember = "_ShortName";
+            maindoc.DisplayMember = "_ShortNameAndNumber";
             maindoc.HeaderText = "Главный врач";
             maindoc.DataSource = mainForm.currentLPU.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
             grid.Columns.Add(maindoc);
@@ -176,7 +177,7 @@ namespace TimeSheetManger
             DataGridViewComboBoxColumn departmentmanager = new DataGridViewComboBoxColumn();
             departmentmanager.ValueMember = "_Self";
             departmentmanager.DataPropertyName = "DepartmentManager";
-            departmentmanager.DisplayMember = "_ShortName";
+            departmentmanager.DisplayMember = "_ShortNameAndNumber";
             departmentmanager.HeaderText = "Заведующий отделения";
             departmentmanager.DataSource = mainForm.currentLPU.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
             grid.Columns.Add(departmentmanager);

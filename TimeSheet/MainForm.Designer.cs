@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.pLPUSelection = new System.Windows.Forms.Panel();
+            this.btnExit = new System.Windows.Forms.Button();
             this.btnLPUChoiceEnter = new System.Windows.Forms.Button();
             this.lbChoiceLPU = new System.Windows.Forms.Label();
             this.cbLPUList = new System.Windows.Forms.ComboBox();
@@ -47,13 +48,6 @@
             this.btnAdminPanel = new System.Windows.Forms.Button();
             this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
-            this.pColors = new System.Windows.Forms.Panel();
-            this.lbweekend = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.cpWeekEnd = new System.Windows.Forms.Panel();
-            this.cpShortDay = new System.Windows.Forms.Panel();
-            this.cpHolyday = new System.Windows.Forms.Panel();
-            this.label2 = new System.Windows.Forms.Label();
             this.btnExportToExcel = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -79,12 +73,10 @@
             this.tspbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.tsslSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
-            this.cdDayColors = new System.Windows.Forms.ColorDialog();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
-            this.pColors.SuspendLayout();
             this.pDepartment.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
@@ -94,13 +86,24 @@
             // pLPUSelection
             // 
             this.pLPUSelection.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pLPUSelection.Controls.Add(this.btnExit);
             this.pLPUSelection.Controls.Add(this.btnLPUChoiceEnter);
             this.pLPUSelection.Controls.Add(this.lbChoiceLPU);
             this.pLPUSelection.Controls.Add(this.cbLPUList);
             this.pLPUSelection.Location = new System.Drawing.Point(147, 189);
             this.pLPUSelection.Name = "pLPUSelection";
-            this.pLPUSelection.Size = new System.Drawing.Size(400, 26);
+            this.pLPUSelection.Size = new System.Drawing.Size(400, 62);
             this.pLPUSelection.TabIndex = 0;
+            // 
+            // btnExit
+            // 
+            this.btnExit.Location = new System.Drawing.Point(318, 30);
+            this.btnExit.Name = "btnExit";
+            this.btnExit.Size = new System.Drawing.Size(75, 23);
+            this.btnExit.TabIndex = 3;
+            this.btnExit.Text = "Выход";
+            this.btnExit.UseVisualStyleBackColor = true;
+            this.btnExit.Click += new System.EventHandler(this.btnExit_Click);
             // 
             // btnLPUChoiceEnter
             // 
@@ -239,7 +242,7 @@
             // 
             this.btnAdminPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnAdminPanel.Enabled = false;
-            this.btnAdminPanel.Location = new System.Drawing.Point(424, 3);
+            this.btnAdminPanel.Location = new System.Drawing.Point(358, 3);
             this.btnAdminPanel.Name = "btnAdminPanel";
             this.btnAdminPanel.Size = new System.Drawing.Size(159, 23);
             this.btnAdminPanel.TabIndex = 6;
@@ -251,11 +254,11 @@
             // btnLogout
             // 
             this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLogout.Location = new System.Drawing.Point(589, 3);
+            this.btnLogout.Location = new System.Drawing.Point(523, 3);
             this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Size = new System.Drawing.Size(75, 23);
+            this.btnLogout.Size = new System.Drawing.Size(138, 23);
             this.btnLogout.TabIndex = 5;
-            this.btnLogout.Text = "Выход";
+            this.btnLogout.Text = "Смена пользователя";
             this.btnLogout.UseVisualStyleBackColor = true;
             this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
@@ -264,7 +267,6 @@
             this.pTimeSheetEditor.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pTimeSheetEditor.Controls.Add(this.pColors);
             this.pTimeSheetEditor.Controls.Add(this.btnExportToExcel);
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
@@ -274,71 +276,6 @@
             this.pTimeSheetEditor.Size = new System.Drawing.Size(664, 365);
             this.pTimeSheetEditor.TabIndex = 4;
             this.pTimeSheetEditor.Visible = false;
-            // 
-            // pColors
-            // 
-            this.pColors.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pColors.Controls.Add(this.lbweekend);
-            this.pColors.Controls.Add(this.label3);
-            this.pColors.Controls.Add(this.cpWeekEnd);
-            this.pColors.Controls.Add(this.cpShortDay);
-            this.pColors.Controls.Add(this.cpHolyday);
-            this.pColors.Controls.Add(this.label2);
-            this.pColors.Location = new System.Drawing.Point(3, 302);
-            this.pColors.Name = "pColors";
-            this.pColors.Size = new System.Drawing.Size(158, 59);
-            this.pColors.TabIndex = 8;
-            // 
-            // lbweekend
-            // 
-            this.lbweekend.AutoSize = true;
-            this.lbweekend.Location = new System.Drawing.Point(3, 0);
-            this.lbweekend.Name = "lbweekend";
-            this.lbweekend.Size = new System.Drawing.Size(89, 13);
-            this.lbweekend.TabIndex = 7;
-            this.lbweekend.Text = "Выходные дни - ";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(3, 38);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(109, 13);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Сокращенные дни - ";
-            // 
-            // cpWeekEnd
-            // 
-            this.cpWeekEnd.Location = new System.Drawing.Point(115, 0);
-            this.cpWeekEnd.Name = "cpWeekEnd";
-            this.cpWeekEnd.Size = new System.Drawing.Size(32, 13);
-            this.cpWeekEnd.TabIndex = 6;
-            this.cpWeekEnd.DoubleClick += new System.EventHandler(this.cpWeekEnd_DoubleClick);
-            // 
-            // cpShortDay
-            // 
-            this.cpShortDay.Location = new System.Drawing.Point(115, 38);
-            this.cpShortDay.Name = "cpShortDay";
-            this.cpShortDay.Size = new System.Drawing.Size(32, 13);
-            this.cpShortDay.TabIndex = 6;
-            this.cpShortDay.DoubleClick += new System.EventHandler(this.cpShortDay_DoubleClick);
-            // 
-            // cpHolyday
-            // 
-            this.cpHolyday.Location = new System.Drawing.Point(115, 19);
-            this.cpHolyday.Name = "cpHolyday";
-            this.cpHolyday.Size = new System.Drawing.Size(32, 13);
-            this.cpHolyday.TabIndex = 6;
-            this.cpHolyday.DoubleClick += new System.EventHandler(this.cpHolyday_DoubleClick);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 19);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(106, 13);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Праздничные дни - ";
             // 
             // btnExportToExcel
             // 
@@ -557,18 +494,13 @@
             // tsslSpace
             // 
             this.tsslSpace.Name = "tsslSpace";
-            this.tsslSpace.Size = new System.Drawing.Size(634, 17);
+            this.tsslSpace.Size = new System.Drawing.Size(501, 17);
             this.tsslSpace.Spring = true;
             // 
             // tsslStatusRight
             // 
             this.tsslStatusRight.Name = "tsslStatusRight";
             this.tsslStatusRight.Size = new System.Drawing.Size(0, 17);
-            // 
-            // cdDayColors
-            // 
-            this.cdDayColors.AnyColor = true;
-            this.cdDayColors.FullOpen = true;
             // 
             // MainForm
             // 
@@ -594,8 +526,6 @@
             this.pWorkspace.ResumeLayout(false);
             this.pWorkspace.PerformLayout();
             this.pTimeSheetEditor.ResumeLayout(false);
-            this.pColors.ResumeLayout(false);
-            this.pColors.PerformLayout();
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
@@ -651,14 +581,7 @@
         private System.Windows.Forms.ToolStripProgressBar tspbProgress;
         private System.Windows.Forms.ToolStripStatusLabel tsslSpace;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusRight;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Panel cpShortDay;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Panel cpHolyday;
-        private System.Windows.Forms.Label lbweekend;
-        private System.Windows.Forms.Panel cpWeekEnd;
-        private System.Windows.Forms.ColorDialog cdDayColors;
-        private System.Windows.Forms.Panel pColors;
+        private System.Windows.Forms.Button btnExit;
 
 
 
