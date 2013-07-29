@@ -88,7 +88,7 @@ namespace TimeSheetManger
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
-            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; })); };
+            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information); })); };
 
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
@@ -580,6 +580,7 @@ namespace TimeSheetManger
         private void btnExportToExcel_Click(object sender, EventArgs e)
         {
             dlgSaveFile.FileName = string.Format("{0} - {1}", currentTimeSheet.Department.Name, currentTimeSheet._GetDate.ToString("MMMM yyyy"));
+            dlgSaveFile.InitialDirectory = Path.GetDirectoryName(Application.ExecutablePath) + @"\export";
             if (currentTimeSheet.Content.Count > 0 && dlgSaveFile.ShowDialog()==System.Windows.Forms.DialogResult.OK)
             {
                 StatusLeft = "Заполнение шаблона...";
@@ -596,8 +597,7 @@ namespace TimeSheetManger
                 try
                 {
                     Thread exprt = new Thread(a => ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx", dlgSaveFile.FileName));
-                    exprt.Start();
-                    //MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    exprt.Start();                    
                 }
                 catch (Exception ex)
                 {
@@ -616,11 +616,6 @@ namespace TimeSheetManger
                 e.Cancel = true;
         }
 
-        private void cpShortDay_DoubleClick(object sender, EventArgs e)
-        {
-            
-        }
-
         private void tbAuthPass_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -636,8 +631,7 @@ namespace TimeSheetManger
         }
 
         private void miAbout_Click(object sender, EventArgs e)
-        {            
-            //MessageBox.Show(string.Format("Версия: {0}", Environment.Version), "Учет использования рабочего времени", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        {
             AboutBox about = new AboutBox();
             about.ShowDialog();            
         }
