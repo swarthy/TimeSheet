@@ -15,7 +15,7 @@ namespace TimeSheetManger
     {
         public static IniFile settings;    
         public static Random R = new Random();
-        public static string getMD5(string input)
+        /*public static string getMD5(string input)
         {
             MD5 md5Hasher = MD5.Create();
             byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(input));
@@ -23,7 +23,7 @@ namespace TimeSheetManger
             for (int i = 0; i < data.Length; i++)
                 sBuilder.Append(data[i].ToString("x2"));
             return sBuilder.ToString();
-        }
+        }*/
         public static void Set(string section, string key, object value)
         {
             settings.IniWriteValue(section, key, value.ToString());

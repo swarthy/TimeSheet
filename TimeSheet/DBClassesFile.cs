@@ -146,7 +146,8 @@ namespace TimeSheetManger
             Role = role;
             Profile = profile;
             Login = login;
-            Pass = Helper.getMD5(password);
+            //Pass = Helper.getMD5(password);
+            Pass = password;
         }
     }
     public class UserDepartment : Domain

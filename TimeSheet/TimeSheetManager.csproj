@@ -63,6 +63,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox.Designer.cs">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="AddTimeSheetInstanceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,6 +145,9 @@
     <Compile Include="TimeSheets.Designer.cs">
       <DependentUpon>TimeSheets.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AddTimeSheetInstanceForm.resx">
       <DependentUpon>AddTimeSheetInstanceForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -179,7 +188,31 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
-    <None Include="Resources\ajax-loader.gif" />
+    <None Include="Resources\User.ico" />
+    <None Include="Resources\Upload.ico" />
+    <None Include="Resources\Text Document.ico" />
+    <None Include="Resources\Settings.ico" />
+    <None Include="Resources\Search.ico" />
+    <None Include="Resources\Save.ico" />
+    <None Include="Resources\Rename.ico" />
+    <None Include="Resources\Remove.ico" />
+    <None Include="Resources\Refresh.ico" />
+    <None Include="Resources\Properties.ico" />
+    <None Include="Resources\Print.ico" />
+    <None Include="Resources\Preview.ico" />
+    <None Include="Resources\Open.ico" />
+    <None Include="Resources\New.ico" />
+    <None Include="Resources\Log Out.ico" />
+    <None Include="Resources\Key.ico" />
+    <None Include="Resources\Information.ico" />
+    <None Include="Resources\Find.ico" />
+    <None Include="Resources\Favorites.ico" />
+    <None Include="Resources\Edit.ico" />
+    <None Include="Resources\Download.ico" />
+    <None Include="Resources\Delete.ico" />
+    <None Include="Resources\Calendar.ico" />
+    <None Include="Resources\Archive.ico" />
+    <None Include="Resources\Add.ico" />
     <None Include="template\temp.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

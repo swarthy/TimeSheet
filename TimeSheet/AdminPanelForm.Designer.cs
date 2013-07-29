@@ -637,6 +637,7 @@
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "AdminPanelForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Панель администратора";
             this.Load += new System.EventHandler(this.AdminPanelForm_Load);
             this.tbContent.ResumeLayout(false);

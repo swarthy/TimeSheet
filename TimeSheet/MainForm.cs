@@ -38,7 +38,7 @@ namespace TimeSheetManger
             set
             {
                 curUsr = value;                
-                btnAdminPanel.Visible = btnAdminPanel.Enabled = curUsr!=null && curUsr._IS_MODERATOR;
+                miAdminPanel.Visible = curUsr!=null && curUsr._IS_MODERATOR;
             }
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
@@ -144,18 +144,20 @@ namespace TimeSheetManger
                         changeState(AppState.Auth);
                         return;
                     }
+                    msMainMenu.Hide();
                     HideAllShowThis(pLPUSelection);
                     break;
                 case AppState.Auth:
                     lbAuthSelectedLPU.Text = currentLPU.Name;
                     tbAuthLogin.Text = Helper.Get("user", "lastLogin").ToString();
+                    msMainMenu.Hide();
                     HideAllShowThis(pAuth);
                     break;
                 case AppState.Workspace:                                                 
-                    HideAllShowThis(pWorkspace);
-                    btnAdminPanel.Show();
+                    HideAllShowThis(pWorkspace);                    
                     pTimeSheetEditor.Hide();
                     lbCurrentTimeSheetName.Text = "";
+                    msMainMenu.Show();
                     currentUser.TimeSheets.Sort((t1, t2) =>
                     {
                         var r1 = t1.Department.Name.CompareTo(t2.Department.Name);
@@ -170,8 +172,7 @@ namespace TimeSheetManger
                     break;
                 case AppState.EditTimeSheet:                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
-                    UpdateColumns(currentTimeSheet);
-                    btnAdminPanel.Hide();
+                    UpdateColumns(currentTimeSheet);                    
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager._FullName;
@@ -215,7 +216,7 @@ namespace TimeSheetManger
             //currentTimeSheet = TimeSheetInstance.Get<TimeSheetInstance>(25);
             changeState(AppState.Workspace);//для сортировки списка табелей
             //changeState(AppState.EditTimeSheet);
-            btnAdminPanel_Click(this, EventArgs.Empty);
+            HideAllShowThis(pDesktop);
             #endif
         }
 
@@ -231,7 +232,7 @@ namespace TimeSheetManger
 
         private void btnLoginEnter_Click(object sender, EventArgs e)
         {
-            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, Helper.getMD5(tbAuthPass.Text), currentLPU.ID);            
+            User user = User.Find<User>("login = '{0}' and pass = '{1}' and lpu_id = '{2}'", tbAuthLogin.Text, tbAuthPass.Text, currentLPU.ID);            
             if (user == null)
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
@@ -333,13 +334,13 @@ namespace TimeSheetManger
             }
         }
 
-        private void btnLogout_Click(object sender, EventArgs e)
+        private void miLogout_Click(object sender, EventArgs e)
         {
             currentUser = null;
             changeState(AppState.Auth);
         }
 
-        private void btnAdminPanel_Click(object sender, EventArgs e)
+        private void miAdminPanel_Click(object sender, EventArgs e)
         {
             AdminPanelForm admin = new AdminPanelForm(this);
             admin.ShowDialog();
@@ -609,6 +610,13 @@ namespace TimeSheetManger
         private void btnExit_Click(object sender, EventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        private void miAbout_Click(object sender, EventArgs e)
+        {            
+            //MessageBox.Show(string.Format("Версия: {0}", Environment.Version), "Учет использования рабочего времени", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AboutBox about = new AboutBox();
+            about.ShowDialog();
         }
     }
     public enum AppState

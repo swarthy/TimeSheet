@@ -45,8 +45,6 @@
             this.btnLoginEnter = new System.Windows.Forms.Button();
             this.pWorkspace = new System.Windows.Forms.Panel();
             this.lbCurrentTimeSheetName = new System.Windows.Forms.Label();
-            this.btnAdminPanel = new System.Windows.Forms.Button();
-            this.btnLogout = new System.Windows.Forms.Button();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
             this.btnExportToExcel = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
@@ -54,10 +52,6 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
-            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
@@ -66,21 +60,33 @@
             this.miEditPersonal = new System.Windows.Forms.ToolStripMenuItem();
             this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btnNewRow = new System.Windows.Forms.Button();
-            this.btnTimeSheetList = new System.Windows.Forms.Button();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusBar = new System.Windows.Forms.StatusStrip();
             this.tsslStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
             this.tspbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.tsslSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.msMainMenu = new System.Windows.Forms.MenuStrip();
+            this.пользовательToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.miLogout = new System.Windows.Forms.ToolStripMenuItem();
+            this.miExit = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
+            this.miAdminPanel = new System.Windows.Forms.ToolStripMenuItem();
+            this.miTimeSheets = new System.Windows.Forms.ToolStripMenuItem();
+            this.pDesktop = new System.Windows.Forms.Panel();
+            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
+            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
+            this.statusBar.SuspendLayout();
+            this.msMainMenu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -144,7 +150,7 @@
             this.pAuth.Controls.Add(this.lbPassword);
             this.pAuth.Controls.Add(this.lbLogin);
             this.pAuth.Controls.Add(this.btnLoginEnter);
-            this.pAuth.Location = new System.Drawing.Point(245, 144);
+            this.pAuth.Location = new System.Drawing.Point(245, 153);
             this.pAuth.Name = "pAuth";
             this.pAuth.Size = new System.Drawing.Size(214, 121);
             this.pAuth.TabIndex = 1;
@@ -220,47 +226,20 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pWorkspace.Controls.Add(this.lbCurrentTimeSheetName);
-            this.pWorkspace.Controls.Add(this.btnAdminPanel);
-            this.pWorkspace.Controls.Add(this.btnLogout);
             this.pWorkspace.Controls.Add(this.pTimeSheetEditor);
-            this.pWorkspace.Controls.Add(this.btnTimeSheetList);
-            this.pWorkspace.Location = new System.Drawing.Point(12, 12);
+            this.pWorkspace.Location = new System.Drawing.Point(422, 57);
             this.pWorkspace.Name = "pWorkspace";
-            this.pWorkspace.Size = new System.Drawing.Size(670, 400);
+            this.pWorkspace.Size = new System.Drawing.Size(670, 380);
             this.pWorkspace.TabIndex = 2;
             // 
             // lbCurrentTimeSheetName
             // 
             this.lbCurrentTimeSheetName.AutoSize = true;
             this.lbCurrentTimeSheetName.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.lbCurrentTimeSheetName.Location = new System.Drawing.Point(95, 6);
+            this.lbCurrentTimeSheetName.Location = new System.Drawing.Point(6, 3);
             this.lbCurrentTimeSheetName.Name = "lbCurrentTimeSheetName";
             this.lbCurrentTimeSheetName.Size = new System.Drawing.Size(0, 17);
             this.lbCurrentTimeSheetName.TabIndex = 7;
-            // 
-            // btnAdminPanel
-            // 
-            this.btnAdminPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnAdminPanel.Enabled = false;
-            this.btnAdminPanel.Location = new System.Drawing.Point(358, 3);
-            this.btnAdminPanel.Name = "btnAdminPanel";
-            this.btnAdminPanel.Size = new System.Drawing.Size(159, 23);
-            this.btnAdminPanel.TabIndex = 6;
-            this.btnAdminPanel.Text = "Панель администратора";
-            this.btnAdminPanel.UseVisualStyleBackColor = true;
-            this.btnAdminPanel.Visible = false;
-            this.btnAdminPanel.Click += new System.EventHandler(this.btnAdminPanel_Click);
-            // 
-            // btnLogout
-            // 
-            this.btnLogout.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnLogout.Location = new System.Drawing.Point(523, 3);
-            this.btnLogout.Name = "btnLogout";
-            this.btnLogout.Size = new System.Drawing.Size(138, 23);
-            this.btnLogout.TabIndex = 5;
-            this.btnLogout.Text = "Смена пользователя";
-            this.btnLogout.UseVisualStyleBackColor = true;
-            this.btnLogout.Click += new System.EventHandler(this.btnLogout_Click);
             // 
             // pTimeSheetEditor
             // 
@@ -271,16 +250,16 @@
             this.pTimeSheetEditor.Controls.Add(this.pDepartment);
             this.pTimeSheetEditor.Controls.Add(this.dgTimeSheet);
             this.pTimeSheetEditor.Controls.Add(this.btnNewRow);
-            this.pTimeSheetEditor.Location = new System.Drawing.Point(3, 32);
+            this.pTimeSheetEditor.Location = new System.Drawing.Point(6, 23);
             this.pTimeSheetEditor.Name = "pTimeSheetEditor";
-            this.pTimeSheetEditor.Size = new System.Drawing.Size(664, 365);
+            this.pTimeSheetEditor.Size = new System.Drawing.Size(664, 354);
             this.pTimeSheetEditor.TabIndex = 4;
             this.pTimeSheetEditor.Visible = false;
             // 
             // btnExportToExcel
             // 
             this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExportToExcel.Location = new System.Drawing.Point(153, 273);
+            this.btnExportToExcel.Location = new System.Drawing.Point(153, 262);
             this.btnExportToExcel.Name = "btnExportToExcel";
             this.btnExportToExcel.Size = new System.Drawing.Size(132, 23);
             this.btnExportToExcel.TabIndex = 5;
@@ -295,7 +274,7 @@
             this.pDepartment.Controls.Add(this.lbCurrentDepartment);
             this.pDepartment.Controls.Add(this.tbCurrentDepartmentManager);
             this.pDepartment.Controls.Add(this.tbCurrentDepartment);
-            this.pDepartment.Location = new System.Drawing.Point(297, 273);
+            this.pDepartment.Location = new System.Drawing.Point(297, 262);
             this.pDepartment.Name = "pDepartment";
             this.pDepartment.Size = new System.Drawing.Size(364, 56);
             this.pDepartment.TabIndex = 4;
@@ -337,51 +316,6 @@
             this.tbCurrentDepartment.ReadOnly = true;
             this.tbCurrentDepartment.Size = new System.Drawing.Size(211, 20);
             this.tbCurrentDepartment.TabIndex = 0;
-            // 
-            // dgTimeSheet
-            // 
-            this.dgTimeSheet.AllowUserToAddRows = false;
-            this.dgTimeSheet.AllowUserToDeleteRows = false;
-            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.cFIO,
-            this.cPost,
-            this.cRate});
-            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
-            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
-            this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.ReadOnly = true;
-            this.dgTimeSheet.Size = new System.Drawing.Size(658, 264);
-            this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
-            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
-            // 
-            // cFIO
-            // 
-            this.cFIO.HeaderText = "ФИО";
-            this.cFIO.Name = "cFIO";
-            this.cFIO.ReadOnly = true;
-            this.cFIO.Width = 59;
-            // 
-            // cPost
-            // 
-            this.cPost.HeaderText = "Должность";
-            this.cPost.Name = "cPost";
-            this.cPost.ReadOnly = true;
-            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.cPost.Width = 90;
-            // 
-            // cRate
-            // 
-            this.cRate.HeaderText = "Ставка";
-            this.cRate.Name = "cRate";
-            this.cRate.ReadOnly = true;
-            this.cRate.Width = 68;
             // 
             // cmsDaysMenu
             // 
@@ -443,7 +377,7 @@
             // btnNewRow
             // 
             this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Location = new System.Drawing.Point(3, 273);
+            this.btnNewRow.Location = new System.Drawing.Point(3, 262);
             this.btnNewRow.Name = "btnNewRow";
             this.btnNewRow.Size = new System.Drawing.Size(144, 23);
             this.btnNewRow.TabIndex = 3;
@@ -451,33 +385,23 @@
             this.btnNewRow.UseVisualStyleBackColor = true;
             this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
             // 
-            // btnTimeSheetList
-            // 
-            this.btnTimeSheetList.Location = new System.Drawing.Point(3, 3);
-            this.btnTimeSheetList.Name = "btnTimeSheetList";
-            this.btnTimeSheetList.Size = new System.Drawing.Size(86, 23);
-            this.btnTimeSheetList.TabIndex = 1;
-            this.btnTimeSheetList.Text = "Табели";
-            this.btnTimeSheetList.UseVisualStyleBackColor = true;
-            this.btnTimeSheetList.Click += new System.EventHandler(this.btnTimeSheetList_Click);
-            // 
             // dlgSaveFile
             // 
             this.dlgSaveFile.Filter = "Книга Excel|*.xlsx";
             this.dlgSaveFile.Title = "Экспорт табеля";
             // 
-            // statusStrip1
+            // statusBar
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsslStatusLeft,
             this.tspbProgress,
             this.tsslSpace,
             this.tsslStatusRight});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 415);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(694, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
+            this.statusBar.Location = new System.Drawing.Point(0, 415);
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Size = new System.Drawing.Size(694, 22);
+            this.statusBar.TabIndex = 3;
+            this.statusBar.Text = "statusStrip1";
             // 
             // tsslStatusLeft
             // 
@@ -494,7 +418,7 @@
             // tsslSpace
             // 
             this.tsslSpace.Name = "tsslSpace";
-            this.tsslSpace.Size = new System.Drawing.Size(501, 17);
+            this.tsslSpace.Size = new System.Drawing.Size(634, 17);
             this.tsslSpace.Spring = true;
             // 
             // tsslStatusRight
@@ -502,16 +426,131 @@
             this.tsslStatusRight.Name = "tsslStatusRight";
             this.tsslStatusRight.Size = new System.Drawing.Size(0, 17);
             // 
+            // msMainMenu
+            // 
+            this.msMainMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.пользовательToolStripMenuItem,
+            this.miTimeSheets,
+            this.miAdminPanel,
+            this.miAbout});
+            this.msMainMenu.Location = new System.Drawing.Point(0, 0);
+            this.msMainMenu.Name = "msMainMenu";
+            this.msMainMenu.Size = new System.Drawing.Size(694, 24);
+            this.msMainMenu.TabIndex = 4;
+            this.msMainMenu.Text = "menuStrip1";
+            // 
+            // пользовательToolStripMenuItem
+            // 
+            this.пользовательToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.miLogout,
+            this.miExit});
+            this.пользовательToolStripMenuItem.Name = "пользовательToolStripMenuItem";
+            this.пользовательToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
+            this.пользовательToolStripMenuItem.Text = "Пользователь";
+            // 
+            // miLogout
+            // 
+            this.miLogout.Name = "miLogout";
+            this.miLogout.Size = new System.Drawing.Size(200, 22);
+            this.miLogout.Text = "Сменить пользователя";
+            this.miLogout.Click += new System.EventHandler(this.miLogout_Click);
+            // 
+            // miExit
+            // 
+            this.miExit.Name = "miExit";
+            this.miExit.Size = new System.Drawing.Size(200, 22);
+            this.miExit.Text = "Выйти из программы";
+            this.miExit.Click += new System.EventHandler(this.btnExit_Click);
+            // 
+            // miAbout
+            // 
+            this.miAbout.Name = "miAbout";
+            this.miAbout.Size = new System.Drawing.Size(94, 20);
+            this.miAbout.Text = "О программе";
+            this.miAbout.Click += new System.EventHandler(this.miAbout_Click);
+            // 
+            // miAdminPanel
+            // 
+            this.miAdminPanel.Name = "miAdminPanel";
+            this.miAdminPanel.Size = new System.Drawing.Size(154, 20);
+            this.miAdminPanel.Text = "Панель администратора";
+            this.miAdminPanel.Click += new System.EventHandler(this.miAdminPanel_Click);
+            // 
+            // miTimeSheets
+            // 
+            this.miTimeSheets.Name = "miTimeSheets";
+            this.miTimeSheets.Size = new System.Drawing.Size(59, 20);
+            this.miTimeSheets.Text = "Табели";
+            this.miTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
+            // 
+            // pDesktop
+            // 
+            this.pDesktop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pDesktop.Location = new System.Drawing.Point(12, 27);
+            this.pDesktop.Name = "pDesktop";
+            this.pDesktop.Size = new System.Drawing.Size(670, 371);
+            this.pDesktop.TabIndex = 5;
+            // 
+            // dgTimeSheet
+            // 
+            this.dgTimeSheet.AllowUserToAddRows = false;
+            this.dgTimeSheet.AllowUserToDeleteRows = false;
+            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cFIO,
+            this.cPost,
+            this.cRate});
+            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
+            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
+            this.dgTimeSheet.Name = "dgTimeSheet";
+            this.dgTimeSheet.ReadOnly = true;
+            this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
+            this.dgTimeSheet.TabIndex = 2;
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
+            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
+            // 
+            // cFIO
+            // 
+            this.cFIO.HeaderText = "ФИО";
+            this.cFIO.Name = "cFIO";
+            this.cFIO.ReadOnly = true;
+            this.cFIO.Width = 59;
+            // 
+            // cPost
+            // 
+            this.cPost.HeaderText = "Должность";
+            this.cPost.Name = "cPost";
+            this.cPost.ReadOnly = true;
+            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.cPost.Width = 90;
+            // 
+            // cRate
+            // 
+            this.cRate.HeaderText = "Ставка";
+            this.cRate.Name = "cRate";
+            this.cRate.ReadOnly = true;
+            this.cRate.Width = 68;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(694, 437);
-            this.Controls.Add(this.statusStrip1);
+            this.Controls.Add(this.pDesktop);
+            this.Controls.Add(this.statusBar);
+            this.Controls.Add(this.msMainMenu);
+            this.Controls.Add(this.pLPUSelection);
             this.Controls.Add(this.pWorkspace);
             this.Controls.Add(this.pAuth);
-            this.Controls.Add(this.pLPUSelection);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MainMenuStrip = this.msMainMenu;
             this.MinimumSize = new System.Drawing.Size(710, 475);
             this.Name = "MainForm";
             this.Text = "Учет использования рабочего времени";
@@ -528,10 +567,12 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.cmsDaysMenu.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
+            this.statusBar.ResumeLayout(false);
+            this.statusBar.PerformLayout();
+            this.msMainMenu.ResumeLayout(false);
+            this.msMainMenu.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -551,7 +592,6 @@
         private System.Windows.Forms.Button btnLoginEnter;
         private System.Windows.Forms.Button btnLPUSelect;
         private System.Windows.Forms.Panel pWorkspace;
-        private System.Windows.Forms.Button btnTimeSheetList;
         private MyDataGridView dgTimeSheet;        
         private System.Windows.Forms.Button btnNewRow;
         private System.Windows.Forms.Panel pTimeSheetEditor;
@@ -563,8 +603,6 @@
         private System.Windows.Forms.Label lbCurrentDepartment;
         private System.Windows.Forms.TextBox tbCurrentDepartmentManager;
         private System.Windows.Forms.TextBox tbCurrentDepartment;
-        private System.Windows.Forms.Button btnLogout;
-        private System.Windows.Forms.Button btnAdminPanel;
         private System.Windows.Forms.Label lbCurrentTimeSheetName;
         private System.Windows.Forms.ContextMenuStrip cmsDaysMenu;
         private System.Windows.Forms.ToolStripMenuItem miAddMore;
@@ -576,12 +614,20 @@
         private System.Windows.Forms.Button btnExportToExcel;
         private System.Windows.Forms.SaveFileDialog dlgSaveFile;
         private System.Windows.Forms.Label lbAuthSelectedLPU;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusLeft;
         private System.Windows.Forms.ToolStripProgressBar tspbProgress;
         private System.Windows.Forms.ToolStripStatusLabel tsslSpace;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusRight;
         private System.Windows.Forms.Button btnExit;
+        private System.Windows.Forms.MenuStrip msMainMenu;
+        private System.Windows.Forms.ToolStripMenuItem пользовательToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem miLogout;
+        private System.Windows.Forms.ToolStripMenuItem miExit;
+        private System.Windows.Forms.ToolStripMenuItem miTimeSheets;
+        private System.Windows.Forms.ToolStripMenuItem miAdminPanel;
+        private System.Windows.Forms.ToolStripMenuItem miAbout;
+        private System.Windows.Forms.Panel pDesktop;
 
 
 
