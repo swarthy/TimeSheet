@@ -25,7 +25,7 @@ namespace TimeSheetManger
                 clmUser.Visible = false;
             grid.Rows.Clear();            
             if (mainForm.currentUser._IS_ADMIN)
-                mainForm.currentLPU.Users.SelectMany(u => u.TimeSheets).ToList().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
+                mainForm.currentLPU.Users.SelectMany(u => u.HM<TimeSheetInstance>("TimeSheets", true)).ToList().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
             else
                 mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
         }
@@ -46,7 +46,7 @@ namespace TimeSheetManger
             var res = createForm.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
             {
-                mainForm.currentUser.TimeSheets.Add(createForm.TimeSheetIns);
+                mainForm.currentUser.TimeSheets.Add(createForm.TimeSheetIns);                
                 createForm.TimeSheetIns.Save();
                 grid.Rows.Add(createForm.TimeSheetIns.Department.Name, createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy"), createForm.TimeSheetIns.User.Profile, createForm.TimeSheetIns.ID);
             }
@@ -57,7 +57,9 @@ namespace TimeSheetManger
             if (grid.SelectedRows.Count == 1 && MessageBox.Show("Вы действительно хотите удалить табель?", "Подтверждение удаления", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.OK)
             {
                 var id = Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value);
-                mainForm.currentUser.TimeSheets.Find(t=>t.ID==id).Delete();
+                TimeSheetInstance.Get<TimeSheetInstance>(id).Delete();
+                grid.Rows.Remove(grid.SelectedRows[0]);
+                //mainForm.currentUser.TimeSheets.Find(t=>t.ID==id).Delete();
             }            
         }
 
@@ -72,6 +74,5 @@ namespace TimeSheetManger
                 return;
             OpenTimeSheet(Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value));
         }
-
     }
 }

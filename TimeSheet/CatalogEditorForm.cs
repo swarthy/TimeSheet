@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.ComponentModel;
 using FirebirdSql.Data.FirebirdClient;
+using Equin.ApplicationFramework;
 
 namespace TimeSheetManger
 {
@@ -18,7 +20,7 @@ namespace TimeSheetManger
         DBList<Post> posts;
         DBList<Department> departments;
         DBList<Flag> flags;
-        DBBindingSource<Domain> bs = new DBBindingSource<Domain>();
+        DBBindingSource<Domain> bs = new DBBindingSource<Domain>();        
         MainForm mainForm;
         DBList<Personal> personalsOfLPU(LPU lpu)
         {
@@ -40,7 +42,9 @@ namespace TimeSheetManger
         }
         public void OpenUsers()
         {
-            users = mainForm.currentLPU.Users;            
+            users = mainForm.currentLPU.Users;
+            BindingListView<User> view = new BindingListView<User>(users);
+            
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn login = new DataGridViewTextBoxColumn();
@@ -73,9 +77,8 @@ namespace TimeSheetManger
             role.DataPropertyName = "Role";
             role.HeaderText = "Роль";
             grid.Columns.Add(role);
-
-            bs.DataSource = users;
-            grid.DataSource = bs;
+            
+            grid.DataSource = view;
         }
 
         public void OpenPersonals()
@@ -132,11 +135,12 @@ namespace TimeSheetManger
             priority.DataPropertyName = "Priority";
             priority.HeaderText = "Приоритет";
             grid.Columns.Add(priority);
+            
 
             personals.Sort((x, y) => x._FullName.CompareTo(y._FullName));
 
-            bs.DataSource = personals;
-            grid.DataSource = bs;          
+            //view = new BindingListView<Domain>(personals);            
+            //grid.DataSource = view;
         }
 
         public void OpenLPU()
@@ -246,8 +250,8 @@ namespace TimeSheetManger
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Вы действительно хотите удалить запись?\r\nЭто может повлечь за собой необратимое нарушение целостности данных.","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
-                bs.Remove(bs.Current as Domain, true);
+            //if (MessageBox.Show("Вы действительно хотите удалить запись?\r\nЭто может повлечь за собой необратимое нарушение целостности данных.","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
+                //bs.Remove(bs.Current as Domain, true);
         }
     }    
 }

@@ -196,6 +196,7 @@ namespace TimeSheetManger
     public class Department : Domain
     {
         new public static string tableName = "DEPARTMENT";
+        new public static string OrderBy = "PERSONAL_ID";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
@@ -808,7 +809,7 @@ namespace TimeSheetManger
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
-        new public static string OrderBy = "TS_YEAR";
+        new public static string OrderBy = "TS_YEAR, TS_MONTH, DEPARTMENT_ID";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("TimeSheet_ID",typeof(TimeSheet_Content))}

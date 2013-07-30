@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using System.Windows.Forms;
+using System.ComponentModel;
 ///     Developer: Alexander Mochalin
 ///     License: GNU LGPL
 
@@ -27,6 +28,13 @@ namespace TimeSheetManger
         public static DBList<T> ToDBList<T>(this IEnumerable<T> ien) where T : Domain, new()
         {
             DBList<T> res = new DBList<T>();
+            foreach (T item in ien)
+                res.Add(item);
+            return res;
+        }
+        public static BindingList<T> ToBindingList<T>(this IEnumerable<T> ien) where T : Domain, new()
+        {
+            BindingList<T> res = new BindingList<T>();
             foreach (T item in ien)
                 res.Add(item);
             return res;

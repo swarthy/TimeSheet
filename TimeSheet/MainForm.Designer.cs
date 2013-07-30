@@ -52,10 +52,6 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
-            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
-            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,16 +77,20 @@
             this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.pDesktop = new System.Windows.Forms.Panel();
             this.deskbtnTimeSheets = new System.Windows.Forms.Button();
+            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
+            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.msMainMenu.SuspendLayout();
             this.pDesktop.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -328,51 +328,6 @@
             this.tbCurrentDepartment.Size = new System.Drawing.Size(211, 20);
             this.tbCurrentDepartment.TabIndex = 0;
             // 
-            // dgTimeSheet
-            // 
-            this.dgTimeSheet.AllowUserToAddRows = false;
-            this.dgTimeSheet.AllowUserToDeleteRows = false;
-            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.cFIO,
-            this.cPost,
-            this.cRate});
-            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
-            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
-            this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.ReadOnly = true;
-            this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
-            this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
-            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
-            // 
-            // cFIO
-            // 
-            this.cFIO.HeaderText = "ФИО";
-            this.cFIO.Name = "cFIO";
-            this.cFIO.ReadOnly = true;
-            this.cFIO.Width = 59;
-            // 
-            // cPost
-            // 
-            this.cPost.HeaderText = "Должность";
-            this.cPost.Name = "cPost";
-            this.cPost.ReadOnly = true;
-            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.cPost.Width = 90;
-            // 
-            // cRate
-            // 
-            this.cRate.HeaderText = "Ставка";
-            this.cRate.Name = "cRate";
-            this.cRate.ReadOnly = true;
-            this.cRate.Width = 68;
-            // 
             // cmsDaysMenu
             // 
             this.cmsDaysMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -511,6 +466,7 @@
             // 
             // miCurrentUser
             // 
+            this.miCurrentUser.Enabled = false;
             this.miCurrentUser.Name = "miCurrentUser";
             this.miCurrentUser.Size = new System.Drawing.Size(200, 22);
             this.miCurrentUser.Text = "user";
@@ -583,6 +539,51 @@
             this.deskbtnTimeSheets.UseVisualStyleBackColor = true;
             this.deskbtnTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
             // 
+            // dgTimeSheet
+            // 
+            this.dgTimeSheet.AllowUserToAddRows = false;
+            this.dgTimeSheet.AllowUserToDeleteRows = false;
+            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cFIO,
+            this.cPost,
+            this.cRate});
+            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
+            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
+            this.dgTimeSheet.Name = "dgTimeSheet";
+            this.dgTimeSheet.ReadOnly = true;
+            this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
+            this.dgTimeSheet.TabIndex = 2;
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
+            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
+            // 
+            // cFIO
+            // 
+            this.cFIO.HeaderText = "ФИО";
+            this.cFIO.Name = "cFIO";
+            this.cFIO.ReadOnly = true;
+            this.cFIO.Width = 59;
+            // 
+            // cPost
+            // 
+            this.cPost.HeaderText = "Должность";
+            this.cPost.Name = "cPost";
+            this.cPost.ReadOnly = true;
+            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.cPost.Width = 90;
+            // 
+            // cRate
+            // 
+            this.cRate.HeaderText = "Ставка";
+            this.cRate.Name = "cRate";
+            this.cRate.ReadOnly = true;
+            this.cRate.Width = 68;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -612,13 +613,13 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.cmsDaysMenu.ResumeLayout(false);
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
             this.msMainMenu.ResumeLayout(false);
             this.msMainMenu.PerformLayout();
             this.pDesktop.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

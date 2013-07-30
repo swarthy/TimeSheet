@@ -44,6 +44,10 @@
       <HintPath>Binaries\EPPlus.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Equin.ApplicationFramework.BindingListView">
+      <HintPath>Binaries\Equin.ApplicationFramework.BindingListView.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="FirebirdSql.Data.FirebirdClient">
       <HintPath>Binaries\FirebirdSql.Data.FirebirdClient.dll</HintPath>
       <Private>True</Private>

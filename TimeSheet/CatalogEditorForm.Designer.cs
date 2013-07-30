@@ -32,6 +32,7 @@
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
             this.grid = new TimeSheetManger.MyDataGridView();
+            this.flEditBox = new System.Windows.Forms.FlowLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,6 +73,8 @@
             // grid
             // 
             this.grid.AllowUserToDeleteRows = false;
+            this.grid.AllowUserToResizeColumns = false;
+            this.grid.AllowUserToResizeRows = false;
             this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -79,8 +82,17 @@
             this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.grid.Location = new System.Drawing.Point(12, 12);
             this.grid.Name = "grid";
-            this.grid.Size = new System.Drawing.Size(544, 271);
+            this.grid.Size = new System.Drawing.Size(544, 207);
             this.grid.TabIndex = 0;
+            // 
+            // flEditBox
+            // 
+            this.flEditBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flEditBox.Location = new System.Drawing.Point(12, 225);
+            this.flEditBox.Name = "flEditBox";
+            this.flEditBox.Size = new System.Drawing.Size(544, 58);
+            this.flEditBox.TabIndex = 5;
             // 
             // CatalogEditorForm
             // 
@@ -89,6 +101,7 @@
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(568, 324);
             this.ControlBox = false;
+            this.Controls.Add(this.flEditBox);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnSave);
@@ -107,5 +120,6 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.FlowLayoutPanel flEditBox;
     }
 }

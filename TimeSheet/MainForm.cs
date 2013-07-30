@@ -93,8 +93,6 @@ namespace TimeSheetManger
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
 
-            
-
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             #region DB Initialization
             User.Initialize<User>();
@@ -124,11 +122,10 @@ namespace TimeSheetManger
                 MessageBox.Show("У данного ЛПУ не указан главный врач.\r\nВозможно нарушение отчетности.", "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
             var invalidDepartments = currentLPU.Departments.FindAll(d => d.DepartmentManager == null);
             if (invalidDepartments.Count != 0)
-                MessageBox.Show("У следующих отделений не указан руководитель: " +
+                MessageBox.Show("У следующих отделений не указан заведующий: " +
                     invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
                     "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);            
             Ready();
-
             Enabled = true;
         }
         Color GetColor(string key)
@@ -181,17 +178,16 @@ namespace TimeSheetManger
                     break;
                 case AppState.Desktop:                    
                     HideAllShowThis(pDesktop);
-                    currentUser.TimeSheets.Sort((t1, t2) =>
-                    {
-                        var r1 = t1.Department.Name.CompareTo(t2.Department.Name);
-                        if (r1 == 0)
+                    currentUser.TimeSheets.Sort((t1, t2) =>                    
+                        t1.Department.Name.CompareTo(t2.Department.Name)
+                        /*if (r1 == 0)
                         {
                             var r2 = t1.TS_Year.CompareTo(t2.TS_Year);
                             return r2 == 0 ? t1.TS_Month.CompareTo(t2.TS_Month) : r2;
                         }
                         else
-                            return r1;
-                    });
+                            return r1;*/
+                   );
                     msMainMenu.Show();
                     break;                
                 case AppState.EditTimeSheet:                    
@@ -238,8 +234,10 @@ namespace TimeSheetManger
             changeState(AppState.LPUselect);  //release
             #if DEBUG
             currentLPU = LPU.Get<LPU>(1);            
-            currentUser = User.Get<User>(22);            
-            changeState(AppState.Desktop);            
+            currentUser = User.Get<User>(22);
+            //currentUser = currentLPU.Users.Find(u => u.ID == 22);
+            changeState(AppState.Desktop);
+            miAdminPanel_Click(this, e);
             #endif
         }
 
@@ -261,6 +259,7 @@ namespace TimeSheetManger
             else
             {                
                 Helper.Set("user", "lastLogin", tbAuthLogin.Text);
+                //currentUser = currentLPU.Users.Find(u => u.ID == user.ID);//чтобы вносимые изменения в currentUser отражались сразу в списке пользователей.                 
                 currentUser = user;                
                 changeState(AppState.Desktop);
                 tbAuthPass.Text = "";
