@@ -19,9 +19,10 @@ namespace TimeSheetManger
         }
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter && RowEditStarted != null)
+            if (e.KeyCode == Keys.Enter)
             {
-                RowEditStarted(this, e);
+                if (RowEditStarted != null)
+                    RowEditStarted(this, e);
                 e.Handled = true;
             }
             base.OnKeyDown(e);
@@ -29,8 +30,7 @@ namespace TimeSheetManger
         protected override void OnCellDoubleClick(DataGridViewCellEventArgs e)
         {
             if (RowEditStarted != null)
-                RowEditStarted(this, e);
-            base.OnCellDoubleClick(e);
+                RowEditStarted(this, e);            
         }
     }
 }

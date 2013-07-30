@@ -40,19 +40,22 @@ namespace TimeSheetManger
             flFilters.Controls.Add(tb);
         }
         void aE(Control tb)
-        {
-            flEditBox.Controls.Add(tb);
+        {            
             tb.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
-                {                    
-                    grid.Focus();
-                    e.Handled = true;
-                    //здесь можно будет обработать состояние: добавление/изменение и вызвать нужное событие
+                {   
+                    e.Handled = true;                    
                     CompleteEnteringValues(this, e);
                 }
+                else
+                    if (e.KeyCode == Keys.Escape)
+                    {
+                        cancelEditing();
+                    }
 
             };
+            flEditBox.Controls.Add(tb);
         }
         bool addingNewRow = false;
         bool success = false;
@@ -66,10 +69,26 @@ namespace TimeSheetManger
                     EditingComplete(sender, e);
             if (success)
             {
-                ClearValues();
-                gbValues.Hide();
+                cancelEditing();
             }
         }
+        void beginEditing()
+        {
+            gbValues.Show();
+            setControlsEnabled(false);            
+            flEditBox.Controls[0].Focus();
+        }
+        void cancelEditing()
+        {
+            gbValues.Hide();
+            addingNewRow = false;
+            setControlsEnabled(true);
+            grid.Focus();
+        }
+        void setControlsEnabled(bool value)
+        {
+            btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = value;
+        }        
         public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
             mainForm = mainform;
@@ -80,8 +99,7 @@ namespace TimeSheetManger
             grid.RowEditStarted += (s, e) =>
             {
                 addingNewRow = false;
-                gbValues.Show();
-                flEditBox.Controls[0].Focus();
+                beginEditing();     
             };
             Text = string.Format("Справочник: {0}", catalogTitle);            
         }
@@ -91,20 +109,19 @@ namespace TimeSheetManger
             Button btnSave = new Button();
             btnSave.Text = "Сохранить";
             btnSave.Click += CompleteEnteringValues;
-            grid.RowEditStarted += (s, e) => { grid.Refresh(); };
-            
             flEditBox.Controls.Add(btnSave);
-
+            
             Button btnCancel = new Button();
             btnCancel.Text = "Отмена";
-            btnCancel.Click += (s, e) => { gbValues.Hide(); addingNewRow = false; };
+            btnCancel.Click += (s, e) => { cancelEditing(); };
             flEditBox.Controls.Add(btnCancel);
         }
+        //done
         public void OpenUsers()
         {
             users = mainForm.currentLPU.Users;            
             BindingListView<User> view = new BindingListView<User>(users);
-            
+            #region Столбцы и элементы управления
             grid.Columns.Clear();
             
             DataGridViewTextBoxColumn login = new DataGridViewTextBoxColumn();
@@ -151,7 +168,7 @@ namespace TimeSheetManger
             aF(roleFTB);
             var roleETB = new MyTB();
             aE(roleETB);
-
+            #endregion
             grid.RowEditStarted +=
             delegate
             {                
@@ -173,10 +190,15 @@ namespace TimeSheetManger
                 if (!int.TryParse(roleETB.Text, out tempRole))
                 {
                     MessageBox.Show("Роль введена неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
                     return;
                 }
                 usr.Role = tempRole;
-                usr.Save();                
+                if (!usr.Save())
+                {
+                    success = false;
+                    return;
+                }               
             };
 
             AddingComplete += (s, e) =>
@@ -204,75 +226,187 @@ namespace TimeSheetManger
 
             RowDeleting += (s, e) => {
                 users.Remove((bs.Current as ObjectView<User>).Object, true);
+                view.Refresh();
             };
-
-            bs.DataSource = view;            
+            bs.DataSource = view;
         }
-
+        //done
         public void OpenPersonals()
         {
             personals = LPUPersonals;
+            BindingListView<Personal> view = new BindingListView<Personal>(personals);
+            #region Столбцы и элементы управления
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn tn = new DataGridViewTextBoxColumn();
             tn.DataPropertyName = "Table_Number";
-            tn.HeaderText = "Табельный номер";            
+            tn.HeaderText = "Табельный номер";
             grid.Columns.Add(tn);
-            
+            var tnFTB = new MyTB((box) => { view.ApplyFilter(p => p.Table_Number.ToString().Contains(box.Text)); });
+            aF(tnFTB);
+            var tnETB = new MyTB();
+            aE(tnETB);
+
             DataGridViewTextBoxColumn lastName = new DataGridViewTextBoxColumn();
             lastName.DataPropertyName = "LastName";
-            lastName.HeaderText = "Фамилия";            
+            lastName.HeaderText = "Фамилия";
             grid.Columns.Add(lastName);
+            var lastNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.LastName.ToString().Contains(box.Text)); });
+            aF(lastNameFTB);
+            var lastNameETB = new MyTB();
+            aE(lastNameETB);
 
             DataGridViewTextBoxColumn firstName = new DataGridViewTextBoxColumn();
             firstName.DataPropertyName = "FirstName";
-            firstName.HeaderText = "Имя";            
+            firstName.HeaderText = "Имя";
             grid.Columns.Add(firstName);
+            var firstNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.FirstName.ToString().Contains(box.Text)); });
+            aF(firstNameFTB);
+            var firstNameETB = new MyTB();
+            aE(firstNameETB);
 
             DataGridViewTextBoxColumn middleName = new DataGridViewTextBoxColumn();
             middleName.DataPropertyName = "MiddleName";
-            middleName.HeaderText = "Отчество";            
+            middleName.HeaderText = "Отчество";
             grid.Columns.Add(middleName);
+            var middleNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.MiddleName.ToString().Contains(box.Text)); });
+            aF(middleNameFTB);
+            var middleNameETB = new MyTB();
+            aE(middleNameETB);
 
-            DataGridViewComboBoxColumn post = new DataGridViewComboBoxColumn();
-            post.ValueMember = "_Self";
+            DataGridViewTextBoxColumn post = new DataGridViewTextBoxColumn();
             post.DataPropertyName = "Post";
-            post.DisplayMember = "Name";
-            post.HeaderText = "Специальность";
-            post.DataSource = Post.All<Post>();
+            post.HeaderText = "Должность";
             grid.Columns.Add(post);
+            var postFB = new MyCB(Post.All<Post>(), (box) => { view.ApplyFilter(u => u.Post.Name.Contains(box.Text)); });
+            aF(postFB);
+            var postEB = new MyCB(Post.All<Post>());
+            aE(postEB);
 
-            DataGridViewComboBoxColumn department = new DataGridViewComboBoxColumn();
-            department.ValueMember = "_Self";
+            DataGridViewTextBoxColumn department = new DataGridViewTextBoxColumn();
             department.DataPropertyName = "Department";
-            department.DisplayMember = "Name";
-            department.HeaderText = "Отделение";            
-            department.DataSource = mainForm.currentLPU.Departments;            
+            department.HeaderText = "Отделение";
             grid.Columns.Add(department);
+            var DepartmentFB = new MyCB(mainForm.currentLPU.Departments, (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
+            aF(DepartmentFB);
+            var DepartmentEB = new MyCB(mainForm.currentLPU.Departments);
+            aE(DepartmentEB);
 
-            DataGridViewComboBoxColumn tsmanager = new DataGridViewComboBoxColumn();
-            tsmanager.ValueMember = "_Self";            
-            tsmanager.DataPropertyName = "TimeSheetManager";
-            tsmanager.DisplayMember = "_LoginAndProfile";
-            tsmanager.HeaderText = "Табельщик";
-            tsmanager.DataSource = mainForm.currentLPU.Users;
-            grid.Columns.Add(tsmanager);
-
+            DataGridViewTextBoxColumn tsManager = new DataGridViewTextBoxColumn();
+            tsManager.DataPropertyName = "TimeSheetManager";
+            tsManager.HeaderText = "Табельщик";
+            grid.Columns.Add(tsManager);
+            var tsManagerFB = new MyCB(mainForm.currentLPU.Users, (box) => { view.ApplyFilter((u) => { if (u.TimeSheetManager == null) return false; else return u.TimeSheetManager._LoginAndProfile.Contains(box.Text); }); });
+            aF(tsManagerFB);
+            var tsManagerEB = new MyCB(mainForm.currentLPU.Users);
+            aE(tsManagerEB);
 
             DataGridViewTextBoxColumn priority = new DataGridViewTextBoxColumn();
             priority.DataPropertyName = "Priority";
             priority.HeaderText = "Приоритет";
             grid.Columns.Add(priority);
-            
+            var priorityFTB = new MyTB((box) => { view.ApplyFilter(u => u.Priority.ToString().Contains(box.Text)); });
+            aF(priorityFTB);
+            var priorityETB = new MyTB();
+            aE(priorityETB);
 
-            personals.Sort((x, y) => x._FullName.CompareTo(y._FullName));
+            #endregion
 
-            //view = new BindingListView<Domain>(personals);            
-            //grid.DataSource = view;
+            grid.RowEditStarted +=
+            delegate
+            {
+                var personal = (bs.Current as ObjectView<Personal>).Object;
+                tnETB.Text = personal.Table_Number.ToString();
+                lastNameETB.Text= personal.LastName;
+                middleNameETB.Text = personal.MiddleName;
+                firstNameETB.Text = personal.FirstName;
+                postEB.SelectedItem = personal.Post;
+                DepartmentEB.SelectedItem = personal.Department;
+                tsManagerEB.SelectedItem = personal.TimeSheetManager;
+                priorityETB.Text = personal.Priority.ToString();
+            };
+
+            EditingComplete += (s, e) =>
+            {
+                var personal = (bs.Current as ObjectView<Personal>).Object;
+                
+                int temp;
+                if (!int.TryParse(tnETB.Text, out temp))
+                {
+                    MessageBox.Show("Табельный номер введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                personal.Table_Number = temp;
+                personal.FirstName = firstNameETB.Text;
+                personal.LastName = lastNameETB.Text;
+                personal.MiddleName = middleNameETB.Text;
+                personal.Post = postEB.SelectedItem as Post;
+                personal.Department = DepartmentEB.SelectedItem as Department;
+                personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
+                                
+                if (!int.TryParse(tnETB.Text, out temp))
+                {
+                    MessageBox.Show("Приоритет введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                personal.Priority = temp;
+                
+                if (!personal.Save())
+                {
+                    success = false;
+                    return;
+                }
+            };
+
+            AddingComplete += (s, e) =>
+            {
+                var personal = new Personal();
+                int temp;
+                if (!int.TryParse(tnETB.Text, out temp))
+                {
+                    MessageBox.Show("Табельный номер введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                personal.Table_Number = temp;
+                personal.FirstName = firstNameETB.Text;
+                personal.LastName = lastNameETB.Text;
+                personal.MiddleName = middleNameETB.Text;
+                personal.Post = postEB.SelectedItem as Post;
+                personal.Department = DepartmentEB.SelectedItem as Department;
+                personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
+
+                if (!int.TryParse(tnETB.Text, out temp))
+                {
+                    MessageBox.Show("Приоритет введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                personal.Priority = temp;
+
+                if (!personal.Save())
+                {
+                    success = false;
+                    return;
+                }
+                personals.Add(personal);                
+                view.Refresh();
+            };
+
+            RowDeleting += (s, e) =>
+            {
+                personals.Remove((bs.Current as ObjectView<Personal>).Object, true);
+                view.Refresh();
+            };
+            bs.DataSource = view;
         }
 
         public void OpenLPU()
         {
+            #region OLD
+            /*
             lpuList = LPU.All<LPU>();            
             grid.Columns.Clear();
 
@@ -290,7 +424,8 @@ namespace TimeSheetManger
             grid.Columns.Add(maindoc);
 
             bs.DataSource = lpuList;
-            grid.DataSource = bs;
+            grid.DataSource = bs;*/
+#endregion            
         }
 
         public void OpenPosts()
@@ -342,28 +477,86 @@ namespace TimeSheetManger
             grid.DataSource = bs;
         }
 
+        //done
         public void OpenFlags()
         {
             flags = Flag.All<Flag>();
+
+            BindingListView<Flag> view = new BindingListView<Flag>(flags);            
+
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn ru_name = new DataGridViewTextBoxColumn();
             ru_name.DataPropertyName = "Ru_Name";
             ru_name.HeaderText = "Отображаемое название [3]";
             grid.Columns.Add(ru_name);
+            var ru_nameFTB = new MyTB((box) => { view.ApplyFilter(f => f.Ru_Name.Contains(box.Text)); });
+            aF(ru_nameFTB);
+            var ru_nameETB = new MyTB();
+            aE(ru_nameETB);
 
             DataGridViewTextBoxColumn description = new DataGridViewTextBoxColumn();
             description.DataPropertyName = "Description";
             description.HeaderText = "Описание";
             grid.Columns.Add(description);
+            var descriptionFTB = new MyTB((box) => { view.ApplyFilter(f => f.Description.Contains(box.Text)); });
+            aF(descriptionFTB);
+            var descriptionETB = new MyTB();
+            aE(descriptionETB);
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
-            name.DataPropertyName = "Name";
-            name.HeaderText = "Системный код (НЕ ТРОГАТЬ) [3]";
+            name.DataPropertyName = "name";
+            name.HeaderText = "Код [НЕ ТРОГАТЬ!]";
             grid.Columns.Add(name);
+            var nameFTB = new MyTB((box) => { view.ApplyFilter(f => f.Name.Contains(box.Text)); });
+            aF(nameFTB);
+            var nameETB = new MyTB();
+            aE(nameETB);
+            
+            grid.RowEditStarted +=
+            delegate
+            {
+                var flag = (bs.Current as ObjectView<Flag>).Object;
+                ru_nameETB.Text = flag.Ru_Name;
+                descriptionETB.Text = flag.Description;
+                nameETB.Text = flag.Name;
+            };
 
-            bs.DataSource = flags;
-            grid.DataSource = bs;
+            EditingComplete += (s, e) =>
+            {
+                var flag = (bs.Current as ObjectView<Flag>).Object;
+                flag.Ru_Name = ru_nameETB.Text;
+                flag.Description = descriptionETB.Text;
+                flag.Name = nameETB.Text;
+
+                if (!flag.Save())
+                {
+                    success = false;
+                    return;
+                }
+            };
+
+            AddingComplete += (s, e) =>
+            {
+                var flag = new Flag();
+                flag.Ru_Name = ru_nameETB.Text;
+                flag.Description = descriptionETB.Text;
+                flag.Name = nameETB.Text;
+                if (!flag.Save())
+                {
+                    success = false;
+                    return;
+                }
+                flags.Add(flag);
+                view.Refresh();
+            };
+
+            RowDeleting += (s, e) =>
+            {
+                flags.Remove((bs.Current as ObjectView<Flag>).Object, true);
+                view.Refresh();
+            };
+            bs.DataSource = view;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -379,10 +572,8 @@ namespace TimeSheetManger
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            if (RowDeleting != null)
-                RowDeleting(sender, e);
-            //if (MessageBox.Show("Вы действительно хотите удалить запись?\r\nЭто может повлечь за собой необратимое нарушение целостности данных.","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
-                //bs.Remove(bs.Current as Domain, true);
+            if (RowDeleting != null && MessageBox.Show("Вы действительно хотите удалить запись?\r\nЭто может повлечь за собой необратимое нарушение целостности данных.", "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                RowDeleting(sender, e);            
         }
         bool FiltersEnabled = false;
         void ToggleFiltersEnabled()
@@ -409,7 +600,7 @@ namespace TimeSheetManger
         {           
             addingNewRow = true;
             ClearValues();
-            gbValues.Show();
+            beginEditing();
         }
         void ClearValues()
         {
