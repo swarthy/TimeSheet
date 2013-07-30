@@ -55,27 +55,44 @@ namespace TimeSheetManger
             };
         }
         bool addingNewRow = false;
+        bool success = false;
         void CompleteEnteringValues(object sender, EventArgs e)
         {
+            success = false;
             if (addingNewRow && AddingComplete != null)
                 AddingComplete(sender, e);
             else
                 if (EditingComplete != null)
                     EditingComplete(sender, e);
-            gbValues.Hide();
+            if (success)
+            {
+                ClearValues();
+                gbValues.Hide();
+            }
         }
         public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
             mainForm = mainform;
             InitializeComponent();
             grid.AutoGenerateColumns = false;
+            AddingComplete += (s, e) => { success = true; };
+            EditingComplete += (s, e) => { success = true; };
+            grid.RowEditStarted += (s, e) =>
+            {
+                addingNewRow = false;
+                gbValues.Show();
+                flEditBox.Controls[0].Focus();
+            };
             Text = string.Format("Справочник: {0}", catalogTitle);            
         }
-        public void MyInit()
+        public void MyAfterOpenningInit()//вызывается после Open<Domain>
         {
+            grid.DataSource = bs;
             Button btnSave = new Button();
             btnSave.Text = "Сохранить";
             btnSave.Click += CompleteEnteringValues;
+            grid.RowEditStarted += (s, e) => { grid.Refresh(); };
+            
             flEditBox.Controls.Add(btnSave);
 
             Button btnCancel = new Button();
@@ -137,16 +154,13 @@ namespace TimeSheetManger
 
             grid.RowEditStarted +=
             delegate
-            {
-                addingNewRow = false;
-                gbValues.Show();
+            {                
                 var usr = (bs.Current as ObjectView<User>).Object;
                 loginETB.Text = usr.Login;
                 passETB.Text = usr.Pass;
                 lpuEB.SelectedItem = usr.LPU;
                 profileEB.SelectedItem = usr.Profile;
-                roleETB.Text = usr.Role.ToString();
-                flEditBox.Controls[0].Focus();
+                roleETB.Text = usr.Role.ToString();                
             };
 
             EditingComplete += (s, e) => {                
@@ -162,8 +176,7 @@ namespace TimeSheetManger
                     return;
                 }
                 usr.Role = tempRole;
-                usr.Save();
-                grid.Refresh();
+                usr.Save();                
             };
 
             AddingComplete += (s, e) =>
@@ -181,12 +194,15 @@ namespace TimeSheetManger
                     }
                     usr.Role = tempRole;
                     if (!usr.Save())
+                    {
+                        success = false;
                         return;
-                    users.Add(usr);                    
-                    view.Refresh();                    
-                };            
-            bs.DataSource = view;
-            grid.DataSource = bs;            
+                    }
+                    users.Add(usr);
+                    view.Refresh();
+                };
+
+            bs.DataSource = view;            
         }
 
         public void OpenPersonals()
@@ -376,15 +392,7 @@ namespace TimeSheetManger
             else
             {
                 gbFilters.Hide();
-                foreach (Control c in flFilters.Controls)
-                {
-                    var type = c.GetType();
-                    if (type == typeof(MyTB))                    
-                        (c as MyTB).Text = "";                    
-                    else
-                        if (type == typeof(MyCB))                        
-                            (c as MyCB).SelectedItem = null;
-                }
+                ClearValues();
                 grid.Height += gbFilters.Height + 10;
             }
         }
@@ -396,6 +404,11 @@ namespace TimeSheetManger
         private void btnAdd_Click(object sender, EventArgs e)
         {           
             addingNewRow = true;
+            ClearValues();
+            gbValues.Show();
+        }
+        void ClearValues()
+        {
             foreach (Control c in flFilters.Controls)
             {
                 var type = c.GetType();
@@ -405,7 +418,6 @@ namespace TimeSheetManger
                     if (type == typeof(MyCB))
                         (c as MyCB).SelectedItem = null;
             }
-            gbValues.Show();
         }
     }
 
