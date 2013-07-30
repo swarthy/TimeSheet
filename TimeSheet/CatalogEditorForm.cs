@@ -153,12 +153,9 @@ namespace TimeSheetManger
             profile.DataPropertyName = "Profile";
             profile.HeaderText = "Профиль";
             grid.Columns.Add(profile);
-            //var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
-            var profileFB = new MyCB(mainForm.currentUser.PersonalLink.ToDBList(), (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
+            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });
             aF(profileFB);
-            //var profileEB = new MyCB(LPUPersonals);            //работает
-            //var profileEB = new MyCB(mainForm.currentUser.PersonalLink);//не работает
-            var profileEB = new MyCB(mainForm.currentUser.PersonalLink.ToDBList());//работает... я видимо чего-то в этой жизни не понимаю...             
+            var profileEB = new MyCB(LPUPersonals);            
             aE(profileEB);
 
             DataGridViewTextBoxColumn role = new DataGridViewTextBoxColumn();
@@ -256,7 +253,7 @@ namespace TimeSheetManger
             lastName.DataPropertyName = "LastName";
             lastName.HeaderText = "Фамилия";
             grid.Columns.Add(lastName);
-            var lastNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.LastName.ToString().Contains(box.Text)); });
+            var lastNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.LastName.Contains(box.Text)); });
             aF(lastNameFTB);
             var lastNameETB = new MyTB();
             aE(lastNameETB);
@@ -265,7 +262,7 @@ namespace TimeSheetManger
             firstName.DataPropertyName = "FirstName";
             firstName.HeaderText = "Имя";
             grid.Columns.Add(firstName);
-            var firstNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.FirstName.ToString().Contains(box.Text)); });
+            var firstNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.FirstName.Contains(box.Text)); });
             aF(firstNameFTB);
             var firstNameETB = new MyTB();
             aE(firstNameETB);
@@ -274,7 +271,7 @@ namespace TimeSheetManger
             middleName.DataPropertyName = "MiddleName";
             middleName.HeaderText = "Отчество";
             grid.Columns.Add(middleName);
-            var middleNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.MiddleName.ToString().Contains(box.Text)); });
+            var middleNameFTB = new MyTB((box) => { view.ApplyFilter(p => p.MiddleName.Contains(box.Text)); });
             aF(middleNameFTB);
             var middleNameETB = new MyTB();
             aE(middleNameETB);
@@ -292,29 +289,18 @@ namespace TimeSheetManger
             department.DataPropertyName = "Department";
             department.HeaderText = "Отделение";
             grid.Columns.Add(department);
-            var DepartmentFB = new MyCB(mainForm.currentLPU.Departments, (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
+            var DepartmentFB = new MyCB(mainForm.currentLPU.Departments.ToList(), (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
             aF(DepartmentFB);
-            var DepartmentEB = new MyCB(mainForm.currentLPU.Departments);
+            var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
 
-
-            /*
-            DataGridViewTextBoxColumn profile = new DataGridViewTextBoxColumn();
-            profile.DataPropertyName = "Profile";
-            profile.HeaderText = "Профиль";
-            grid.Columns.Add(profile);
-            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
-            aF(profileFB);
-            var profileEB = new MyCB(LPUPersonals);            
-            aE(profileEB);                          
-             */
             DataGridViewTextBoxColumn tsManager = new DataGridViewTextBoxColumn();
             tsManager.DataPropertyName = "TimeSheetManager";
             tsManager.HeaderText = "Табельщик";
             grid.Columns.Add(tsManager);
-            var tsManagerFB = new MyCB(mainForm.currentLPU.Users, (box) => { view.ApplyFilter((p) => { if (p.TimeSheetManager == null) return true; else return p.TimeSheetManager.ToString().Contains(box.Text); }); });
+            var tsManagerFB = new MyCB(mainForm.currentLPU.Users.ToList(), (box) => { view.ApplyFilter((p) => { if (p.TimeSheetManager == null) return true; else return p.TimeSheetManager.ToString().Contains(box.Text); }); });
             aF(tsManagerFB);
-            var tsManagerEB = new MyCB(mainForm.currentLPU.Users);
+            var tsManagerEB = new MyCB(mainForm.currentLPU.Users.ToList());
             aE(tsManagerEB);
 
             DataGridViewTextBoxColumn priority = new DataGridViewTextBoxColumn();
@@ -419,48 +405,134 @@ namespace TimeSheetManger
             };
             bs.DataSource = view;
         }
-
+        //done
         public void OpenLPU()
         {
-            #region OLD
-            /*
-            lpuList = LPU.All<LPU>();            
+            lpuList = LPU.All<LPU>();
+            BindingListView<LPU> view = new BindingListView<LPU>(lpuList);            
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
             name.DataPropertyName = "Name";
             name.HeaderText = "Название";
             grid.Columns.Add(name);
+            var nameFTB = new MyTB((box) => { view.ApplyFilter(l => l.Name.Contains(box.Text)); });
+            aF(nameFTB);
+            var nameETB = new MyTB();
+            aE(nameETB);
 
-            DataGridViewComboBoxColumn maindoc = new DataGridViewComboBoxColumn();
-            maindoc.ValueMember = "_Self";
+            DataGridViewTextBoxColumn maindoc = new DataGridViewTextBoxColumn();
             maindoc.DataPropertyName = "MainDoc";
-            maindoc.DisplayMember = "_ShortNameAndNumber";
             maindoc.HeaderText = "Главный врач";
-            maindoc.DataSource = Personal.All<Personal>();
             grid.Columns.Add(maindoc);
+            var maindocFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(l => l.MainDoc.ToString().Contains(box.Text)); });
+            aF(maindocFB);
+            var maindocEB = new MyCB(LPUPersonals);
+            aE(maindocEB);
 
-            bs.DataSource = lpuList;
-            grid.DataSource = bs;*/
-#endregion            
+
+            grid.RowEditStarted +=
+            delegate
+            {
+                var lpu = (bs.Current as ObjectView<LPU>).Object;
+                nameETB.Text = lpu.Name;
+                maindocEB.SelectedItem = lpu.MainDoc;                
+            };
+
+            EditingComplete += (s, e) =>
+            {                
+                var lpu = (bs.Current as ObjectView<LPU>).Object;
+                lpu.Name = nameETB.Text;
+                lpu.MainDoc = maindocEB.SelectedItem as Personal;                
+                if (!lpu.Save())
+                {
+                    success = false;
+                    return;
+                }
+                view.Refresh();
+            };
+
+            AddingComplete += (s, e) =>
+            {
+                var lpu = new LPU();
+                lpu.Name = nameETB.Text;
+                lpu.MainDoc = maindocEB.SelectedItem as Personal;
+                if (!lpu.Save())
+                {
+                    success = false;
+                    return;
+                }
+                lpuList.Add(lpu);
+                view.Refresh();
+            };
+
+            RowDeleting += (s, e) =>
+            {
+                lpuList.Remove((bs.Current as ObjectView<LPU>).Object, true);
+                view.Refresh();
+            };
+            bs.DataSource = view;
         }
-
+        //done
         public void OpenPosts()
         {
             posts = Post.All<Post>();
+            BindingListView<LPU> view = new BindingListView<LPU>(posts);
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
             name.DataPropertyName = "Name";
             name.HeaderText = "Название";
             grid.Columns.Add(name);
+            var nameFTB = new MyTB((box) => { view.ApplyFilter(l => l.Name.Contains(box.Text)); });
+            aF(nameFTB);
+            var nameETB = new MyTB();
+            aE(nameETB);
 
-            bs.DataSource = posts;
-            grid.DataSource = bs;
+
+            grid.RowEditStarted +=
+            delegate
+            {
+                var post = (bs.Current as ObjectView<Post>).Object;
+                nameETB.Text = post.Name;                
+            };
+
+            EditingComplete += (s, e) =>
+            {
+                var post = (bs.Current as ObjectView<Post>).Object;
+                post.Name = nameETB.Text;
+                if (!post.Save())
+                {
+                    success = false;
+                    return;
+                }
+                view.Refresh();
+            };
+
+            AddingComplete += (s, e) =>
+            {
+                var post = new Post();
+                post.Name = nameETB.Text;
+                if (!post.Save())
+                {
+                    success = false;
+                    return;
+                }
+                posts.Add(post);
+                view.Refresh();
+            };
+
+            RowDeleting += (s, e) =>
+            {
+                lpuList.Remove((bs.Current as ObjectView<LPU>).Object, true);
+                view.Refresh();
+            };
+            bs.DataSource = view;
         }
 
         public void OpenDepartments()
         {
+            throw new NotImplementedException("Отделения будут доступны в следующих версиях");
             departments = mainForm.currentLPU.Departments;
             grid.Columns.Clear();
 
@@ -551,6 +623,7 @@ namespace TimeSheetManger
                     success = false;
                     return;
                 }
+                view.Refresh();
             };
 
             AddingComplete += (s, e) =>
@@ -574,17 +647,6 @@ namespace TimeSheetManger
                 view.Refresh();
             };
             bs.DataSource = view;
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {              
-            /*
-            if (MessageBox.Show("Вы уверены, что хотите сохранить изменения?", "Подтверждение сохранения", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
-                return;
-            foreach (var item in bs)
-            {
-                (item as Domain).Save();
-            } */           
         }
 
         private void btnDelete_Click(object sender, EventArgs e)

@@ -267,7 +267,7 @@ namespace TimeSheetManger
             {
                 Fields[key] = value;
                 _Changed = true;
-                if (value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
+                if (value!=null && value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
                     BTfetched[key] = true;                    
             }
         }
@@ -600,11 +600,16 @@ namespace TimeSheetManger
                 return true;
             GetBelongsTo(GetType()).Keys.ToList().ForEach(k =>
             {
-                if (Fields.ContainsKey(k) && Fields[k] != null)
+                if (Fields.ContainsKey(k))
                 {
-                    var itm = (Fields[k] as Domain);
-                    itm.Save();
-                    Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
+                    var itm = Fields[k] as Domain;
+                    if (itm != null)
+                    {
+                        itm.Save();
+                        Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
+                    }
+                    else
+                        Fields[GetBelongsTo(GetType())[k].FieldInDB] = null;
                     changed = true;
                 }
             });
