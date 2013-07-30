@@ -594,10 +594,10 @@ namespace TimeSheetManger
         /// <summary>
         /// Сохроняет запись в БД. В зависимости от того, задан ID или нет, будет вызван запрос UPDATE или INSERT
         /// </summary>
-        public void Save(bool hard_save = false)
+        public bool Save(bool hard_save = false)
         {
             if (!_Changed && !hard_save)
-                return;
+                return true;
             GetBelongsTo(GetType()).Keys.ToList().ForEach(k =>
             {
                 if (Fields.ContainsKey(k) && Fields[k] != null)
@@ -619,10 +619,12 @@ namespace TimeSheetManger
             catch (FbException ex)
             {
                 MessageBox.Show(ex.Message, "DataBase: Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
             _Changed = false;
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Save(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save()); });
+            return true;
         }
         /// <summary>
         /// Создаёт новую запись

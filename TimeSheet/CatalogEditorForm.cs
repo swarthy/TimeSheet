@@ -32,7 +32,7 @@ namespace TimeSheetManger
             }
         }
 
-        public event EventHandler EditingComplete;
+        public event EventHandler EditingComplete;        
         public event EventHandler AddingComplete;
         public event EventHandler RowDeleting;
         void aF(Control tb)
@@ -138,6 +138,7 @@ namespace TimeSheetManger
             grid.RowEditStarted +=
             delegate
             {
+                addingNewRow = false;
                 gbValues.Show();
                 var usr = (bs.Current as ObjectView<User>).Object;
                 loginETB.Text = usr.Login;
@@ -148,7 +149,7 @@ namespace TimeSheetManger
                 flEditBox.Controls[0].Focus();
             };
 
-            EditingComplete += (s, e) => {
+            EditingComplete += (s, e) => {                
                 var usr = (bs.Current as ObjectView<User>).Object;
                 usr.Login = loginETB.Text;
                 usr.Pass = passETB.Text;
@@ -166,7 +167,7 @@ namespace TimeSheetManger
             };
 
             AddingComplete += (s, e) =>
-                {
+                {                    
                     var usr = new User();                    
                     usr.Login = loginETB.Text;
                     usr.Pass = passETB.Text;
@@ -179,11 +180,11 @@ namespace TimeSheetManger
                         return;
                     }
                     usr.Role = tempRole;
-                    usr.Save();
-                    users.Add(usr);
-                    grid.Refresh();
-                };
-
+                    if (!usr.Save())
+                        return;
+                    users.Add(usr);                    
+                    view.Refresh();                    
+                };            
             bs.DataSource = view;
             grid.DataSource = bs;            
         }
@@ -393,7 +394,7 @@ namespace TimeSheetManger
         }
 
         private void btnAdd_Click(object sender, EventArgs e)
-        {
+        {           
             addingNewRow = true;
             foreach (Control c in flFilters.Controls)
             {
