@@ -44,13 +44,14 @@ namespace TimeSheetManger
             tb.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
-                {   
-                    e.Handled = true;                    
+                {
+                    e.Handled = true;
                     CompleteEnteringValues(this, e);
                 }
                 else
                     if (e.KeyCode == Keys.Escape)
                     {
+                        e.Handled = true;
                         cancelEditing();
                     }
 
@@ -61,7 +62,6 @@ namespace TimeSheetManger
         bool success = false;
         void CompleteEnteringValues(object sender, EventArgs e)
         {
-            success = false;
             if (addingNewRow && AddingComplete != null)
                 AddingComplete(sender, e);
             else
@@ -69,8 +69,11 @@ namespace TimeSheetManger
                     EditingComplete(sender, e);
             if (success)
             {
+                MessageBox.Show("Success!");
                 cancelEditing();
             }
+            else
+                MessageBox.Show("Fail!");
         }
         void beginEditing()
         {
@@ -80,8 +83,8 @@ namespace TimeSheetManger
         }
         void cancelEditing()
         {
-            gbValues.Hide();
             addingNewRow = false;
+            gbValues.Hide();            
             setControlsEnabled(true);
             grid.Focus();
         }
@@ -96,11 +99,7 @@ namespace TimeSheetManger
             grid.AutoGenerateColumns = false;
             AddingComplete += (s, e) => { success = true; };
             EditingComplete += (s, e) => { success = true; };
-            grid.RowEditStarted += (s, e) =>
-            {
-                addingNewRow = false;
-                beginEditing();     
-            };
+            grid.RowEditStarted += (s, e) => { beginEditing(); };
             Text = string.Format("Справочник: {0}", catalogTitle);            
         }
         public void MyAfterOpenningInit()//вызывается после Open<Domain>
@@ -171,16 +170,17 @@ namespace TimeSheetManger
             #endregion
             grid.RowEditStarted +=
             delegate
-            {                
+            {
                 var usr = (bs.Current as ObjectView<User>).Object;
                 loginETB.Text = usr.Login;
                 passETB.Text = usr.Pass;
                 lpuEB.SelectedItem = usr.LPU;
                 profileEB.SelectedItem = usr.Profile;
-                roleETB.Text = usr.Role.ToString();                
+                roleETB.Text = usr.Role.ToString();
             };
 
-            EditingComplete += (s, e) => {                
+            EditingComplete += (s, e) =>
+            {
                 var usr = (bs.Current as ObjectView<User>).Object;
                 usr.Login = loginETB.Text;
                 usr.Pass = passETB.Text;
@@ -198,33 +198,36 @@ namespace TimeSheetManger
                 {
                     success = false;
                     return;
-                }               
+                }
+                view.Refresh();
             };
 
             AddingComplete += (s, e) =>
-                {                    
-                    var usr = new User();                    
-                    usr.Login = loginETB.Text;
-                    usr.Pass = passETB.Text;
-                    usr.LPU = lpuEB.SelectedItem as LPU;
-                    usr.Profile = profileEB.SelectedItem as Personal;
-                    int tempRole;
-                    if (!int.TryParse(roleETB.Text, out tempRole))
-                    {
-                        MessageBox.Show("Роль введена неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                    usr.Role = tempRole;
-                    if (!usr.Save())
-                    {
-                        success = false;
-                        return;
-                    }
-                    users.Add(usr);
-                    view.Refresh();
-                };
+            {
+                var usr = new User();
+                usr.Login = loginETB.Text;
+                usr.Pass = passETB.Text;
+                usr.LPU = lpuEB.SelectedItem as LPU;
+                usr.Profile = profileEB.SelectedItem as Personal;
+                int tempRole;
+                if (!int.TryParse(roleETB.Text, out tempRole))
+                {
+                    MessageBox.Show("Роль введена неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                usr.Role = tempRole;
+                if (!usr.Save())
+                {
+                    success = false;
+                    return;
+                }
+                users.Add(usr);
+                view.Refresh();
+            };
 
-            RowDeleting += (s, e) => {
+            RowDeleting += (s, e) =>
+            {
                 users.Remove((bs.Current as ObjectView<User>).Object, true);
                 view.Refresh();
             };
