@@ -153,9 +153,12 @@ namespace TimeSheetManger
             profile.DataPropertyName = "Profile";
             profile.HeaderText = "Профиль";
             grid.Columns.Add(profile);
-            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
+            //var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
+            var profileFB = new MyCB(mainForm.currentUser.PersonalLink.ToDBList(), (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
             aF(profileFB);
-            var profileEB = new MyCB(LPUPersonals);            
+            //var profileEB = new MyCB(LPUPersonals);            //работает
+            //var profileEB = new MyCB(mainForm.currentUser.PersonalLink);//не работает
+            var profileEB = new MyCB(mainForm.currentUser.PersonalLink.ToDBList());//работает... я видимо чего-то в этой жизни не понимаю...             
             aE(profileEB);
 
             DataGridViewTextBoxColumn role = new DataGridViewTextBoxColumn();
@@ -294,6 +297,17 @@ namespace TimeSheetManger
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments);
             aE(DepartmentEB);
 
+
+            /*
+            DataGridViewTextBoxColumn profile = new DataGridViewTextBoxColumn();
+            profile.DataPropertyName = "Profile";
+            profile.HeaderText = "Профиль";
+            grid.Columns.Add(profile);
+            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });            
+            aF(profileFB);
+            var profileEB = new MyCB(LPUPersonals);            
+            aE(profileEB);                          
+             */
             DataGridViewTextBoxColumn tsManager = new DataGridViewTextBoxColumn();
             tsManager.DataPropertyName = "TimeSheetManager";
             tsManager.HeaderText = "Табельщик";
@@ -614,7 +628,8 @@ namespace TimeSheetManger
                     (c as MyTB).Text = "";
                 else
                     if (type == typeof(MyCB))
-                        (c as MyCB).SelectedItem = null;
+                        (c as MyCB).SelectedIndex = -1;
+                        //(c as MyCB).SelectedItem = null;
             }
         }
 
