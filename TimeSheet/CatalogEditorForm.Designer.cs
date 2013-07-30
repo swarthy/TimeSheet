@@ -170,6 +170,7 @@
             this.Name = "CatalogEditorForm";
             this.Text = "Справочник";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.Load += new System.EventHandler(this.CatalogEditorForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.gbFilters.ResumeLayout(false);
             this.gbValues.ResumeLayout(false);

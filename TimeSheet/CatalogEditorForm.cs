@@ -36,11 +36,11 @@ namespace TimeSheetManger
         public event EventHandler AddingComplete;
         public event EventHandler RowDeleting;
         void aF(Control tb)
-        {            
+        {
             flFilters.Controls.Add(tb);
         }
         void aE(Control tb)
-        {            
+        {
             tb.KeyDown += (s, e) =>
             {
                 if (e.KeyCode == Keys.Enter)
@@ -54,7 +54,6 @@ namespace TimeSheetManger
                         e.Handled = true;
                         cancelEditing();
                     }
-
             };
             flEditBox.Controls.Add(tb);
         }
@@ -299,7 +298,7 @@ namespace TimeSheetManger
             tsManager.DataPropertyName = "TimeSheetManager";
             tsManager.HeaderText = "Табельщик";
             grid.Columns.Add(tsManager);
-            var tsManagerFB = new MyCB(mainForm.currentLPU.Users, (box) => { view.ApplyFilter((u) => { if (u.TimeSheetManager == null) return false; else return u.TimeSheetManager._LoginAndProfile.Contains(box.Text); }); });
+            var tsManagerFB = new MyCB(mainForm.currentLPU.Users, (box) => { view.ApplyFilter((p) => { if (p.TimeSheetManager == null) return true; else return p.TimeSheetManager.ToString().Contains(box.Text); }); });
             aF(tsManagerFB);
             var tsManagerEB = new MyCB(mainForm.currentLPU.Users);
             aE(tsManagerEB);
@@ -361,6 +360,7 @@ namespace TimeSheetManger
                     success = false;
                     return;
                 }
+                view.Refresh();
             };
 
             AddingComplete += (s, e) =>
@@ -590,7 +590,7 @@ namespace TimeSheetManger
             else
             {
                 gbFilters.Hide();
-                ClearValues();
+                ClearValues(flFilters.Controls);
                 grid.Height += gbFilters.Height + 10;
             }
         }
@@ -602,12 +602,12 @@ namespace TimeSheetManger
         private void btnAdd_Click(object sender, EventArgs e)
         {           
             addingNewRow = true;
-            ClearValues();
+            ClearValues(flEditBox.Controls);
             beginEditing();
         }
-        void ClearValues()
+        void ClearValues(System.Windows.Forms.Control.ControlCollection controls)
         {
-            foreach (Control c in flFilters.Controls)
+            foreach (Control c in controls)
             {
                 var type = c.GetType();
                 if (type == typeof(MyTB))
@@ -616,6 +616,11 @@ namespace TimeSheetManger
                     if (type == typeof(MyCB))
                         (c as MyCB).SelectedItem = null;
             }
+        }
+
+        private void CatalogEditorForm_Load(object sender, EventArgs e)
+        {
+            ClearValues(flFilters.Controls);
         }
     }
 
@@ -631,12 +636,14 @@ namespace TimeSheetManger
         {
             DataSource = source;
             SelectedItem = null;
+            SelectedIndex = -1;
         }
         public MyCB(object source, TextChangedCustomEventCB cb) :
             base()
         {
             DataSource = source;
             SelectedItem = null;
+            SelectedIndex = -1;
             textChanged = cb;
         }
         protected override void OnTextChanged(EventArgs e)
