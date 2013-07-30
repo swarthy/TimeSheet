@@ -611,8 +611,10 @@ namespace TimeSheetManger
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            #if !DEBUG
             if (MessageBox.Show("Завершить работу с программой?", "Подтверждение выхода", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
                 e.Cancel = true;
+            #endif
         }
 
         private void tbAuthPass_KeyDown(object sender, KeyEventArgs e)

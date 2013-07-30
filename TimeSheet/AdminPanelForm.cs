@@ -86,6 +86,7 @@ namespace TimeSheetManger
                     form.OpenFlags();
                     break;
             }
+            form.MyInit();
             form.ShowDialog();
         }
         #endregion
