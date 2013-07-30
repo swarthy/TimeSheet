@@ -202,6 +202,10 @@ namespace TimeSheetManger
                     view.Refresh();
                 };
 
+            RowDeleting += (s, e) => {
+                users.Remove((bs.Current as ObjectView<User>).Object, true);
+            };
+
             bs.DataSource = view;            
         }
 
