@@ -298,7 +298,10 @@ namespace TimeSheetManger
             aF(DepartmentFB);
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
-            /*
+            /*   //При добавлении/сохранении в него null grid начинает сходить с ума, и при любом действии (смена строки, onmousemove и тд) начинает плеваться exception'ами (посмотреть можно в grid.ondataerror ниже)
+             *   //Можно было бы оставить, просто перехватывая их, но т.к. вылетают слишком часто - тормозят систему.
+             *   //P.S. вдруг что-то поменяется... В момент написания ругался на TimeSheetManager.Personal - ссылка на объект указывает на null, в grid... .... "cell_GetValue"
+             *   //P.S.S. нигде (на момент написания) в решении нет обращения к personal.TimeSheetUser.Profile
             DataGridViewTextBoxColumn tsManager = new DataGridViewTextBoxColumn();
             tsManager.DataPropertyName = "TimeSheetManager";            
             tsManager.HeaderText = "Табельщик";
