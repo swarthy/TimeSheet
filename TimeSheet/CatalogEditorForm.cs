@@ -35,32 +35,36 @@ namespace TimeSheetManger
         public event EventHandler EditingComplete;        
         public event EventHandler AddingComplete;
         public event EventHandler RowDeleting;
-        void aF(Control tb)
+        void aF(Control box)
         {
-            flFilters.Controls.Add(tb);
+            flFilters.Controls.Add(box);
         }
-        void aE(Control tb)
+        void aE(Control box)
         {
-            tb.KeyDown += (s, e) =>
-            {
-                if (e.KeyCode == Keys.Enter)
+            box.KeyDown += (s, e) =>
+            {                
+                /*if (e.KeyCode == Keys.Enter)
                 {
                     e.Handled = true;
+                    e.SuppressKeyPress = true;
                     CompleteEnteringValues(this, e);
                 }
-                else
-                    if (e.KeyCode == Keys.Escape)
-                    {
-                        e.Handled = true;
-                        cancelEditing();
-                    }
-            };
-            flEditBox.Controls.Add(tb);
+                else*/
+                if (e.KeyCode == Keys.Escape)
+                {
+                    e.Handled = true;
+                    e.SuppressKeyPress = true;
+                    cancelEditing();
+                }
+            };            
+            flEditBox.Controls.Add(box);
         }
         bool addingNewRow = false;
         bool success = false;
         void CompleteEnteringValues(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Сохранить?", "Подтверждение сохранения", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                return;
             if (addingNewRow && AddingComplete != null)
                 AddingComplete(sender, e);
             else
@@ -68,11 +72,12 @@ namespace TimeSheetManger
                     EditingComplete(sender, e);
             if (success)
             {
-                MessageBox.Show("Success!");
+                Helper.Log("Success!");
                 cancelEditing();
+                ClearValues(flEditBox.Controls);
             }
             else
-                MessageBox.Show("Fail!");
+                Helper.Log("Fail!");
         }
         void beginEditing()
         {
@@ -89,7 +94,7 @@ namespace TimeSheetManger
         }
         void setControlsEnabled(bool value)
         {
-            btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = value;
+            btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = grid.Enabled = value;
         }        
         public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
@@ -324,7 +329,7 @@ namespace TimeSheetManger
                 firstNameETB.Text = personal.FirstName;
                 postEB.SelectedItem = personal.Post;
                 DepartmentEB.SelectedItem = personal.Department;
-                tsManagerEB.SelectedItem = personal.TimeSheetManager;
+                tsManagerEB.SelectedItem = personal.TimeSheetManager;                
                 priorityETB.Text = personal.Priority.ToString();
             };
 
@@ -407,7 +412,7 @@ namespace TimeSheetManger
         }
         //done
         public void OpenLPU()
-        {
+        {            
             lpuList = LPU.All<LPU>();
             BindingListView<LPU> view = new BindingListView<LPU>(lpuList);            
             grid.Columns.Clear();
@@ -425,9 +430,9 @@ namespace TimeSheetManger
             maindoc.DataPropertyName = "MainDoc";
             maindoc.HeaderText = "Главный врач";
             grid.Columns.Add(maindoc);
-            var maindocFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(l => l.MainDoc.ToString().Contains(box.Text)); });
+            var maindocFB = new MyCB(Personal.All<Personal>(), (box) => { view.ApplyFilter(l => l.MainDoc.ToString().Contains(box.Text)); });
             aF(maindocFB);
-            var maindocEB = new MyCB(LPUPersonals);
+            var maindocEB = new MyCB(Personal.All<Personal>());
             aE(maindocEB);
 
 
@@ -477,7 +482,7 @@ namespace TimeSheetManger
         public void OpenPosts()
         {
             posts = Post.All<Post>();
-            BindingListView<LPU> view = new BindingListView<LPU>(posts);
+            BindingListView<Post> view = new BindingListView<Post>(posts);
             grid.Columns.Clear();
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
@@ -532,7 +537,8 @@ namespace TimeSheetManger
 
         public void OpenDepartments()
         {
-            throw new NotImplementedException("Отделения будут доступны в следующих версиях");
+            #region old
+            /*
             departments = mainForm.currentLPU.Departments;
             grid.Columns.Clear();
 
@@ -563,7 +569,48 @@ namespace TimeSheetManger
             grid.Columns.Add(lpu);
 
             bs.DataSource = departments;
-            grid.DataSource = bs;
+            grid.DataSource = bs;*/
+            #endregion
+            departments = mainForm.currentLPU.Departments;
+            BindingListView<Department> view = new BindingListView<Department>(departments);
+
+            DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
+            name.DataPropertyName = "Name";
+            name.HeaderText = "Название";
+            grid.Columns.Add(name);
+            var nameFTB = new MyTB((box) => { view.ApplyFilter(d => d.Name.Contains(box.Text)); });
+            aF(nameFTB);
+            var nameETB = new MyTB();
+            aE(nameETB);
+
+            DataGridViewTextBoxColumn dn = new DataGridViewTextBoxColumn();
+            dn.DataPropertyName = "Department_Number";
+            dn.HeaderText = "Номер отделения";
+            grid.Columns.Add(dn);
+            var dnFTB = new MyTB((box) => { view.ApplyFilter(d => d.Department_Number.ToString().Contains(box.Text)); });
+            aF(dnFTB);
+            var dnETB = new MyTB();
+            aE(dnETB);
+
+
+            DataGridViewTextBoxColumn manager = new DataGridViewTextBoxColumn();
+            manager.DataPropertyName = "DepartmentManager";            
+            manager.HeaderText = "Заведующий отделения";
+            grid.Columns.Add(manager);
+            var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => d.DepartmentManager.ToString().Contains(box.Text)); });
+            aF(managerFB);
+            var managerEB = new MyCB(LPUPersonals);
+            aE(managerEB);
+
+            DataGridViewTextBoxColumn lpu = new DataGridViewTextBoxColumn();
+            lpu.DataPropertyName = "LPU";
+            lpu.HeaderText = "ЛПУ";
+            grid.Columns.Add(lpu);
+            var lpuFB = new MyCB(LPU.All<LPU>(), (box) => { view.ApplyFilter(u => u.LPU.Name.Contains(box.Text)); });
+            aF(lpuFB);
+            var lpuEB = new MyCB(LPU.All<LPU>());
+            aE(lpuEB);
+
         }
 
         //done
@@ -595,7 +642,7 @@ namespace TimeSheetManger
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
             name.DataPropertyName = "name";
-            name.HeaderText = "Код [НЕ ТРОГАТЬ!]";
+            name.HeaderText = "Код [3] [НЕ ТРОГАТЬ!]";
             grid.Columns.Add(name);
             var nameFTB = new MyTB((box) => { view.ApplyFilter(f => f.Name.Contains(box.Text)); });
             aF(nameFTB);
@@ -698,6 +745,7 @@ namespace TimeSheetManger
         private void CatalogEditorForm_Load(object sender, EventArgs e)
         {
             ClearValues(flFilters.Controls);
+            grid.KeyDown += (s, e2) => { if (e2.KeyCode == Keys.Delete) btnDelete_Click(sender, e); };
         }
     }
 
@@ -712,16 +760,21 @@ namespace TimeSheetManger
             base()
         {
             DataSource = source;
-            SelectedItem = null;
-            SelectedIndex = -1;
+            PreviewKeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) e.IsInputKey = true;};
+            FormattingEnabled = true;
+            //DropDownStyle = ComboBoxStyle.DropDownList;
+            AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
         }
         public MyCB(object source, TextChangedCustomEventCB cb) :
             base()
         {
             DataSource = source;
-            SelectedItem = null;
-            SelectedIndex = -1;
+            PreviewKeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) e.IsInputKey = true; };
+            FormattingEnabled = true;            
             textChanged = cb;
+            AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;            
         }
         protected override void OnTextChanged(EventArgs e)
         {
@@ -736,10 +789,12 @@ namespace TimeSheetManger
         public MyTB() :
             base()
         {
+            PreviewKeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) e.IsInputKey = true; };
         }
         public MyTB(TextChangedCustomEventTB tc) :
             base()
         {
+            PreviewKeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) e.IsInputKey = true; };
             textChanged = tc;
         }
         protected override void OnTextChanged(EventArgs e)

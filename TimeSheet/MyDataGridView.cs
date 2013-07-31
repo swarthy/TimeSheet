@@ -31,6 +31,7 @@ namespace TimeSheetManger
         {
             if (RowEditStarted != null)
                 RowEditStarted(this, e);            
+            base.OnCellDoubleClick(e);
         }
     }
 }

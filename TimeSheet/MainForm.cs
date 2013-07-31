@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using TimeSheetManger;
-using System.Diagnostics;
 using System.Threading;
 
 namespace TimeSheetManger
@@ -541,13 +536,13 @@ namespace TimeSheetManger
         }
 
         private void редактироватьВыделеннуюЗаписьToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        {   
             if (dgTimeSheet.SelectedCells.Count > 0 && !Saving)
             {
-                var firstCell = dgTimeSheet.SelectedCells[0];
+                var firstCell = dgTimeSheet.SelectedCells[dgTimeSheet.SelectedCells.Count - 1];
                 int contentPosition, contentOldCount;
                 var content = GetContentForDayByCell(firstCell, out contentPosition, out contentOldCount);
-                FlagsForm ff = new FlagsForm(this);
+                FlagsForm ff = new FlagsForm(this, firstCell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     Enabled = false;
@@ -635,6 +630,19 @@ namespace TimeSheetManger
         {
             AboutBox about = new AboutBox();
             about.ShowDialog();            
+        }
+
+        private void cmsDaysMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (dgTimeSheet.SelectedCells.Count == 0)
+            {
+                e.Cancel = true;
+                return;
+            }
+            var firstCell = dgTimeSheet.SelectedCells[dgTimeSheet.SelectedCells.Count - 1];
+            bool state = firstCell.OwningColumn.Tag != null && firstCell.OwningColumn.Tag.GetType() == typeof(DateTime);                            
+            редактироватьВыделеннуюЗаписьToolStripMenuItem.Enabled = miAddMore.Enabled = удалитьВыделеннуюЗаписьToolStripMenuItem.Enabled = state;
+            miEditPersonal.Enabled = удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Enabled = !state;            
         }
     }
     public enum AppState

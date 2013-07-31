@@ -450,7 +450,7 @@ namespace TimeSheetManger
             {"Users", new Link("LPU_ID", typeof(User))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            {"MainDoc", new Link("MAINDOC",typeof(Personal))}
+            {"MainDoc", new Link("MAINDOC_ID",typeof(Personal))}
         };
         public LPU _Self
         {
@@ -514,6 +514,7 @@ namespace TimeSheetManger
     public class Flag : Domain
     {
         new public static string tableName = "FLAGS";
+        new public static string OrderBy = "ru_name";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                        
         public override string ToString()
         {
