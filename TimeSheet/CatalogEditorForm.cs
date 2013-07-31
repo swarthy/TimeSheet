@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using FirebirdSql.Data.FirebirdClient;
 using Equin.ApplicationFramework;
+using SwarthyComponents;
 
 namespace TimeSheetManger
 {
@@ -95,7 +96,8 @@ namespace TimeSheetManger
         void setControlsEnabled(bool value)
         {
             btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = grid.Enabled = value;
-        }        
+        }
+        string catalogTitle;
         public CatalogEditorForm(MainForm mainform, string catalogTitle)
         {
             mainForm = mainform;
@@ -104,6 +106,7 @@ namespace TimeSheetManger
             AddingComplete += (s, e) => { success = true; };
             EditingComplete += (s, e) => { success = true; };
             grid.RowEditStarted += (s, e) => { beginEditing(); };
+            this.catalogTitle = catalogTitle;
             Text = string.Format("Справочник: {0}", catalogTitle);            
         }
         public void MyAfterOpenningInit()//вызывается после Open<Domain>
@@ -821,6 +824,12 @@ namespace TimeSheetManger
         private void grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             //Helper.Log(e.ToString());
+        }
+
+        private void btnPrint_Click(object sender, EventArgs e)
+        {
+            DataGridViewPrinter printer = new DataGridViewPrinter(grid);
+            printer.Print(catalogTitle);
         }
     }
 

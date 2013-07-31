@@ -40,7 +40,7 @@ namespace TimeSheetManger
                 MessageBox.Show("Количество минут введено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            var c = Controls.OfType<RadioButton>();
+            var c = pFlags.Controls.OfType<RadioButton>();
             if (c.Any(cc => cc.Checked))
                 flag = c.First(b => b.Checked).Tag as Flag;
             else
@@ -55,14 +55,23 @@ namespace TimeSheetManger
         {
             var needCh = preDay != null;
             for (int i = 0; i < mainForm.Flags.Count; i++)
-                CreateRadioButton(mainForm.Flags[i].Name, mainForm.Flags[i].Ru_Name, 12 + i % 6 * 40, 12 + (i / 6) * 23, mainForm.Flags[i], 100 + i, needCh ? mainForm.Flags[i].ID == preDay.Flag.ID : false);
+                //CreateRadioButton(mainForm.Flags[i].Name, mainForm.Flags[i].Description, 12 + i % 6 * 40, 12 + (i / 6) * 23, mainForm.Flags[i], 100 + i, needCh ? mainForm.Flags[i].ID == preDay.Flag.ID : false);
+                CreateRadioButton(mainForm.Flags[i].Name, string.Format("[{1}] {0}",mainForm.Flags[i].Description,mainForm.Flags[i].Ru_Name), 0, i * 18, mainForm.Flags[i], 100 + i, needCh ? mainForm.Flags[i].ID == preDay.Flag.ID : false);
             if (needCh)
                 flag = preDay.Flag;
             if (preDay!=null && preDay.Worked_Time != null)
             {
                 tbHours.Text = preDay.Worked_Time.Hours.ToString();
                 tbMinutes.Text = preDay.Worked_Time.Minutes.ToString();
-            }
+            }            
+            Location = Cursor.Position;            
+            Location.Offset(10, 10);
+            Rectangle scr = Screen.FromPoint(Location).Bounds;
+            if ((Location + Size).X>scr.Width)            
+                Left = scr.Width - Width;
+            if ((Location + Size).Y > scr.Height)
+                Top = scr.Height - Height;
+            
         }        
         RadioButton CreateRadioButton(string name, string text, int x, int y,  Flag rbflag, int tabIndex = 0, bool check=false)
         {
@@ -76,7 +85,7 @@ namespace TimeSheetManger
             rb.TabStop = true;
             rb.UseVisualStyleBackColor = true;
             rb.Tag = rbflag;
-            Controls.Add(rb);
+            pFlags.Controls.Add(rb);
             return rb;
         }
     }

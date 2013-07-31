@@ -206,12 +206,20 @@ namespace TimeSheetManger
     }
     public struct Link
     {
-        public Link(string FieldInDB, Type DomainType)
+        /// <summary>
+        /// Прослойка
+        /// </summary>
+        /// <param name="FieldSoruce">Поле в исходной таблице, в которой записывается значение, принадлежащее записи в ссылаемой таблице (Personal_Table_Number)</param>
+        /// <param name="FieldDestination">Имя поля в связываемой таблице, являющееся естественным ключем (Table_Number) [по умолчанию это ID]</param>
+        /// <param name="DomainType">Класс записи</param>
+        public Link(string FieldSoruce, Type DomainType, string FieldDestination = "ID")
         {
             Type = DomainType;
-            this.FieldInDB = FieldInDB;
+            Field_Source = FieldSoruce;
+            Field_Destination = FieldDestination;
         }
-        public string FieldInDB;
+        public string Field_Source;
+        public string Field_Destination;
         public Type Type;
     }
     public class Domain
@@ -340,7 +348,7 @@ namespace TimeSheetManger
                 pi.Name[0]!='_' &&
                 !pi.PropertyType.IsGenericType &&
                 !pi.PropertyType.IsSubclassOf(typeof(Domain))).ToList().ForEach(pi => field_names.Add(pi.Name));
-            GetBelongsTo(type).Values.ToList().ForEach(k => { field_names.Add(k.FieldInDB); });
+            GetBelongsTo(type).Values.ToList().ForEach(k => { field_names.Add(k.Field_Source); });
         }
         protected T FetchBelongsTo<T>(string key, bool refetch = false) where T: Domain, new()
         {
@@ -349,9 +357,9 @@ namespace TimeSheetManger
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
             if (belongsto.Count > 0 && Fields["ID"] != null && (!BTfetched[key] || refetch))
             {
-                if (this[belongsto[key].FieldInDB]==null || this[belongsto[key].FieldInDB].ToString() == "")
+                if (this[belongsto[key].Field_Source]==null || this[belongsto[key].Field_Source].ToString() == "")
                     return null;
-                var temp = Domain.F_All<T>("ID = " + this[belongsto[key].FieldInDB], true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
+                var temp = Domain.F_All<T>("ID = " + this[belongsto[key].Field_Source], true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
                 Fields[key] = temp;
                 BTfetched[key] = true;
                 return temp;
@@ -368,9 +376,9 @@ namespace TimeSheetManger
             Dictionary<string, Link> hasOne = GetHasOne(GetType());
             if (typeof(T) != hasOne[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if (hasOne.Count > 0 && Fields["ID"] != null && (!H1fetched[key] || refetch))
+            if (hasOne.Count > 0 && Fields[hasOne[key].Field_Destination] != null && (!H1fetched[key] || refetch))
             {
-                var temp = Domain.F_All<T>(hasOne[key].FieldInDB + " = " + ID, true);
+                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasOne[key].Field_Source, Fields[hasOne[key].Field_Destination]), true);
                 T result;
                 if (temp.Count == 0)
                     return null;
@@ -394,9 +402,9 @@ namespace TimeSheetManger
                 throw new Exception("Fetch error: Type mismatch");
             if (hasmany.Count > 0 && Fields["ID"] != null && (!HMfetched[key] || refetch))
             {
-                var temp = Domain.F_All<T>(hasmany[key].FieldInDB + " = " + ID);
+                var temp = Domain.F_All<T>(hasmany[key].Field_Source + " = " + ID);
                 HMfetched[key] = true;
-                temp.FieldInDB = hasmany[key].FieldInDB;
+                temp.FieldInDB = hasmany[key].Field_Source;
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
                 Fields[key] = temp;
@@ -606,10 +614,10 @@ namespace TimeSheetManger
                     if (itm != null)
                     {
                         itm.Save();
-                        Fields[GetBelongsTo(GetType())[k].FieldInDB] = itm.ID;
+                        Fields[GetBelongsTo(GetType())[k].Field_Source] = itm.ID;
                     }
                     else
-                        Fields[GetBelongsTo(GetType())[k].FieldInDB] = null;
+                        Fields[GetBelongsTo(GetType())[k].Field_Source] = null;
                     changed = true;
                 }
             });

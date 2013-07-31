@@ -95,6 +95,13 @@ namespace TimeSheetManger.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Delete_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Delete_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Edit_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Edit_16x16", resourceCulture);
@@ -112,6 +119,20 @@ namespace TimeSheetManger.Properties {
         internal static System.Drawing.Bitmap Log_Out_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Log Out_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Print_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Print_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Rename_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Rename_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

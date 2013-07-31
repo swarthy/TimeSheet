@@ -94,6 +94,7 @@
     <Compile Include="CatalogEditorForm.Designer.cs">
       <DependentUpon>CatalogEditorForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataGridViewPrinter.cs" />
     <Compile Include="DBClassesFile.cs" />
     <Compile Include="DBFmanager.cs" />
     <Compile Include="ExcelManager.cs" />
@@ -192,6 +193,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\Rename_16x16.png" />
+    <None Include="Resources\Delete_16x16.png" />
+    <None Include="Resources\Print_16x16.png" />
     <None Include="Resources\XLSX-16x16.png" />
     <None Include="Resources\Calendar_32x32.png" />
     <None Include="Resources\Calendar_16x16.png" />

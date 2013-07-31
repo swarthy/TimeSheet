@@ -29,33 +29,22 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.btnDelete = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.grid = new TimeSheetManger.MyDataGridView();
             this.flEditBox = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnFiltersEnable = new System.Windows.Forms.Button();
             this.flFilters = new System.Windows.Forms.FlowLayoutPanel();
             this.gbFilters = new System.Windows.Forms.GroupBox();
             this.gbValues = new System.Windows.Forms.GroupBox();
-            this.bs = new System.Windows.Forms.BindingSource(this.components);
+            this.btnPrint = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
+            this.btnFiltersEnable = new System.Windows.Forms.Button();
+            this.btnDelete = new System.Windows.Forms.Button();
+            this.bs = new System.Windows.Forms.BindingSource(this.components);
+            this.grid = new TimeSheetManger.MyDataGridView();
             this.gbFilters.SuspendLayout();
             this.gbValues.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
-            // 
-            // btnDelete
-            // 
-            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnDelete.Location = new System.Drawing.Point(177, 289);
-            this.btnDelete.Name = "btnDelete";
-            this.btnDelete.Size = new System.Drawing.Size(80, 23);
-            this.btnDelete.TabIndex = 2;
-            this.btnDelete.Text = "Удалить";
-            this.btnDelete.UseVisualStyleBackColor = true;
-            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
             // btnCancel
             // 
@@ -68,28 +57,6 @@
             this.btnCancel.Text = "Закрыть";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
-            // grid
-            // 
-            this.grid.AllowUserToAddRows = false;
-            this.grid.AllowUserToDeleteRows = false;
-            this.grid.AllowUserToResizeColumns = false;
-            this.grid.AllowUserToResizeRows = false;
-            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
-            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.grid.Location = new System.Drawing.Point(12, 12);
-            this.grid.MultiSelect = false;
-            this.grid.Name = "grid";
-            this.grid.ReadOnly = true;
-            this.grid.RowHeadersVisible = false;
-            this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.grid.ShowEditingIcon = false;
-            this.grid.Size = new System.Drawing.Size(544, 218);
-            this.grid.TabIndex = 0;
-            this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.grid_DataError);
-            // 
             // flEditBox
             // 
             this.flEditBox.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -97,17 +64,6 @@
             this.flEditBox.Name = "flEditBox";
             this.flEditBox.Size = new System.Drawing.Size(538, 28);
             this.flEditBox.TabIndex = 5;
-            // 
-            // btnFiltersEnable
-            // 
-            this.btnFiltersEnable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnFiltersEnable.Location = new System.Drawing.Point(15, 289);
-            this.btnFiltersEnable.Name = "btnFiltersEnable";
-            this.btnFiltersEnable.Size = new System.Drawing.Size(75, 23);
-            this.btnFiltersEnable.TabIndex = 6;
-            this.btnFiltersEnable.Text = "Фильтры";
-            this.btnFiltersEnable.UseVisualStyleBackColor = true;
-            this.btnFiltersEnable.Click += new System.EventHandler(this.btnFiltersEnable_Click);
             // 
             // flFilters
             // 
@@ -143,16 +99,83 @@
             this.gbValues.Text = "Значения";
             this.gbValues.Visible = false;
             // 
+            // btnPrint
+            // 
+            this.btnPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPrint.Image = global::TimeSheetManger.Properties.Resources.Print_16x16;
+            this.btnPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnPrint.Location = new System.Drawing.Point(400, 289);
+            this.btnPrint.Name = "btnPrint";
+            this.btnPrint.Size = new System.Drawing.Size(75, 23);
+            this.btnPrint.TabIndex = 11;
+            this.btnPrint.Text = "Печать";
+            this.btnPrint.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnPrint.UseVisualStyleBackColor = true;
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            // 
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAdd.Location = new System.Drawing.Point(96, 289);
+            this.btnAdd.Image = global::TimeSheetManger.Properties.Resources.Add_16x16;
+            this.btnAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnAdd.Location = new System.Drawing.Point(105, 289);
             this.btnAdd.Name = "btnAdd";
-            this.btnAdd.Size = new System.Drawing.Size(75, 23);
+            this.btnAdd.Size = new System.Drawing.Size(86, 23);
             this.btnAdd.TabIndex = 10;
             this.btnAdd.Text = "Добавить";
+            this.btnAdd.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
+            // btnFiltersEnable
+            // 
+            this.btnFiltersEnable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnFiltersEnable.Image = global::TimeSheetManger.Properties.Resources.Rename_16x16;
+            this.btnFiltersEnable.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnFiltersEnable.Location = new System.Drawing.Point(15, 289);
+            this.btnFiltersEnable.Name = "btnFiltersEnable";
+            this.btnFiltersEnable.Size = new System.Drawing.Size(84, 23);
+            this.btnFiltersEnable.TabIndex = 6;
+            this.btnFiltersEnable.Text = "Фильтры";
+            this.btnFiltersEnable.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnFiltersEnable.UseVisualStyleBackColor = true;
+            this.btnFiltersEnable.Click += new System.EventHandler(this.btnFiltersEnable_Click);
+            // 
+            // btnDelete
+            // 
+            this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnDelete.Image = global::TimeSheetManger.Properties.Resources.Delete_16x16;
+            this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnDelete.Location = new System.Drawing.Point(197, 289);
+            this.btnDelete.Name = "btnDelete";
+            this.btnDelete.Size = new System.Drawing.Size(80, 23);
+            this.btnDelete.TabIndex = 2;
+            this.btnDelete.Text = "Удалить";
+            this.btnDelete.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnDelete.UseVisualStyleBackColor = true;
+            this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
+            // 
+            // grid
+            // 
+            this.grid.AllowUserToAddRows = false;
+            this.grid.AllowUserToDeleteRows = false;
+            this.grid.AllowUserToResizeColumns = false;
+            this.grid.AllowUserToResizeRows = false;
+            this.grid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.grid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
+            this.grid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.grid.Location = new System.Drawing.Point(12, 12);
+            this.grid.MultiSelect = false;
+            this.grid.Name = "grid";
+            this.grid.ReadOnly = true;
+            this.grid.RowHeadersVisible = false;
+            this.grid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.grid.ShowEditingIcon = false;
+            this.grid.Size = new System.Drawing.Size(544, 218);
+            this.grid.TabIndex = 0;
+            this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.grid_DataError);
             // 
             // CatalogEditorForm
             // 
@@ -161,6 +184,7 @@
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(568, 324);
             this.ControlBox = false;
+            this.Controls.Add(this.btnPrint);
             this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.grid);
             this.Controls.Add(this.gbValues);
@@ -172,10 +196,10 @@
             this.Text = "Справочник";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.CatalogEditorForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.gbFilters.ResumeLayout(false);
             this.gbValues.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.grid)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -192,5 +216,6 @@
         private System.Windows.Forms.GroupBox gbValues;
         private System.Windows.Forms.BindingSource bs;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.Button btnPrint;
     }
 }

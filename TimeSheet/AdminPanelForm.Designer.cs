@@ -83,8 +83,8 @@
             this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
-            this.cdDayColors = new System.Windows.Forms.ColorDialog();
             this.cHolydayCalendar = new SwarthyComponents.CalendarView();
+            this.cdDayColors = new System.Windows.Forms.ColorDialog();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.gbColors.SuspendLayout();
@@ -204,7 +204,7 @@
             this.btnEditCatalog.Size = new System.Drawing.Size(110, 23);
             this.btnEditCatalog.TabIndex = 1;
             this.btnEditCatalog.Text = "Редактировать";
-            this.btnEditCatalog.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnEditCatalog.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnEditCatalog.UseVisualStyleBackColor = true;
             this.btnEditCatalog.Click += new System.EventHandler(this.btnEditCatalog_Click);
             // 
@@ -568,7 +568,7 @@
             this.btnEditSaveDaysHours.Size = new System.Drawing.Size(111, 23);
             this.btnEditSaveDaysHours.TabIndex = 4;
             this.btnEditSaveDaysHours.Text = "Редактировать";
-            this.btnEditSaveDaysHours.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnEditSaveDaysHours.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnEditSaveDaysHours.UseVisualStyleBackColor = true;
             this.btnEditSaveDaysHours.Click += new System.EventHandler(this.btnEditSaveDaysHours_Click);
             // 
@@ -691,7 +691,7 @@
             this.btnEditSaveDayType.Size = new System.Drawing.Size(112, 23);
             this.btnEditSaveDayType.TabIndex = 6;
             this.btnEditSaveDayType.Text = "Редактировать";
-            this.btnEditSaveDayType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnEditSaveDayType.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnEditSaveDayType.UseVisualStyleBackColor = true;
             this.btnEditSaveDayType.Click += new System.EventHandler(this.btnEditSaveDayType_Click);
             // 
