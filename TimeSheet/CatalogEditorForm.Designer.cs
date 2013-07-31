@@ -88,6 +88,7 @@
             this.grid.ShowEditingIcon = false;
             this.grid.Size = new System.Drawing.Size(544, 218);
             this.grid.TabIndex = 0;
+            this.grid.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.grid_DataError);
             // 
             // flEditBox
             // 

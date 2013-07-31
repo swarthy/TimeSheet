@@ -298,16 +298,16 @@ namespace TimeSheetManger
             aF(DepartmentFB);
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
-
+            /*
             DataGridViewTextBoxColumn tsManager = new DataGridViewTextBoxColumn();
-            tsManager.DataPropertyName = "TimeSheetManager";
+            tsManager.DataPropertyName = "TimeSheetManager";            
             tsManager.HeaderText = "Табельщик";
             grid.Columns.Add(tsManager);
             var tsManagerFB = new MyCB(mainForm.currentLPU.Users.ToList(), (box) => { view.ApplyFilter((p) => { if (p.TimeSheetManager == null) return true; else return p.TimeSheetManager.ToString().Contains(box.Text); }); });
             aF(tsManagerFB);
             var tsManagerEB = new MyCB(mainForm.currentLPU.Users.ToList());
             aE(tsManagerEB);
-
+            */
             DataGridViewTextBoxColumn priority = new DataGridViewTextBoxColumn();
             priority.DataPropertyName = "Priority";
             priority.HeaderText = "Приоритет";
@@ -329,7 +329,7 @@ namespace TimeSheetManger
                 firstNameETB.Text = personal.FirstName;
                 postEB.SelectedItem = personal.Post;
                 DepartmentEB.SelectedItem = personal.Department;
-                tsManagerEB.SelectedItem = personal.TimeSheetManager;                
+                //tsManagerEB.SelectedItem = personal.TimeSheetManager;                
                 priorityETB.Text = personal.Priority.ToString();
             };
 
@@ -350,9 +350,9 @@ namespace TimeSheetManger
                 personal.MiddleName = middleNameETB.Text;
                 personal.Post = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
-                personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
+                //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
                                 
-                if (!int.TryParse(tnETB.Text, out temp))
+                if (!int.TryParse(priorityETB.Text, out temp))
                 {
                     MessageBox.Show("Приоритет введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     success = false;
@@ -384,9 +384,9 @@ namespace TimeSheetManger
                 personal.MiddleName = middleNameETB.Text;
                 personal.Post = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
-                personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
+                //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
 
-                if (!int.TryParse(tnETB.Text, out temp))
+                if (!int.TryParse(priorityETB.Text, out temp))
                 {
                     MessageBox.Show("Приоритет введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     success = false;
@@ -529,7 +529,7 @@ namespace TimeSheetManger
 
             RowDeleting += (s, e) =>
             {
-                lpuList.Remove((bs.Current as ObjectView<LPU>).Object, true);
+                posts.Remove((bs.Current as ObjectView<Post>).Object, true);
                 view.Refresh();
             };
             bs.DataSource = view;
@@ -572,6 +572,7 @@ namespace TimeSheetManger
             grid.DataSource = bs;*/
             #endregion
             departments = mainForm.currentLPU.Departments;
+            #region Поля
             BindingListView<Department> view = new BindingListView<Department>(departments);
 
             DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
@@ -597,7 +598,7 @@ namespace TimeSheetManger
             manager.DataPropertyName = "DepartmentManager";            
             manager.HeaderText = "Заведующий отделения";
             grid.Columns.Add(manager);
-            var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => d.DepartmentManager.ToString().Contains(box.Text)); });
+            var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => { if (d.DepartmentManager == null) return true; return d.DepartmentManager.ToString().Contains(box.Text); }); });
             aF(managerFB);
             var managerEB = new MyCB(LPUPersonals);
             aE(managerEB);
@@ -611,6 +612,72 @@ namespace TimeSheetManger
             var lpuEB = new MyCB(LPU.All<LPU>());
             aE(lpuEB);
 
+#endregion
+            #region События
+            grid.RowEditStarted +=
+            delegate
+            {
+                var department = (bs.Current as ObjectView<Department>).Object;
+                nameETB.Text = department.Name;
+                dnETB.Text = department.Department_Number.ToString();                
+                managerEB.SelectedItem = department.DepartmentManager;
+                lpuEB.SelectedItem = department.LPU;
+            };
+
+            EditingComplete += (s, e) =>
+            {
+                var department = (bs.Current as ObjectView<Department>).Object;
+                int temp;
+                department.Name = nameETB.Text;
+                if (!int.TryParse(dnETB.Text, out temp))
+                {
+                    MessageBox.Show("Номер отделения введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                department.Department_Number = temp;
+                department.DepartmentManager = managerEB.SelectedItem as Personal;
+                department.LPU = lpuEB.SelectedItem as LPU;
+                
+                if (!department.Save())
+                {
+                    success = false;
+                    return;
+                }
+                view.Refresh();
+            };
+
+            AddingComplete += (s, e) =>
+            {
+                var department = new Department();
+                int temp;
+                department.Name = nameETB.Text;
+                if (!int.TryParse(dnETB.Text, out temp))
+                {
+                    MessageBox.Show("Номер отделения введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                department.Department_Number = temp;
+                department.DepartmentManager = managerEB.SelectedItem as Personal;
+                department.LPU = lpuEB.SelectedItem as LPU;
+
+                if (!department.Save())
+                {
+                    success = false;
+                    return;
+                }
+                departments.Add(department);
+                view.Refresh();
+            };
+
+            RowDeleting += (s, e) =>
+            {
+                departments.Remove((bs.Current as ObjectView<Department>).Object, true);
+                view.Refresh();
+            };
+            #endregion
+            bs.DataSource = view;
         }
 
         //done
@@ -746,6 +813,11 @@ namespace TimeSheetManger
         {
             ClearValues(flFilters.Controls);
             grid.KeyDown += (s, e2) => { if (e2.KeyCode == Keys.Delete) btnDelete_Click(sender, e); };
+        }
+
+        private void grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            //Helper.Log(e.ToString());
         }
     }
 

@@ -349,7 +349,7 @@ namespace TimeSheetManger
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
             if (belongsto.Count > 0 && Fields["ID"] != null && (!BTfetched[key] || refetch))
             {
-                if (this[belongsto[key].FieldInDB].ToString() == "")
+                if (this[belongsto[key].FieldInDB]==null || this[belongsto[key].FieldInDB].ToString() == "")
                     return null;
                 var temp = Domain.F_All<T>("ID = " + this[belongsto[key].FieldInDB], true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
                 Fields[key] = temp;
