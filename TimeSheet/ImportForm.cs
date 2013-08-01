@@ -35,20 +35,39 @@ namespace TimeSheetManger
             switch (catalogName)
             {
                 case "Персонал":
-                    Import<Personal>(dlgImportFile.FileName);
+                    Import(dlgImportFile.FileName, 0);
                     break;
                 case "Должности":
-                    Import<Post>(dlgImportFile.FileName);
+                    Import(dlgImportFile.FileName, 1);
                     break;
                 case "Отделения":
-                    Import<Department>(dlgImportFile.FileName);
+                    Import(dlgImportFile.FileName, 2);
                     break;                
             }
             
         }
-        public void Import<T>(string fileName) where T: Domain, new()
+        public void Import(string fileName, int code)
         {
-
+            StreamReader sr = new StreamReader(fileName);
+            int totalCount = 0, successCount = 0;
+            while (!sr.EndOfStream)
+            {
+                string str = sr.ReadLine();
+                bool res;
+                try
+                {
+                    res = code == 0 ? Personal.TryParseFromString(str) : code == 1 ? Post.TryParseFromString(str) : code == 2 ? Department.TryParseFromString(str) : false;
+                    if (res)
+                        successCount++;
+                }
+                catch (Exception ex)
+                {
+                    tbErrors.Text += string.Format("[{0}] Ошибка: \"{1}\" - {2}\r\n", totalCount, str, ex.Message);
+                }
+                totalCount++;
+                lbStatus.Text = string.Format("Статус: {0}/{1}", successCount, totalCount);
+            }
+            MessageBox.Show(string.Format("Импорт завершен.\r\nКоличество ошибок: {0}/{1}", totalCount-successCount,totalCount), "Статус", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void ImportForm_Load(object sender, EventArgs e)

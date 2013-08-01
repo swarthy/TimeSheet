@@ -484,10 +484,5 @@ namespace TimeSheetManger
             ImportForm form = new ImportForm(mainForm, cbCatalogs.Text);            
             form.ShowDialog();
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Personal.TryParseFromString("Иванов|Владимир|Анатольевич|1|12345|1");
-        }
     }
 }

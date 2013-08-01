@@ -159,7 +159,7 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {            
-            {"PersonalOfDepartment", new Link("Department_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")}
+            {"PersonalOfDepartment", new Link("DEPARTMENT_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
@@ -222,6 +222,26 @@ namespace TimeSheetManger
             }
         }
         #endregion
+        /// <summary>
+        /// Название|Номер отделения|Табельный номер заведующего
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public new static bool TryParseFromString(string str)
+        {            
+            var values = str.SplitAndTrim('|');
+            int temp;
+            Department department = new Department();
+            department.Name = values[0].ToProperCase();
+            if (!int.TryParse(values[1], out temp))
+                return false;
+            department.Department_Number = temp;
+            if (!int.TryParse(values[2], out temp))
+                return false;
+            department["DEPARTMENT_MANAGER_TN"] = temp;
+            department["LPU_ID"] = MainForm.curUsr.LPU.ID;
+            return department.Save();            
+        }
         public Department()
             : base(typeof(Department))
         {
@@ -247,6 +267,13 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return _ShortName;
+        }
+        public static DBList<Personal> GetPersonalOfLPU(int lpu_id)
+        {
+            return Personal.Query<Personal>(@"department, personal
+where   personal.department_number=department.department_number
+        and
+        department.lpu_id = " + lpu_id);
         }
         #region Properties
         public string _ShortName
@@ -364,14 +391,19 @@ namespace TimeSheetManger
             }
         }
         #endregion
+        /// <summary>
+        /// Фамилия|Имя|Отчество|Табельный номер|Код должности|Номер отделения|Приоритет
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public new static bool TryParseFromString(string str)
         {
             var values = str.SplitAndTrim('|');            
             int temp;
             Personal personal = new Personal();
-            personal.LastName = values[0];
-            personal.FirstName = values[1];
-            personal.MiddleName = values[2];
+            personal.LastName = values[0].ToProperCase();
+            personal.FirstName = values[1].ToProperCase();
+            personal.MiddleName = values[2].ToProperCase();
             if (!int.TryParse(values[3], out temp))
                 return false;
             personal.Table_Number = temp;
@@ -381,6 +413,9 @@ namespace TimeSheetManger
             if (!int.TryParse(values[5], out temp))
                 return false;
             personal["DEPARTMENT_NUMBER"] = temp;
+            if (!int.TryParse(values[6], out temp))
+                return false;
+            personal["Priority"] = temp;
             return personal.Save();
         }
         public Personal()
@@ -553,12 +588,17 @@ namespace TimeSheetManger
             }
         }
         #endregion        
+        /// <summary>
+        /// Название|Код должности
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public new static bool TryParseFromString(string str)
         {
             var values = str.SplitAndTrim('|');
             int temp;
             Post post = new Post();
-            post.Name = values[0];
+            post.Name = values[0].ToProperCase();
             if (!int.TryParse(values[1], out temp))
                 return false;
             post.Code = temp;
@@ -1214,5 +1254,5 @@ namespace TimeSheetManger
             Setting_Key = key;
             Setting_Value = value;
         }
-    }
+    }    
 }

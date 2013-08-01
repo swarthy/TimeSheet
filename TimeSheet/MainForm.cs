@@ -108,6 +108,11 @@ namespace TimeSheetManger
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
             #endregion                                                                          
+            var test = Personal.Query<Personal>(@"department, personal
+where   personal.department_number=department.department_number
+        and
+        department.lpu_id = 17");
+            var t= test.Count;
         }
         void AdminAfterLoginCheck()
         {

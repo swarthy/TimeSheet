@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using FirebirdSql.Data.FirebirdClient;
 using Equin.ApplicationFramework;
-using SwarthyComponents;
 using SwarthyComponents.FireBird;
 using SwarthyComponents.WinForms;
 
@@ -21,17 +14,14 @@ namespace TimeSheetManger
         DBList<LPU> lpuList;
         DBList<Post> posts;
         DBList<Department> departments;
-        DBList<Flag> flags;        
+        DBList<Flag> flags;
         MainForm mainForm;
-        DBList<Personal> personalsOfLPU(LPU lpu)
-        {
-            return lpu.HM<Department>("Departments", true).SelectMany(d => d.PersonalOfDepartment).ToDBList();            
-        }
+        
         DBList<Personal> LPUPersonals
         {
             get
             {
-                return personalsOfLPU(mainForm.currentLPU);
+                return Personal.GetPersonalOfLPU(mainForm.currentLPU.ID);//personalsOfLPU(mainForm.currentLPU);
             }
         }
 
@@ -45,14 +35,7 @@ namespace TimeSheetManger
         void aE(Control box)
         {
             box.KeyDown += (s, e) =>
-            {                
-                /*if (e.KeyCode == Keys.Enter)
-                {
-                    e.Handled = true;
-                    e.SuppressKeyPress = true;
-                    CompleteEnteringValues(this, e);
-                }
-                else*/
+            {
                 if (e.KeyCode == Keys.Escape)
                 {
                     e.Handled = true;

@@ -31,7 +31,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminPanelForm));
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
             this.gbColors = new System.Windows.Forms.GroupBox();
             this.lbweekend = new System.Windows.Forms.Label();
@@ -85,8 +84,8 @@
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
             this.btnEditSaveDayType = new System.Windows.Forms.Button();
-            this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
             this.cdDayColors = new System.Windows.Forms.ColorDialog();
+            this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.gbColors.SuspendLayout();
@@ -118,7 +117,6 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.btnImport);
             this.tabPage1.Controls.Add(this.gbColors);
             this.tabPage1.Controls.Add(this.btnEditCatalog);
@@ -130,16 +128,6 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(284, 120);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnImport
             // 
@@ -868,6 +856,5 @@
         private System.Windows.Forms.Button btnEditSaveDayType;
         private System.Windows.Forms.Panel groupPandelDayTypes;
         private System.Windows.Forms.Button btnImport;
-        private System.Windows.Forms.Button button1;
     }
 }

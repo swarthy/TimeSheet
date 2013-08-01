@@ -39,7 +39,10 @@ namespace SwarthyComponents.FireBird
                 res[i] = res[i].Trim();
             return res;            
         }
-        
+        public static string ToProperCase(this string source)
+        {
+            return System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(source.ToLower());
+        }
         public static BindingList<T> ToBindingList<T>(this IEnumerable<T> ien) where T : Domain, new()
         {
             BindingList<T> res = new BindingList<T>();
@@ -629,6 +632,38 @@ namespace SwarthyComponents.FireBird
               sb => sb.ToString());
             FbCommand command = new FbCommand(string.Format("select{4} {0} from {1} where {2}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : "",Distinct?" DISTINCT":""), DB.Connection);
             rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
+            try
+            {
+                FbDataReader data = command.ExecuteReader();
+                while (data.Read())
+                {
+                    T temp = new T();
+                    fieldNames.ForEach(fn => temp[fn] = data[fn]);
+                    temp._Changed = false;
+                    result.Add(temp);
+                    if (single)
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message, "SQL Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if (OnFindEnd != null)
+                OnFindEnd(null, EventArgs.Empty);
+            return result;
+        }
+        public static DBList<T> Query<T>(string query = "", bool single = false, Type customType = null) where T : Domain, new()
+        {
+            if (OnFindBegin != null)
+                OnFindBegin(null, EventArgs.Empty);
+            DBList<T> result = new DBList<T>();
+            Type type = customType == null ? typeof(T) : customType;
+            string tableName = GetTableName(type);            
+            List<string> fieldNames = GetFieldNames(type);
+            // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
+            string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") +tableName+"."+ str; });
+            FbCommand command = new FbCommand(string.Format("select {0} from {1}", fields, query), DB.Connection);
             try
             {
                 FbDataReader data = command.ExecuteReader();
