@@ -21,14 +21,7 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             { "PersonalProfile", new Link("PERSONAL_TN", typeof(Personal), "Table_Number") },
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
-        };
-        public User _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
+        };        
         public override string ToString()
         {
             return Login;
@@ -38,6 +31,13 @@ namespace TimeSheetManger
             get
             {
                 return string.Format("{0} ({1})", Login, Profile._ShortNameAndNumber);
+            }
+        }
+        public string _RoleString
+        {
+            get
+            {
+                return Role == 2 ? "Администратор" : Role == 1 ? "Модератор" : "Табельщик";
             }
         }
         #region Properties
@@ -164,14 +164,7 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
             {"LPU",new Link("LPU_ID",typeof(LPU))}
-        };
-        public Department _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
+        };        
         public override string ToString()
         {
             return Name;
@@ -251,13 +244,6 @@ namespace TimeSheetManger
             {"Department", new Link("DEPARTMENT_NUMBER",typeof(Department),"DEPARTMENT_NUMBER")},
             {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
         };
-        public Personal _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return _ShortName;
@@ -269,7 +255,7 @@ namespace TimeSheetManger
             {
                 if (FirstName.Length == 0 || MiddleName.Length == 0)
                     return LastName;
-                return string.Format("{0} {1}.{2}.", LastName, FirstName[0], MiddleName[0]);
+                return string.Format("{0} {1}. {2}.", LastName, FirstName[0], MiddleName[0]);
             }
         }
         public string _ShortNameAndNumber
@@ -405,14 +391,7 @@ namespace TimeSheetManger
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"MainDoc", new Link("MAINDOC_TN",typeof(Personal),"Table_Number")}
-        };
-        public LPU _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
+        };        
         public override string ToString()
         {
             return Name;
@@ -474,14 +453,7 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return Ru_Name;
-        }
-        public Flag _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
+        }        
         #region Properties
         public string Name
         {
@@ -534,13 +506,6 @@ namespace TimeSheetManger
         new public static string OrderBy = "Name";
         new public static bool virtualDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
-        public Post _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return Name;
@@ -578,14 +543,7 @@ namespace TimeSheetManger
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"Name", new Link("NAME_ID",typeof(Calendar_Name))}
-        };
-        public Calendar _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
+        };        
         public override string ToString()
         {
             return Name.Name;
@@ -646,13 +604,6 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar)) }
         };
-        public Calendar_Content _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return string.Format(new DateTime(Calendar.CYear, CMonth, 1).ToString("MMMM yyyy"));            
@@ -723,13 +674,6 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Calendars", new Link("NAME_ID",typeof(Calendar))}
         };
-        public Calendar_Name _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return Name;
@@ -779,13 +723,6 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return string.Format("{0} - {1}", Department.Name, _GetDate.ToString("MMMM yyyy"));
-        }
-        public TimeSheetInstance _Self
-        {
-            get
-            {
-                return this;
-            }
         }
         #region Properties
         public User User
@@ -870,7 +807,7 @@ namespace TimeSheetManger
     public class TimeSheet_Content : Domain
     {
         new public static string tableName = "TIMESHEET_CONTENT";
-        new public static string OrderBy = "Personal_TN";
+        new public static string OrderBy = "Personal_TN, ID";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
@@ -882,13 +819,6 @@ namespace TimeSheetManger
             {"Post", new Link("POST_ID",typeof(Post))},
             {"TimeSheetManger", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
-        public TimeSheet_Content _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return Personal.ToString();
@@ -1073,13 +1003,6 @@ namespace TimeSheetManger
             {"TimeSheetContent", new Link("TimeSheet_Content_ID",typeof(TimeSheet_Content))},
             {"Flag", new Link("Flag_ID",typeof(Flag))},
         };
-        public TimeSheet_Day _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public override string ToString()
         {
             return Flag + (Worked_Time.TotalHours == 0 ? "" : " " + Worked_Time.ToString("hh':'mm"));
@@ -1182,13 +1105,6 @@ namespace TimeSheetManger
             }
         }
         #endregion
-        public SpecialDay _Self
-        {
-            get
-            {
-                return this;
-            }
-        }
         public static DBList<SpecialDay> GetAllForYear(int year)
         {
             string start = new DateTime(year, 1, 1).ToShortDateString(), end = new DateTime(year, 12, 31).ToShortDateString();
@@ -1245,13 +1161,6 @@ namespace TimeSheetManger
             else
                 setting.Setting_Value = value;
             setting.Save();
-        }
-        public DBSettings _Self
-        {
-            get
-            {
-                return this;
-            }
         }
         
         public DBSettings()

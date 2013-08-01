@@ -37,7 +37,7 @@ namespace TimeSheetManger
                 curUsr = value;
                 if (value != null)
                 {
-                    miCurrentUser.Text = value.Login;
+                    miCurrentUser.Text = string.Format("{0} ({1})",value.Login, value._RoleString);
                     miAdminPanel.Visible = curUsr._IS_MODERATOR;
                     if (value._IS_ADMIN)                    
                         AdminAfterLoginCheck();                    
@@ -83,8 +83,7 @@ namespace TimeSheetManger
             //Environment.Exit(0);         
 
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-
-
+            
             #region DB Initialization
             DBHelper.Log += Helper.Log;//подписываемся на логи (DEBUG)
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
@@ -108,7 +107,7 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
-            #endregion                                                              
+            #endregion                                                                          
         }
         void AdminAfterLoginCheck()
         {
@@ -359,6 +358,7 @@ namespace TimeSheetManger
         {
             AdminPanelForm admin = new AdminPanelForm(this);
             admin.ShowDialog();
+            MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Требуется перезапуск программы", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         
         private void dgTimeSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

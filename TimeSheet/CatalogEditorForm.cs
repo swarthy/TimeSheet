@@ -25,7 +25,7 @@ namespace TimeSheetManger
         MainForm mainForm;
         DBList<Personal> personalsOfLPU(LPU lpu)
         {
-            return lpu.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();            
+            return lpu.HM<Department>("Departments", true).SelectMany(d => d.PersonalOfDepartment).ToDBList();            
         }
         DBList<Personal> LPUPersonals
         {
@@ -127,7 +127,7 @@ namespace TimeSheetManger
         //done
         public void OpenUsers()
         {
-            users = mainForm.currentLPU.Users;            
+            users = mainForm.currentLPU.HM<User>("Users", true);
             BindingListView<User> view = new BindingListView<User>(users);
             #region Столбцы и элементы управления
             grid.Columns.Clear();
@@ -299,7 +299,7 @@ namespace TimeSheetManger
             department.DataPropertyName = "Department";
             department.HeaderText = "Отделение";
             grid.Columns.Add(department);
-            var DepartmentFB = new MyCB(mainForm.currentLPU.Departments.ToList(), (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
+            var DepartmentFB = new MyCB(mainForm.currentLPU.HM<Department>("Departments", true), (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
             aF(DepartmentFB);
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
@@ -579,7 +579,7 @@ namespace TimeSheetManger
             bs.DataSource = departments;
             grid.DataSource = bs;*/
             #endregion
-            departments = mainForm.currentLPU.Departments;
+            departments = mainForm.currentLPU.HM<Department>("Departments", true);
             #region Поля
             BindingListView<Department> view = new BindingListView<Department>(departments);
 

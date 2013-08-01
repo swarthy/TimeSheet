@@ -151,7 +151,7 @@ namespace SwarthyComponents.FireBird
     public class DBList<T> : List<T> where T : Domain, new()
     {
         public bool DeleteFromServerOnRemove = false;
-        public DBList(string FieldSource = "", string FieldDestination = "")
+        public DBList(string FieldSource = "", string FieldDestination = "ID")
             : base()
         {            
             this.FieldSource = FieldSource;
@@ -446,6 +446,7 @@ namespace SwarthyComponents.FireBird
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasmany[key].Field_Source, Fields[hasmany[key].Field_Destination]));
                 HMfetched[key] = true;
                 temp.FieldSource = hasmany[key].Field_Source;
+                temp.FieldDestination = hasmany[key].Field_Destination;
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
                 Fields[key] = temp;
@@ -826,7 +827,12 @@ namespace SwarthyComponents.FireBird
             string tableName = GetTableName(typeof(T));
             FbCommand command = new FbCommand(string.Format("select count(*) from {0} where {1};", tableName, where_str), DB.Connection);
             return (int)command.ExecuteScalar();            
-        }        
+        }
+        public void Fetch<T>() where T: Domain, new()
+        {
+            if (Fields["ID"] != null)            
+                Fields = Domain.F_All<T>(string.Format("ID = {0}", Fields["ID"]), true, GetType())[0].Fields;            
+        }
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldSource] = this[args.GetFieldDestination];
