@@ -32,6 +32,14 @@ namespace SwarthyComponents.FireBird
                 res.Add(item);
             return res;
         }
+        public static string[] SplitAndTrim(this string source, params char[] separators)
+        {
+            var res = source.Split(separators);
+            for (int i = 0; i < res.Length; i++)
+                res[i] = res[i].Trim();
+            return res;            
+        }
+        
         public static BindingList<T> ToBindingList<T>(this IEnumerable<T> ien) where T : Domain, new()
         {
             BindingList<T> res = new BindingList<T>();
@@ -832,6 +840,10 @@ namespace SwarthyComponents.FireBird
         {
             if (Fields["ID"] != null)            
                 Fields = Domain.F_All<T>(string.Format("ID = {0}", Fields["ID"]), true, GetType())[0].Fields;            
+        }
+        public virtual bool TryParseFromString(string str)
+        {
+            return false;
         }
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {

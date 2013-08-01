@@ -49,6 +49,7 @@ namespace TimeSheetManger
                 foreach (var item in SuperAdminCatalogs)
                     cbCatalogs.Items.Add(item);
                 gbColors.Show();
+                btnImport.Show();
             }
             else
                 if (mainform.currentUser._IS_MODERATOR)
@@ -474,6 +475,19 @@ namespace TimeSheetManger
             else
                 currentSelected.Delete();
             cHolydayCalendar.Refresh();
+        }
+
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            if (cbCatalogs.SelectedIndex == -1)
+                return;            
+            ImportForm form = new ImportForm(mainForm, cbCatalogs.Text);            
+            form.ShowDialog();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Personal.TryParseFromString("Иванов|Владимир|Анатольевич|1|12345|1");
         }
     }
 }

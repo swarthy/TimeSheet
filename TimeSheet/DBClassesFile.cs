@@ -240,7 +240,7 @@ namespace TimeSheetManger
         new public static string OrderBy = "LastName";
         new public static List<string> FieldNames = new List<string>();
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
-            {"Post", new Link("POST_ID",typeof(Post)) },
+            {"Post", new Link("POST_CODE",typeof(Post), "CODE") },
             {"Department", new Link("DEPARTMENT_NUMBER",typeof(Department),"DEPARTMENT_NUMBER")},
             {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
         };
@@ -364,6 +364,25 @@ namespace TimeSheetManger
             }
         }
         #endregion
+        public new static bool TryParseFromString(string str)
+        {
+            var values = str.SplitAndTrim('|');            
+            int temp;
+            Personal personal = new Personal();
+            personal.LastName = values[0];
+            personal.FirstName = values[1];
+            personal.MiddleName = values[2];
+            if (!int.TryParse(values[3], out temp))
+                return false;
+            personal.Table_Number = temp;
+            if (!int.TryParse(values[4], out temp))
+                return false;
+            personal["POST_CODE"] = temp;
+            if (!int.TryParse(values[5], out temp))
+                return false;
+            personal["DEPARTMENT_NUMBER"] = temp;
+            return personal.Save();
+        }
         public Personal()
             : base(typeof(Personal))
         {
@@ -522,7 +541,29 @@ namespace TimeSheetManger
                 this["name"] = value;
             }
         }
-        #endregion
+        public int Code
+        {
+            get
+            {
+                return this["Code"] == null ? 0 : (int)this["Code"];
+            }
+            set
+            {
+                this["Code"] = value;
+            }
+        }
+        #endregion        
+        public new static bool TryParseFromString(string str)
+        {
+            var values = str.SplitAndTrim('|');
+            int temp;
+            Post post = new Post();
+            post.Name = values[0];
+            if (!int.TryParse(values[1], out temp))
+                return false;
+            post.Code = temp;
+            return post.Save();
+        }
         public Post()
             : base(typeof(Post))
         {
@@ -816,7 +857,7 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"Personal", new Link("Personal_TN",typeof(Personal), "TABLE_NUMBER")},
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
-            {"Post", new Link("POST_ID",typeof(Post))},
+            {"Post", new Link("POST_CODE",typeof(Post), "CODE") },
             {"TimeSheetManger", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
         };
         public override string ToString()

@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminPanelForm));
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
             this.gbColors = new System.Windows.Forms.GroupBox();
             this.lbweekend = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -79,10 +81,10 @@
             this.rbWeekEnd = new System.Windows.Forms.RadioButton();
             this.rbHolyDay = new System.Windows.Forms.RadioButton();
             this.rbShortDay = new System.Windows.Forms.RadioButton();
-            this.btnEditSaveDayType = new System.Windows.Forms.Button();
             this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
+            this.btnEditSaveDayType = new System.Windows.Forms.Button();
             this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
             this.cdDayColors = new System.Windows.Forms.ColorDialog();
             this.tbContent.SuspendLayout();
@@ -116,6 +118,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.btnImport);
             this.tabPage1.Controls.Add(this.gbColors);
             this.tabPage1.Controls.Add(this.btnEditCatalog);
             this.tabPage1.Controls.Add(this.cbCatalogs);
@@ -126,6 +130,30 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(284, 120);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 12;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // btnImport
+            // 
+            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnImport.Image = global::TimeSheetManger.Properties.Resources.Upload_16x16;
+            this.btnImport.Location = new System.Drawing.Point(332, 33);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(110, 23);
+            this.btnImport.TabIndex = 11;
+            this.btnImport.Text = "Импорт";
+            this.btnImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Visible = false;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // gbColors
             // 
@@ -199,7 +227,7 @@
             this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnEditCatalog.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
             this.btnEditCatalog.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditCatalog.Location = new System.Drawing.Point(306, 4);
+            this.btnEditCatalog.Location = new System.Drawing.Point(332, 4);
             this.btnEditCatalog.Name = "btnEditCatalog";
             this.btnEditCatalog.Size = new System.Drawing.Size(110, 23);
             this.btnEditCatalog.TabIndex = 1;
@@ -216,7 +244,7 @@
             this.cbCatalogs.FormattingEnabled = true;
             this.cbCatalogs.Location = new System.Drawing.Point(6, 6);
             this.cbCatalogs.Name = "cbCatalogs";
-            this.cbCatalogs.Size = new System.Drawing.Size(294, 21);
+            this.cbCatalogs.Size = new System.Drawing.Size(320, 21);
             this.cbCatalogs.TabIndex = 0;
             // 
             // tabPage2
@@ -616,10 +644,10 @@
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.groupPandelDayTypes);
-            this.tabPage3.Controls.Add(this.btnEditSaveDayType);
             this.tabPage3.Controls.Add(this.dtpHolydayMonthPicker);
             this.tabPage3.Controls.Add(this.pbGeneratingWeekEnds);
             this.tabPage3.Controls.Add(this.btnGenerateWeekEnds);
+            this.tabPage3.Controls.Add(this.btnEditSaveDayType);
             this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
@@ -682,19 +710,6 @@
             this.rbShortDay.Text = "Сокращенный рабочий день";
             this.rbShortDay.UseVisualStyleBackColor = true;
             // 
-            // btnEditSaveDayType
-            // 
-            this.btnEditSaveDayType.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
-            this.btnEditSaveDayType.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditSaveDayType.Location = new System.Drawing.Point(182, 110);
-            this.btnEditSaveDayType.Name = "btnEditSaveDayType";
-            this.btnEditSaveDayType.Size = new System.Drawing.Size(112, 23);
-            this.btnEditSaveDayType.TabIndex = 6;
-            this.btnEditSaveDayType.Text = "Редактировать";
-            this.btnEditSaveDayType.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnEditSaveDayType.UseVisualStyleBackColor = true;
-            this.btnEditSaveDayType.Click += new System.EventHandler(this.btnEditSaveDayType_Click);
-            // 
             // dtpHolydayMonthPicker
             // 
             this.dtpHolydayMonthPicker.CustomFormat = "MMMM yyyy";
@@ -726,6 +741,19 @@
             this.btnGenerateWeekEnds.Text = "Сделать все Сб и Вс выходными днями";
             this.btnGenerateWeekEnds.UseVisualStyleBackColor = true;
             this.btnGenerateWeekEnds.Click += new System.EventHandler(this.btnGenerateWeekEnds_Click);
+            // 
+            // btnEditSaveDayType
+            // 
+            this.btnEditSaveDayType.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditSaveDayType.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnEditSaveDayType.Location = new System.Drawing.Point(182, 110);
+            this.btnEditSaveDayType.Name = "btnEditSaveDayType";
+            this.btnEditSaveDayType.Size = new System.Drawing.Size(112, 23);
+            this.btnEditSaveDayType.TabIndex = 6;
+            this.btnEditSaveDayType.Text = "Редактировать";
+            this.btnEditSaveDayType.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnEditSaveDayType.UseVisualStyleBackColor = true;
+            this.btnEditSaveDayType.Click += new System.EventHandler(this.btnEditSaveDayType_Click);
             // 
             // cHolydayCalendar
             // 
@@ -839,5 +867,7 @@
         private System.Windows.Forms.Panel groupPanelSelectControls;
         private System.Windows.Forms.Button btnEditSaveDayType;
         private System.Windows.Forms.Panel groupPandelDayTypes;
+        private System.Windows.Forms.Button btnImport;
+        private System.Windows.Forms.Button button1;
     }
 }

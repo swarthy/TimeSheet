@@ -104,6 +104,12 @@
     <Compile Include="FlagsForm.Designer.cs">
       <DependentUpon>FlagsForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ImportForm.Designer.cs">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="IniFile.cs" />
     <Compile Include="MyDataGridView.cs">
       <SubType>Component</SubType>
@@ -165,6 +171,9 @@
     <EmbeddedResource Include="FlagsForm.resx">
       <DependentUpon>FlagsForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="ImportForm.resx">
+      <DependentUpon>ImportForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RowEditForm.resx">
       <DependentUpon>RowEditForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -193,6 +202,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\Text Document_16x16.png" />
+    <None Include="Resources\Upload_16x16.png" />
     <None Include="Resources\Rename_16x16.png" />
     <None Include="Resources\Delete_16x16.png" />
     <None Include="Resources\Print_16x16.png" />
