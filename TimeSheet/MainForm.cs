@@ -159,8 +159,7 @@ namespace TimeSheetManger
                 case AppState.LPUselect:                    
                     var lastOpened = Convert.ToInt32(Helper.Get("LPU", "lastOpened"));
                     if (lastOpened != 0 && !wantChangeLPU)
-                    {
-                        //cbLPUList.SelectedItem = LPUlist.Find(l => l.ID == lastOpened);
+                    {                        
                         currentLPU = LPU.Get<LPU>(lastOpened);
                         changeState(AppState.Auth);
                         return;
@@ -177,14 +176,7 @@ namespace TimeSheetManger
                 case AppState.Desktop:                    
                     HideAllShowThis(pDesktop);
                     currentUser.TimeSheets.Sort((t1, t2) =>                    
-                        t1.Department.Name.CompareTo(t2.Department.Name)
-                        /*if (r1 == 0)
-                        {
-                            var r2 = t1.TS_Year.CompareTo(t2.TS_Year);
-                            return r2 == 0 ? t1.TS_Month.CompareTo(t2.TS_Month) : r2;
-                        }
-                        else
-                            return r1;*/
+                        t1.Department.Name.CompareTo(t2.Department.Name)                        
                    );
                     msMainMenu.Show();
                     break;                
@@ -237,8 +229,7 @@ namespace TimeSheetManger
             changeState(AppState.LPUselect);  //release
             #if DEBUG
             currentLPU = LPU.Get<LPU>(17);            
-            currentUser = User.Get<User>(68);
-            //currentUser = currentLPU.Users.Find(u => u.ID == 22);
+            currentUser = User.Get<User>(71);            
             changeState(AppState.Desktop);
             miAdminPanel_Click(this, e);
             #endif
@@ -261,8 +252,7 @@ namespace TimeSheetManger
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {                
-                Helper.Set("user", "lastLogin", tbAuthLogin.Text);
-                //currentUser = currentLPU.Users.Find(u => u.ID == user.ID);//чтобы вносимые изменения в currentUser отражались сразу в списке пользователей.                 
+                Helper.Set("user", "lastLogin", tbAuthLogin.Text);                
                 currentUser = user;                
                 changeState(AppState.Desktop);
                 tbAuthPass.Text = "";

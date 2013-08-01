@@ -12,10 +12,10 @@ namespace TimeSheetManger
     public class User : Domain
     {
         new public static string tableName = "USERS";
+        new public static bool virtualDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
-            {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},
-            //{"UserDepartments", new Link("User_ID", typeof(UserDepartment))},
+            {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},            
             {"TimeSheets", new Link("USER_ID",typeof(TimeSheetInstance))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
@@ -150,50 +150,7 @@ namespace TimeSheetManger
             //Pass = Helper.getMD5(password);
             Pass = password;
         }
-    }
-    /*public class UserDepartment : Domain
-    {
-        new public static string tableName = "USERS_DEPARTMENT";
-        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
-        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            { "User", new Link("USER_ID", typeof(User)) },
-            { "Department", new Link("DEPARTMENT_ID", typeof(Department)) }
-        };
-        #region Properties
-        public User User
-        {
-            get
-            {
-                return BT<User>("User");
-            }
-            set
-            {
-                this["User"] = value;
-            }
-        }
-        public Department Department
-        {
-            get
-            {
-                return BT<Department>("Department");
-            }
-            set
-            {
-                this["Department"] = value;
-            }
-        }
-        #endregion
-        public UserDepartment()
-            : base(typeof(UserDepartment))
-        {
-        }
-        public UserDepartment(User user, Department department)
-            : base(typeof(UserDepartment))
-        {
-            User = user;
-            Department = department;
-        }
-    }*/
+    }    
     public class Department : Domain
     {
         new public static string tableName = "DEPARTMENT";
@@ -201,8 +158,7 @@ namespace TimeSheetManger
         new public static string OrderBy = "DEPARTMENT_MANAGER_TN";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
-        {
-            //{"DepartmentUsers", new Link("Department_ID", typeof(UserDepartment))},
+        {            
             {"PersonalOfDepartment", new Link("Department_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
@@ -264,14 +220,7 @@ namespace TimeSheetManger
             {
                 this["LPU"] = value;
             }
-        }
-        /*public DBList<UserDepartment> DepartmentUsers
-        {
-            get
-            {
-                return HM<UserDepartment>("DepartmentUsers");
-            }
-        }*/
+        }        
         public DBList<Personal> PersonalOfDepartment
         {
             get
@@ -446,6 +395,8 @@ namespace TimeSheetManger
     public class LPU : Domain
     {
         new public static string tableName = "LPU";
+        new public static bool virtualDeletion = true;
+        new public static bool virtualSubDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
@@ -518,6 +469,7 @@ namespace TimeSheetManger
     {
         new public static string tableName = "FLAGS";
         new public static string OrderBy = "ru_name";
+        new public static bool virtualDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                        
         public override string ToString()
         {
@@ -579,6 +531,8 @@ namespace TimeSheetManger
     public class Post : Domain
     {
         new public static string tableName = "POSTS";
+        new public static string OrderBy = "Name";
+        new public static bool virtualDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         public Post _Self
         {

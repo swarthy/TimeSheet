@@ -23,7 +23,7 @@ namespace TimeSheetManger
         {
             if (cbDepartment.SelectedIndex != -1)
             {
-                var search = TimeSheetInstance.Find<TimeSheetInstance>(new { user_id = mainform.currentUser.ID, department_id = mainform.currentLPU.Departments[cbDepartment.SelectedIndex].ID, ts_year = dtpTS_Date.Value.Year, ts_month = dtpTS_Date.Value.Month });
+                var search = TimeSheetInstance.Find<TimeSheetInstance>(new { user_id = mainform.currentUser.ID, department_number = mainform.currentLPU.Departments[cbDepartment.SelectedIndex].Department_Number, ts_year = dtpTS_Date.Value.Year, ts_month = dtpTS_Date.Value.Month });
                 if (search != null)
                 {
                     MessageBox.Show("Такой табель уже существует! Табельщик: "+search.User.Profile._ShortNameAndNumber);

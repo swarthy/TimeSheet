@@ -58,8 +58,7 @@ namespace TimeSheetManger
             {
                 var id = Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value);
                 TimeSheetInstance.Get<TimeSheetInstance>(id).Delete();
-                grid.Rows.Remove(grid.SelectedRows[0]);
-                //mainForm.currentUser.TimeSheets.Find(t=>t.ID==id).Delete();
+                grid.Rows.Remove(grid.SelectedRows[0]);                
             }            
         }
 

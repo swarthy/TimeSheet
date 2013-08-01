@@ -41,10 +41,8 @@ namespace TimeSheetManger
 
         private void PersonalListForm_Load(object sender, EventArgs e)
         {   
-            //personals = Personal.FindAll<Personal>("DEPARTMENT_ID = '{0}' and TIMESHEET_MANAGER = '{1}'", mainform.currentTimeSheet.Department.ID, mainform.currentUser.ID);
-            personals = mainform.currentUser.PersonalLink.Where(p => p.Department.ID == mainform.currentTimeSheet.Department.ID).ToList();
-            lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;
-            personals.Sort((p1, p2) => p1.LastName.CompareTo(p2.LastName));
+            personals = mainform.currentUser.PersonalLink.Where(p => p.Department.Department_Number == mainform.currentTimeSheet.Department.Department_Number).ToList();
+            lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;            
             DrawPersonal(personals);
         }
 
