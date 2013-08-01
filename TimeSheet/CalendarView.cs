@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Globalization;
 
-namespace SwarthyComponents
+namespace SwarthyComponents.WinForms
 {
     public class CalendarView:Panel
     {

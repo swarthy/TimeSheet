@@ -83,7 +83,7 @@
             this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
-            this.cHolydayCalendar = new SwarthyComponents.CalendarView();
+            this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
             this.cdDayColors = new System.Windows.Forms.ColorDialog();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -820,7 +820,7 @@
         private System.Windows.Forms.Button btnHideMonth;
         private System.Windows.Forms.Button btnHideYear;
         private System.Windows.Forms.Button btnHideName;
-        private SwarthyComponents.CalendarView cHolydayCalendar;
+        private SwarthyComponents.WinForms.CalendarView cHolydayCalendar;
         private System.Windows.Forms.DateTimePicker dtpHolydayMonthPicker;
         private System.Windows.Forms.Label lbweekend;
         private System.Windows.Forms.Label label3;

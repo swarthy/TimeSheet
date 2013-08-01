@@ -6,7 +6,7 @@ using System.Drawing.Printing;
 using System.Windows.Forms;
 using System.Drawing;
 
-namespace SwarthyComponents
+namespace SwarthyComponents.WinForms
 {
     public class DataGridViewPrinter
     {

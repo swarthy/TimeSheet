@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
+using SwarthyComponents.FireBird;
 
 namespace TimeSheetManger
 {
@@ -14,11 +15,11 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
             {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},
-            {"UserDepartments", new Link("User_ID", typeof(UserDepartment))},
+            //{"UserDepartments", new Link("User_ID", typeof(UserDepartment))},
             {"TimeSheets", new Link("USER_ID",typeof(TimeSheetInstance))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            { "PersonalProfile", new Link("PERSONAL_ID", typeof(Personal)) },
+            { "PersonalProfile", new Link("PERSONAL_TN", typeof(Personal), "Table_Number") },
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
         };
         public User _Self
@@ -127,13 +128,13 @@ namespace TimeSheetManger
                 return this.HM<Personal>("PersonalList");
             }
         }
-        public DBList<UserDepartment> UserDepartments
+        /*public DBList<UserDepartment> UserDepartments
         {
             get
             {
                 return HM<UserDepartment>("UserDepartments");
             }
-        }
+        }*/
         #endregion
         public User()
             : base(typeof(User))
@@ -150,7 +151,7 @@ namespace TimeSheetManger
             Pass = password;
         }
     }
-    public class UserDepartment : Domain
+    /*public class UserDepartment : Domain
     {
         new public static string tableName = "USERS_DEPARTMENT";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
@@ -192,19 +193,20 @@ namespace TimeSheetManger
             User = user;
             Department = department;
         }
-    }
+    }*/
     public class Department : Domain
     {
         new public static string tableName = "DEPARTMENT";
-        new public static string OrderBy = "PERSONAL_ID";
+        new public static bool virtualDeletion = true;
+        new public static string OrderBy = "DEPARTMENT_MANAGER_TN";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
-            {"DepartmentUsers", new Link("Department_ID", typeof(UserDepartment))},
-            {"PersonalOfDepartment", new Link("Department_ID",typeof(Personal))}
+            //{"DepartmentUsers", new Link("Department_ID", typeof(UserDepartment))},
+            {"PersonalOfDepartment", new Link("Department_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            {"DepartmentManager", new Link("PERSONAL_ID", typeof(Personal)) },
+            {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
             {"LPU",new Link("LPU_ID",typeof(LPU))}
         };
         public Department _Self
@@ -263,13 +265,13 @@ namespace TimeSheetManger
                 this["LPU"] = value;
             }
         }
-        public DBList<UserDepartment> DepartmentUsers
+        /*public DBList<UserDepartment> DepartmentUsers
         {
             get
             {
                 return HM<UserDepartment>("DepartmentUsers");
             }
-        }
+        }*/
         public DBList<Personal> PersonalOfDepartment
         {
             get
@@ -282,10 +284,11 @@ namespace TimeSheetManger
             : base(typeof(Department))
         {
         }
-        public Department(string name, int department_number)
+        public Department(string name, int department_number, LPU lpu)
             : base(typeof(Department))
         {
             Name = name;
+            LPU = lpu;
             Department_Number = department_number;
         }
     }
@@ -296,7 +299,7 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
             {"Post", new Link("POST_ID",typeof(Post)) },
-            {"Department", new Link("DEPARTMENT_ID",typeof(Department))},
+            {"Department", new Link("DEPARTMENT_NUMBER",typeof(Department),"DEPARTMENT_NUMBER")},
             {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
         };
         public Personal _Self
@@ -450,7 +453,7 @@ namespace TimeSheetManger
             {"Users", new Link("LPU_ID", typeof(User))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            {"MainDoc", new Link("MAINDOC_ID",typeof(Personal))}
+            {"MainDoc", new Link("MAINDOC_TN",typeof(Personal),"Table_Number")}
         };
         public LPU _Self
         {
@@ -810,14 +813,14 @@ namespace TimeSheetManger
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
-        new public static string OrderBy = "TS_YEAR, TS_MONTH, DEPARTMENT_ID";
+        new public static string OrderBy = "TS_YEAR, TS_MONTH, DEPARTMENT_NUMBER";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("TimeSheet_ID",typeof(TimeSheet_Content))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() { 
             {"User",new Link("User_ID",typeof(User))},            
-            {"Department",new Link("DEPARTMENT_ID",typeof(Department))},
+            {"Department",new Link("DEPARTMENT_NUMBER",typeof(Department), "DEPARTMENT_NUMBER")},
         };
         public override string ToString()
         {
@@ -913,14 +916,14 @@ namespace TimeSheetManger
     public class TimeSheet_Content : Domain
     {
         new public static string tableName = "TIMESHEET_CONTENT";
-        new public static string OrderBy = "Personal_ID";
+        new public static string OrderBy = "Personal_TN";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
             {"Days", new Link("TimeSheet_Content_ID", typeof(TimeSheet_Day))}            
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
-            {"Personal", new Link("Personal_ID",typeof(Personal))},
+            {"Personal", new Link("Personal_TN",typeof(Personal), "TABLE_NUMBER")},
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
             {"Post", new Link("POST_ID",typeof(Post))},
             {"TimeSheetManger", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            

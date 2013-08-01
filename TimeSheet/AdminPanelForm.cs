@@ -8,6 +8,8 @@ using System.Text;
 using System.Windows.Forms;
 using SwarthyComponents;
 using System.Globalization;
+using SwarthyComponents.WinForms;
+using SwarthyComponents.FireBird;
 
 namespace TimeSheetManger
 {

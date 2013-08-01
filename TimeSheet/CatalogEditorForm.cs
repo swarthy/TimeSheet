@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using FirebirdSql.Data.FirebirdClient;
 using Equin.ApplicationFramework;
 using SwarthyComponents;
+using SwarthyComponents.FireBird;
+using SwarthyComponents.WinForms;
 
 namespace TimeSheetManger
 {
@@ -23,7 +25,7 @@ namespace TimeSheetManger
         MainForm mainForm;
         DBList<Personal> personalsOfLPU(LPU lpu)
         {
-            return lpu.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
+            return lpu.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();            
         }
         DBList<Personal> LPUPersonals
         {
@@ -95,7 +97,7 @@ namespace TimeSheetManger
         }
         void setControlsEnabled(bool value)
         {
-            btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = grid.Enabled = value;
+            btnPrint.Enabled = btnAdd.Enabled = btnDelete.Enabled = btnFiltersEnable.Enabled = btnCancel.Enabled = grid.Enabled = value;
         }
         string catalogTitle;
         public CatalogEditorForm(MainForm mainform, string catalogTitle)

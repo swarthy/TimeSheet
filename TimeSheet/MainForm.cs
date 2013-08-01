@@ -7,6 +7,8 @@ using System.Windows.Forms;
 using System.Globalization;
 using System.IO;
 using System.Threading;
+using SwarthyComponents;
+using SwarthyComponents.FireBird;
 
 namespace TimeSheetManger
 {
@@ -81,21 +83,22 @@ namespace TimeSheetManger
             //Environment.Exit(0);         
 
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };            
-            ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
-            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information); })); };
 
-            Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
-            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
 
-            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             #region DB Initialization
+            DBHelper.Log += Helper.Log;//подписываемся на логи (DEBUG)
+            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
+            
+            Domain.VirtualDeletionField = "DELDATE";
+            Domain.VirtualDeletionNotDeletedRecord = "DELDATE is null";
+            Domain.VirtualDeletedValue = () => { return DateTime.Today; };
+
             User.Initialize<User>();
             Personal.Initialize<Personal>();
             LPU.Initialize<LPU>();
             Post.Initialize<Post>();
             Department.Initialize<Department>();
-            UserDepartment.Initialize<UserDepartment>();
+            //UserDepartment.Initialize<UserDepartment>();
             Calendar.Initialize<Calendar>();
             Calendar_Name.Initialize<Calendar_Name>();
             Calendar_Content.Initialize<Calendar_Content>();
@@ -105,7 +108,7 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
-            #endregion                                      
+            #endregion                                                              
         }
         void AdminAfterLoginCheck()
         {
@@ -220,6 +223,11 @@ namespace TimeSheetManger
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };
+            ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
+            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information); })); };
+            Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
+            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
             foreach (LPU lpu in LPUlist)            
@@ -228,8 +236,8 @@ namespace TimeSheetManger
             Flags = Flag.All<Flag>();            
             changeState(AppState.LPUselect);  //release
             #if DEBUG
-            currentLPU = LPU.Get<LPU>(1);            
-            currentUser = User.Get<User>(22);
+            currentLPU = LPU.Get<LPU>(17);            
+            currentUser = User.Get<User>(68);
             //currentUser = currentLPU.Users.Find(u => u.ID == 22);
             changeState(AppState.Desktop);
             miAdminPanel_Click(this, e);

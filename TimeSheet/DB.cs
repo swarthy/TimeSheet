@@ -1,14 +1,14 @@
-﻿using System;
+﻿///     Alexander Mochalin (c) 2013
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using System.Windows.Forms;
 using System.ComponentModel;
-///     Developer: Alexander Mochalin
-///     License: GNU LGPL
 
-namespace TimeSheetManger
+namespace SwarthyComponents.FireBird
 {
     public class DBBindingSource<T> : BindingSource where T:Domain, new()
     {
@@ -52,11 +52,11 @@ namespace TimeSheetManger
                     try
                     {
                         connection.Open();
-                        Helper.Log("Подключение к БД...");
+                        DBHelper.Log("Подключение к БД...");
                     }
                     catch
                     {
-                        Helper.Log("не удалось =\\ Создаю новый экземпляр подключения");
+                        DBHelper.Log("Создаю новый экземпляр подключения");
                         connection = GetNewConnection;
                         connection.Open();
                     }
@@ -86,19 +86,37 @@ namespace TimeSheetManger
         public static object Query(string query)
         {
             FbCommand command = new FbCommand(query, DB.Connection);
-            Helper.Log("Запрос к БД: {0}", query);
+            DBHelper.Log("Query запрос к БД: {0}", query);
             return command.ExecuteScalar();
         }
     }
+    public static class DBHelper
+    {
+        public static IDictionary<string, object> AnonymousObjectToDictionary(object propertyBag)
+        {
+            var result = new Dictionary<string, object>();
+            if (propertyBag != null)
+            {
+                foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(propertyBag))
+                {
+                    result.Add(property.Name, property.GetValue(propertyBag));
+                }
+            }
+            return result;
+        }
+        public static formatAndArgsFunction Log;
+    }
+    public delegate void formatAndArgsFunction(string parameter, params object[] args);
     public class DBEventArgs<T> : EventArgs
     {
         private readonly T data;
-        private readonly string fieldInDB;
+        private readonly string FieldSource, FieldDestination;
         private readonly bool needSaveThis;
-        public DBEventArgs(T data, string fieldInDB, bool needSaveThis = true)
+        public DBEventArgs(T data, string FieldSource, string FieldDestination, bool needSaveThis = true)
         {
             this.data = data;
-            this.fieldInDB = fieldInDB;
+            this.FieldSource = FieldSource;
+            this.FieldDestination = FieldDestination;
             this.needSaveThis = needSaveThis;
         }
         public T GetData
@@ -108,11 +126,18 @@ namespace TimeSheetManger
                 return data;
             }
         }
-        public string GetFieldInDBName
+        public string GetFieldSource
         {
             get
             {
-                return fieldInDB;
+                return FieldSource;
+            }
+        }
+        public string GetFieldDestination
+        {
+            get
+            {
+                return FieldDestination;
             }
         }
         public bool NeedSave
@@ -126,11 +151,11 @@ namespace TimeSheetManger
     public class DBList<T> : List<T> where T : Domain, new()
     {
         public bool DeleteFromServerOnRemove = false;
-        public DBList(string FieldInDB = "")
+        public DBList(string FieldSource = "", string FieldDestination = "")
             : base()
-        {
-            
-            this.FieldInDB = FieldInDB;            
+        {            
+            this.FieldSource = FieldSource;
+            this.FieldDestination = FieldDestination;
         }
         new public T this[int i]
         {
@@ -142,7 +167,7 @@ namespace TimeSheetManger
             {
                 base[i] = value;
                 if (OnChange != null)
-                    OnChange(this, new DBEventArgs<T>(base[i], FieldInDB));
+                    OnChange(this, new DBEventArgs<T>(base[i], FieldSource, FieldDestination));
             }
         }        
         public DBList<T> Except(DBList<T> ex)
@@ -163,26 +188,27 @@ namespace TimeSheetManger
         }
         public T FindOrCreate(object match)
         {
-            var rest = Helper.AnonymousObjectToDictionary(match);
+            var rest = DBHelper.AnonymousObjectToDictionary(match);
             var temp = this.Find((item) => { bool result = true; foreach (var k in rest.Keys) if (!rest[k].Equals(item[k])) { result = false; break; } return result; });
             if (temp == null)
             {
                 temp = new T();
                 temp.SetValues(match);
                 this.Add(temp);
-            }            
+            }
             return temp;
         }
         new public void RemoveAt(int i)
         {
-            Remove(this[i]);            
+            Remove(this[i]);
         }
-        public string FieldInDB = "";
-        public event EventHandler<DBEventArgs<T>> OnAdd, OnRemove, OnChange;        
+        public string FieldSource = "";
+        public string FieldDestination = "";
+        public event EventHandler<DBEventArgs<T>> OnAdd, OnRemove, OnChange;
         new public void Add(T item)
         {
             if (OnAdd != null)
-                OnAdd(this, new DBEventArgs<T>(item, FieldInDB));
+                OnAdd(this, new DBEventArgs<T>(item, FieldSource, FieldDestination));
             base.Add(item);
         }
         public void Clear(bool delete_from_db = false)
@@ -198,16 +224,16 @@ namespace TimeSheetManger
         public void Remove(T item, bool delete_removable_object = false)
         {
             if (OnRemove != null)
-                OnRemove(this, new DBEventArgs<T>(item, FieldInDB, true));//true для удалени персонала из списка favorite 
+                OnRemove(this, new DBEventArgs<T>(item, FieldSource, FieldDestination));//был true для удалени персонала из списка favorite 
             base.Remove(item);
             if (delete_removable_object || DeleteFromServerOnRemove)
-                item.Delete();            
+                item.Delete();
         }
     }
     public struct Link
     {
         /// <summary>
-        /// Прослойка
+        /// Связь таблиц
         /// </summary>
         /// <param name="FieldSoruce">Поле в исходной таблице, в которой записывается значение, принадлежащее записи в ссылаемой таблице (Personal_Table_Number)</param>
         /// <param name="FieldDestination">Имя поля в связываемой таблице, являющееся естественным ключем (Table_Number) [по умолчанию это ID]</param>
@@ -222,8 +248,14 @@ namespace TimeSheetManger
         public string Field_Destination;
         public Type Type;
     }
+    public delegate object VirtualDeletionDeletedValue();
     public class Domain
     {
+        #region settings
+        public static string VirtualDeletionField = "";//isdeleted например для bool
+        public static string VirtualDeletionNotDeletedRecord = "";//"isdeleted = 0"
+        public static VirtualDeletionDeletedValue VirtualDeletedValue { get; set; } 
+        #endregion
         public static EventHandler OnFindBegin = null, OnFindEnd = null;
         /// <summary>
         /// Словарь, содержащий пары [Поле|Значение]
@@ -232,18 +264,16 @@ namespace TimeSheetManger
         /// <summary>
         /// Список имен полей
         /// </summary>
-        public static List<string> FieldNames = new List<string>();
-        /// <summary>
-        /// При включении данной функции будет производиться не физическое удаление объектов,
-        /// а пометка в поле _deleted (short) (которое, соответственно, должно присутсвовать в таблице)
-        /// </summary>
-        public static bool VirtualDeleteEnabled = false;
+        public static List<string> FieldNames = new List<string>();        
         /// <summary>
         /// Словари внешних связей
         /// </summary>
         public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_one = new Dictionary<string, Link>();
         public static Dictionary<string, Link> has_many = new Dictionary<string, Link>();
+        /// <summary>
+        /// Поле сортировки
+        /// </summary>
         public static string OrderBy = "";
         /// <summary>
         /// Загружена ли модель из БД?
@@ -254,7 +284,18 @@ namespace TimeSheetManger
         /// <summary>
         /// Имя таблицы
         /// </summary>
-        public static string tableName = "";
+        protected static string tableName = "";
+        /// <summary>
+        /// Указывает, необходимо ли заменять физическое удаление вирутальным.
+        /// </summary>
+        protected static bool virtualDeletion = false;
+        /// <summary>
+        /// Указывает, необходимо ли рекурсивно виртуально удалять объекты в связях hasone, hasmany
+        /// </summary>
+        protected static bool virtualSubDeletion = false;
+        /// <summary>
+        /// Сохранена ли на сервере?
+        /// </summary>
         public bool _IsNew
         {
             get
@@ -319,7 +360,7 @@ namespace TimeSheetManger
         }
         public void SetValues(object values)
         {
-            var val = Helper.AnonymousObjectToDictionary(values);
+            var val = DBHelper.AnonymousObjectToDictionary(values);
             foreach (var k in val.Keys)
                 this[k] = val[k];
         }
@@ -355,11 +396,11 @@ namespace TimeSheetManger
             Dictionary<string, Link> belongsto = GetBelongsTo(GetType());
             if (typeof(T) != belongsto[key].Type)
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
-            if (belongsto.Count > 0 && Fields["ID"] != null && (!BTfetched[key] || refetch))
+            if (belongsto.Count > 0 && (!BTfetched[key] || refetch))
             {
                 if (this[belongsto[key].Field_Source]==null || this[belongsto[key].Field_Source].ToString() == "")
                     return null;
-                var temp = Domain.F_All<T>("ID = " + this[belongsto[key].Field_Source], true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
+                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", belongsto[key].Field_Destination, this[belongsto[key].Field_Source]), true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
                 Fields[key] = temp;
                 BTfetched[key] = true;
                 return temp;
@@ -400,11 +441,11 @@ namespace TimeSheetManger
             Dictionary<string, Link> hasmany = GetHasMany(GetType());
             if (typeof(T) != hasmany[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if (hasmany.Count > 0 && Fields["ID"] != null && (!HMfetched[key] || refetch))
+            if (hasmany.Count > 0 && Fields[hasmany[key].Field_Destination] != null && (!HMfetched[key] || refetch))
             {
-                var temp = Domain.F_All<T>(hasmany[key].Field_Source + " = " + ID);
+                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasmany[key].Field_Source, Fields[hasmany[key].Field_Destination]));
                 HMfetched[key] = true;
-                temp.FieldInDB = hasmany[key].Field_Source;
+                temp.FieldSource = hasmany[key].Field_Source;
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
                 Fields[key] = temp;
@@ -419,7 +460,7 @@ namespace TimeSheetManger
         }
         public static T FindOrCreate<T>(object restrictions) where T : Domain, new()
         {
-            var rest = Helper.AnonymousObjectToDictionary(restrictions);
+            var rest = DBHelper.AnonymousObjectToDictionary(restrictions);
             var result = Domain.Find<T>(restrictions);
             if (result == null)
             {
@@ -448,6 +489,20 @@ namespace TimeSheetManger
         {
             return type.GetField("tableName").GetValue(null) as string;
         }
+        static bool AllowVirtualDeletion(Type type)
+        {
+            var f = type.GetField("virtualDeletion");
+            if (f == null)
+                return false;            
+            return Convert.ToBoolean(f.GetValue(null));            
+        }
+        static bool AllowVirtualSubDeletion(Type type)
+        {
+            var f = type.GetField("virtualSubDeletion");
+            if (f == null)
+                return false;
+            return Convert.ToBoolean(f.GetValue(null));
+        }        
         static string GetOrderBy(Type type)
         {
             var f = type.GetField("OrderBy");
@@ -511,10 +566,20 @@ namespace TimeSheetManger
             DBList<T> result = new DBList<T>();
             Type type = customType == null ? typeof(T) : customType;
             string tableName = GetTableName(type);
+            bool virtualMode = AllowVirtualDeletion(type);            
             List<string> fieldNames = GetFieldNames(type);
             // Получение строки "ПОЛЕ1, ПОЛЕ2, ПОЛЕ3 ..."
             string fields = fieldNames.Aggregate("", (acc, str) => { return acc + (acc.Length > 0 ? ", " : "") + str; });
-            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{4}{3}", fields, tableName, where_str.Length > 0 ? string.Format("where {0}", where_str) : "", GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : "",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
+            string wherePart = "";
+            //where_str.Length > 0 ? string.Format("where {0}", where_str) : ""            
+            if (where_str.Length > 0)
+                wherePart += string.Format("where {0}",where_str);
+            if (virtualMode)
+            {
+                wherePart += where_str.Length > 0 ? " and" : "where";                
+                wherePart += string.Format(" {0}", VirtualDeletionNotDeletedRecord);
+            }
+            FbCommand command = new FbCommand(string.Format("select {0} from {1} {2}{3}", fields, tableName, wherePart, GetOrderBy(type).Length > 0 ? " order by " + GetOrderBy(type) : ""), DB.Connection);
             try
             {
                 FbDataReader data = command.ExecuteReader();
@@ -540,7 +605,9 @@ namespace TimeSheetManger
         {
             if (OnFindBegin != null)
                 OnFindBegin(null, EventArgs.Empty);
-            var rest = Helper.AnonymousObjectToDictionary(restrictions);
+            var rest = DBHelper.AnonymousObjectToDictionary(restrictions);
+            if (rest.Keys.Count == 0)
+                return All<T>();
             DBList<T> result = new DBList<T>();
             Type type = customType == null ? typeof(T) : customType;
             string tableName = GetTableName(type);
@@ -551,7 +618,7 @@ namespace TimeSheetManger
               (sb, kvp) => sb.AppendFormat("{0}{1} = @{1}",
                            sb.Length > 0 ? " AND " : "", kvp.Key, kvp.Value),
               sb => sb.ToString());
-            FbCommand command = new FbCommand(string.Format("select{4} {0} from {1} where {2}{5}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : "",Distinct?" DISTINCT":"",VirtualDeleteEnabled?" AND _deleted = 0":""), DB.Connection);
+            FbCommand command = new FbCommand(string.Format("select{4} {0} from {1} where {2}{3}", fields, tableName, wherestr, GetOrderBy(type).Length > 0 ? " order by "+GetOrderBy(type) : "",Distinct?" DISTINCT":""), DB.Connection);
             rest.Keys.ToList().ForEach(k => command.Parameters.AddWithValue("@" + k, rest[k]));            
             try
             {
@@ -614,7 +681,7 @@ namespace TimeSheetManger
                     if (itm != null)
                     {
                         itm.Save();
-                        Fields[GetBelongsTo(GetType())[k].Field_Source] = itm.ID;
+                        Fields[GetBelongsTo(GetType())[k].Field_Source] = itm[GetBelongsTo(GetType())[k].Field_Destination];
                     }
                     else
                         Fields[GetBelongsTo(GetType())[k].Field_Source] = null;
@@ -651,15 +718,20 @@ namespace TimeSheetManger
         /// </summary>
         public void Delete()
         {
+            if (AllowVirtualDeletion(GetType()))
+                VirtualDelete();
+            else
+                PhysicalDelete();
+        }
+        /// <summary>
+        /// Физическое удаление
+        /// </summary>
+        void PhysicalDelete()
+        {
             if (Fields["ID"] == null)
-                return;            
+                return;
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Delete(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Delete()); });
-            if (VirtualDeleteEnabled)
-            {
-                VirtualDelete();
-                return;
-            }
             try
             {
                 string tableName = GetTableName(GetType());
@@ -677,22 +749,20 @@ namespace TimeSheetManger
         /// </summary>
         void VirtualDelete()
         {
-            string tableName = GetTableName(GetType());
-            FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 1 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
-            command.ExecuteNonQuery();
-        }
-        /// <summary>
-        /// Восстановление виртуально удаленных данных
-        /// </summary>
-        internal void VirtualDeletedRepair()
-        {
             if (Fields["ID"] == null)
                 return;
-            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).VirtualDeletedRepair(); });
-            GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.VirtualDeletedRepair()); });            
-            string tableName = GetTableName(GetType());
-            FbCommand command = new FbCommand(string.Format("update {0} set _deleted = 0 where ID = {1}", tableName, Fields["ID"]), DB.Connection);
-            command.ExecuteNonQuery();
+            if (AllowVirtualDeletion(GetType()))
+            {
+                string tableName = GetTableName(GetType());
+                FbCommand command = new FbCommand(string.Format("update {0} set {1} = @DELVAL where ID = {2}", tableName, VirtualDeletionField, Fields["ID"]), DB.Connection);
+                command.Parameters.AddWithValue("@DELVAL", VirtualDeletedValue());
+                command.ExecuteNonQuery();
+                if (AllowVirtualSubDeletion(GetType()))
+                {
+                    GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).VirtualDelete(); });
+                    GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.VirtualDelete()); });
+                }
+            }
         }
         /// <summary>
         /// Найти все записи, удовлетворяющие условию where_str
@@ -759,13 +829,13 @@ namespace TimeSheetManger
         }        
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
-            args.GetData.Fields[args.GetFieldInDBName] = ID;
+            args.GetData.Fields[args.GetFieldSource] = this[args.GetFieldDestination];
             args.GetData.changed = true;
             changed = true;
         }
         public void ListOnRemove<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
-            args.GetData.Fields[args.GetFieldInDBName] = null;            
+            args.GetData.Fields[args.GetFieldSource] = null;            
             if (args.NeedSave)
                 args.GetData.Save(true);
             changed = true;
