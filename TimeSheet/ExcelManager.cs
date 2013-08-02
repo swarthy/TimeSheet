@@ -200,14 +200,14 @@ namespace TimeSheetManger
         {
             get
             {
-                return worksheet.Cells[string.Format("{0}:{1}", templateStartRow + rowCount * 4, templateStartRow + rowCount * 4 + 3)];
+                return worksheet.Cells[string.Format("A{0}:Y{1}", templateStartRow + rowCount * 4, templateStartRow + rowCount * 4 + 3)];
             }
         }
         static void AddRow()
         {
             worksheet.InsertRow(lastRow, 4);
             rowCount++;
-            template.Copy(worksheet.Cells[string.Format("{0}:{1}", lastRow, lastRow + 3)]);
+            template.Copy(worksheet.Cells[string.Format("A{0}:Y{1}", lastRow, lastRow + 3)]);
             lastRow += 4;
         }
         struct DayCounter

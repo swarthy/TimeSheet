@@ -212,9 +212,7 @@
   <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="Resources\Download_16x16.png" />
-    <None Include="Resources\ajax-loader.gif" />
     <None Include="Resources\Settings_48x48.png" />
-    <None Include="Resources\Settings_256x256.png" />
     <None Include="Resources\Text Document_16x16.png" />
     <None Include="Resources\Upload_16x16.png" />
     <None Include="Resources\Rename_16x16.png" />
