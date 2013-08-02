@@ -31,6 +31,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.lbStatus = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
@@ -57,6 +58,7 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.lbStatus);
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -64,6 +66,15 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(294, 75);
             this.panel1.TabIndex = 2;
+            // 
+            // lbStatus
+            // 
+            this.lbStatus.Location = new System.Drawing.Point(70, 44);
+            this.lbStatus.Name = "lbStatus";
+            this.lbStatus.Size = new System.Drawing.Size(189, 20);
+            this.lbStatus.TabIndex = 2;
+            this.lbStatus.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lbStatus.Visible = false;
             // 
             // WaitingForm
             // 
@@ -77,7 +88,8 @@
             this.Name = "WaitingForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "WaitingForm";
-            this.TopMost = true;            
+            this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.WaitingForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
@@ -90,5 +102,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Label lbStatus;
     }
 }

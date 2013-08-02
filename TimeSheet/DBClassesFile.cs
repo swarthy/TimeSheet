@@ -161,7 +161,8 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {            
-            {"PersonalOfDepartment", new Link("DEPARTMENT_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")}
+            {"PersonalOfDepartment", new Link("DEPARTMENT_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")},
+            {"TimeSheets", new Link("DEPARTMENT_NUMBER",typeof(TimeSheetInstance),"DEPARTMENT_NUMBER")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
@@ -221,6 +222,13 @@ namespace TimeSheetManger
             get
             {
                 return HM<Personal>("PersonalOfDepartment");
+            }
+        }
+        public DBList<TimeSheetInstance> TimeSheets
+        {
+            get
+            {
+                return HM<TimeSheetInstance>("TimeSheets");
             }
         }
         #endregion
@@ -629,7 +637,7 @@ where   personal.department_number=department.department_number
         };        
         public override string ToString()
         {
-            return Name.Name;
+            return NameLink.Name;
         }
         public void Generate12Months()
         {
@@ -644,7 +652,7 @@ where   personal.department_number=department.department_number
                 return HM<Calendar_Content>("Content");
             }
         }
-        public Calendar_Name Name
+        public Calendar_Name NameLink
         {
             get
             {
@@ -675,7 +683,7 @@ where   personal.department_number=department.department_number
         public Calendar(Calendar_Name name, int year)
             : base(typeof(Calendar))
         {
-            Name = name;
+            NameLink = name;
             CYear = year;            
         }
     }
@@ -794,7 +802,7 @@ where   personal.department_number=department.department_number
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
-        new public static string OrderBy = "TS_YEAR, TS_MONTH, DEPARTMENT_NUMBER";
+        new public static string OrderBy = "User_ID, TS_YEAR, TS_MONTH, DEPARTMENT_NUMBER";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             {"Content", new Link("TimeSheet_ID",typeof(TimeSheet_Content))}
@@ -910,8 +918,8 @@ where   personal.department_number=department.department_number
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
             {"Personal", new Link("Personal_TN",typeof(Personal), "TABLE_NUMBER")},
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
-            {"Post", new Link("POST_CODE",typeof(Post), "CODE") },
-            {"TimeSheetManger", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))}            
+            {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))},
+            {"Post", new Link("POST_CODE",typeof(Post), "CODE") }            
         };
         public override string ToString()
         {
@@ -925,17 +933,7 @@ where   personal.department_number=department.department_number
                 return HM<TimeSheet_Day>("Days");
             }
         }
-        public TimeSheetInstance TimeSheetManger
-        {
-            get
-            {
-                return BT<TimeSheetInstance>("TimeSheetManger");
-            }
-            set
-            {
-                this["TimeSheetManger"] = value;
-            }
-        }
+        
         public Calendar Calendar
         {
             get
@@ -945,6 +943,17 @@ where   personal.department_number=department.department_number
             set
             {
                 this["Calendar"] = value;
+            }
+        }
+        public TimeSheetInstance TimeSheet
+        {
+            get
+            {
+                return BT<TimeSheetInstance>("TimeSheet");
+            }
+            set
+            {
+                this["TimeSheet"] = value;
             }
         }
         public Post Post
@@ -996,7 +1005,7 @@ where   personal.department_number=department.department_number
             var needRows = groups.Max(a => a.Count());
             result = new DataGridViewRow[needRows];
             var values = new object[needRows][];
-            var colCount = 4 + TimeSheetManger._DaysInMonth + 4;
+            var colCount = 4 + TimeSheet._DaysInMonth + 4;
             for (int i = 0; i < needRows; i++)
             {
                 result[i] = new DataGridViewRow();
@@ -1083,7 +1092,7 @@ where   personal.department_number=department.department_number
             : base(typeof(TimeSheet_Content))
         {
             Personal = personal;
-            TimeSheetManger = timeSheet;
+            TimeSheet = timeSheet;
             Post = post;
             Rate = rate;
         }

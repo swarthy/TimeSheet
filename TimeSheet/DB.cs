@@ -764,15 +764,15 @@ namespace SwarthyComponents.FireBird
                 return false;
             }
             _Changed = false;
-            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Save(); });
+            GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k] != null) (Fields[k] as Domain).Save(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k =>
             {
-                if (Fields.ContainsKey(k))
-                {                    
+                if (Fields.ContainsKey(k) && Fields[k] != null)
+                {
                     //(Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save());
                     var subs = Fields[k] as IEnumerable<Domain>;
                     foreach (var item in subs)
-                        item.Save();                    
+                        item.Save();
                 }
             });
             return true;

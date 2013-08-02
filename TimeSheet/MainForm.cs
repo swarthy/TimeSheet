@@ -242,16 +242,15 @@ namespace TimeSheetManger
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();            
         }
-        Thread waitingThread;
         void showwait()
         {
-            WaitingForm form = new WaitingForm();
-            form.ShowDialog();
+            var waitform = new WaitingForm();
+            waitform.ShowDialog();
         }
+        Thread waitingThread;
         public void WaitStart()
         {
-            Enabled = false;
-            WaitingForm form = new WaitingForm();
+            Enabled = false;            
             waitingThread = new Thread(showwait);
             waitingThread.Start();
         }
@@ -266,8 +265,9 @@ namespace TimeSheetManger
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
             ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); WaitStop(); })); };
+                        
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
-            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
+            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); WaitStop();})); };
             
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            

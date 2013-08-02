@@ -11,6 +11,9 @@ using System.Globalization;
 using SwarthyComponents.WinForms;
 using SwarthyComponents.FireBird;
 using System.Xml.Linq;
+using System.IO;
+using System.Data.OleDb;
+using System.Threading;
 
 namespace TimeSheetManger
 {
@@ -52,6 +55,7 @@ namespace TimeSheetManger
                 gbColors.Show();
                 btnImport.Show();
                 btnExportTimeSheetXML.Show();
+                btnExportTimeSheetDBF.Show();
             }
             else
                 if (mainform.currentUser._IS_MODERATOR)
@@ -62,6 +66,8 @@ namespace TimeSheetManger
         {
             UpdateSpecialDaysFromServer(DateTime.Today.Year);            
             RenderPCalendars();
+            OnDBFExportProgress += delegate { Invoke((Action)(() => progressBar.Increment(1))); };
+            OnDBFExportEnd += delegate { Invoke((Action)(() => { progressBar.Visible = false; Enabled = true; MessageBox.Show("Экспорт в DBF завершен."); })); };
         }
 
         #region Справочники
@@ -490,7 +496,7 @@ namespace TimeSheetManger
         private void btnExportTimeSheetXML_Click(object sender, EventArgs e)
         {
             mainForm.WaitStart();
-            Helper.DirectoryCreateIfNotExists("xml");
+            Helper.DirectoryCreateIfNotExists("export\\xml");
             TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>
             {
                 XDocument doc = new XDocument();
@@ -502,9 +508,74 @@ namespace TimeSheetManger
                     tabel.Add(line);
                 });
                 doc.Add(tabel);
-                doc.Save(string.Format("xml\\{0}_{1}_{2}.xml", ts._GetDate.ToShortDateString(), ts.Department.Department_Number, ts.Department.Name));
+                doc.Save(string.Format("export\\xml\\{0}_{1}_{2}.xml", ts._GetDate.ToShortDateString(), ts.Department.Department_Number, ts.Department.Name));
             });
             mainForm.WaitStop();
+        }        
+        public static EventHandler OnDBFExportProgress, OnDBFExportBegin, OnDBFExportEnd;
+        void DBFTimeSheetsExport()
+        {
+            if (OnDBFExportBegin != null)
+                OnDBFExportBegin(this, EventArgs.Empty);
+            var path = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "export\\dbf");            
+            string connectionString = string.Format("Provider=Microsoft.Jet.OLEDB.4.0;Data Source={0};Extended Properties=dBase IV", path);            
+            OleDbConnection connection = new OleDbConnection(connectionString);
+            OleDbCommand command = connection.CreateCommand();
+            connection.Open();
+            //Создание файла
+            command.CommandText = @"CREATE TABLE Tabel (USERTN Integer, TN Integer, LName Character(50), FName Character(50), MName Character(50), DNumber Integer, DName Character(50), TSYear Integer, TSMonth Integer, PCode Integer, PName Character(50), CID Integer, CName Character(50), DayDate Date, DayHours Integer, DayFlag Character(10))";
+            command.ExecuteNonQuery();
+            daysForDBF.ForEach(day =>
+            {
+                var insrtcmd = connection.CreateCommand();
+                insrtcmd.CommandText = "insert into Tabel (USERTN, TN, LName, FName, MName, DNumber, DName, TSYear, TSMonth, PCode, PName, CID, CName, DayDate, DayHours, DayFlag) VALUES (@USERTN, @TN, @LName, @FName, @MName, @DNumber, @DName, @TSYear, @TSMonth, @PCode, @PName, @CID, @CName, @DayDate, @DayHours, @DayFlag)";
+                insrtcmd.Parameters.AddWithValue("@USERTN", day.TimeSheetContent.TimeSheet.User.Profile.Table_Number);//тн сотрудника в табеле
+                insrtcmd.Parameters.AddWithValue("@TN", day.TimeSheetContent.Personal.Table_Number);//тн сотрудника в табеле
+                insrtcmd.Parameters.AddWithValue("@LName", day.TimeSheetContent.Personal.LastName);
+                insrtcmd.Parameters.AddWithValue("@FName", day.TimeSheetContent.Personal.FirstName);
+                insrtcmd.Parameters.AddWithValue("@MName", day.TimeSheetContent.Personal.MiddleName);
+                insrtcmd.Parameters.AddWithValue("@DNumber", day.TimeSheetContent.TimeSheet.Department.Department_Number);
+                insrtcmd.Parameters.AddWithValue("@DName", day.TimeSheetContent.TimeSheet.Department.Name);
+                insrtcmd.Parameters.AddWithValue("@TSYear", day.TimeSheetContent.TimeSheet.TS_Year);
+                insrtcmd.Parameters.AddWithValue("@TSMonth", day.TimeSheetContent.TimeSheet.TS_Month);
+                insrtcmd.Parameters.AddWithValue("@PCode", day.TimeSheetContent.Post.Code);
+                insrtcmd.Parameters.AddWithValue("@PName", day.TimeSheetContent.Post.Name);
+                insrtcmd.Parameters.AddWithValue("@CID", day.TimeSheetContent.Calendar.ID);
+                insrtcmd.Parameters.AddWithValue("@CName", day.TimeSheetContent.Calendar.NameLink.Name);
+                insrtcmd.Parameters.AddWithValue("@DayDate", day.Item_Date);
+                insrtcmd.Parameters.AddWithValue("@DayHours", day.Worked_Time.TotalHours);
+                insrtcmd.Parameters.AddWithValue("@DayFlag", day.Flag.Name);
+                insrtcmd.ExecuteNonQuery();
+                if (OnDBFExportProgress!=null)
+                    OnDBFExportProgress(this, EventArgs.Empty);
+            });
+            connection.Close();
+            if (OnDBFExportEnd != null)
+                OnDBFExportEnd(this, EventArgs.Empty);
+        }
+        DBList<TimeSheet_Day> daysForDBF;
+        private void btnExportTimeSheetDBF_Click(object sender, EventArgs e)
+        {
+            //daysForDBF = TimeSheet_Day.All<TimeSheet_Day>();//без сортировки и по всем ЛПУ
+            Enabled = false;
+            progressBar.Value = 0;
+            progressBar.Visible = true;            
+            daysForDBF = mainForm.currentLPU.Departments.SelectMany<Department, TimeSheetInstance>(d => d.TimeSheets).SelectMany<TimeSheetInstance, TimeSheet_Content>(ts => ts.Content).SelectMany<TimeSheet_Content, TimeSheet_Day>(tc => tc.Days).ToDBList();
+            progressBar.Maximum = daysForDBF.Count;
+            
+            var destinationDir = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "export\\dbf");
+            Helper.DirectoryCreateIfNotExists(destinationDir);
+            File.Delete(Path.Combine(destinationDir, "Tabel.dbf"));            
+            try
+            {
+                Thread exprt = new Thread(DBFTimeSheetsExport);
+                exprt.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Ошибка DBF экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Enabled = true;
+            }
         }
     }
 }

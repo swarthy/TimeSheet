@@ -31,6 +31,9 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminPanelForm));
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btnExportTimeSheetDBF = new System.Windows.Forms.Button();
+            this.btnExportTimeSheetXML = new System.Windows.Forms.Button();
+            this.btnImport = new System.Windows.Forms.Button();
             this.gbColors = new System.Windows.Forms.GroupBox();
             this.lbweekend = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -38,6 +41,7 @@
             this.cpWeekEnd = new System.Windows.Forms.Panel();
             this.cpHolyday = new System.Windows.Forms.Panel();
             this.cpShortDay = new System.Windows.Forms.Panel();
+            this.btnEditCatalog = new System.Windows.Forms.Button();
             this.cbCatalogs = new System.Windows.Forms.ComboBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupPanelSelectControls = new System.Windows.Forms.Panel();
@@ -67,6 +71,7 @@
             this.lbHours = new System.Windows.Forms.Label();
             this.tbDays = new System.Windows.Forms.TextBox();
             this.lbDays = new System.Windows.Forms.Label();
+            this.btnEditSaveDaysHours = new System.Windows.Forms.Button();
             this.gbAddYear = new System.Windows.Forms.GroupBox();
             this.tbPYear = new System.Windows.Forms.TextBox();
             this.btnHideYear = new System.Windows.Forms.Button();
@@ -80,13 +85,10 @@
             this.dtpHolydayMonthPicker = new System.Windows.Forms.DateTimePicker();
             this.pbGeneratingWeekEnds = new System.Windows.Forms.ProgressBar();
             this.btnGenerateWeekEnds = new System.Windows.Forms.Button();
-            this.cdDayColors = new System.Windows.Forms.ColorDialog();
-            this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
-            this.btnExportTimeSheetXML = new System.Windows.Forms.Button();
-            this.btnImport = new System.Windows.Forms.Button();
-            this.btnEditCatalog = new System.Windows.Forms.Button();
-            this.btnEditSaveDaysHours = new System.Windows.Forms.Button();
             this.btnEditSaveDayType = new System.Windows.Forms.Button();
+            this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
+            this.cdDayColors = new System.Windows.Forms.ColorDialog();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.gbColors.SuspendLayout();
@@ -118,6 +120,8 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.progressBar);
+            this.tabPage1.Controls.Add(this.btnExportTimeSheetDBF);
             this.tabPage1.Controls.Add(this.btnExportTimeSheetXML);
             this.tabPage1.Controls.Add(this.btnImport);
             this.tabPage1.Controls.Add(this.gbColors);
@@ -130,6 +134,46 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btnExportTimeSheetDBF
+            // 
+            this.btnExportTimeSheetDBF.Image = global::TimeSheetManger.Properties.Resources.Download_16x161;
+            this.btnExportTimeSheetDBF.Location = new System.Drawing.Point(6, 166);
+            this.btnExportTimeSheetDBF.Name = "btnExportTimeSheetDBF";
+            this.btnExportTimeSheetDBF.Size = new System.Drawing.Size(195, 23);
+            this.btnExportTimeSheetDBF.TabIndex = 13;
+            this.btnExportTimeSheetDBF.Text = "Экспорт всех табелей в DBF";
+            this.btnExportTimeSheetDBF.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnExportTimeSheetDBF.UseVisualStyleBackColor = true;
+            this.btnExportTimeSheetDBF.Visible = false;
+            this.btnExportTimeSheetDBF.Click += new System.EventHandler(this.btnExportTimeSheetDBF_Click);
+            // 
+            // btnExportTimeSheetXML
+            // 
+            this.btnExportTimeSheetXML.Image = global::TimeSheetManger.Properties.Resources.Download_16x16;
+            this.btnExportTimeSheetXML.Location = new System.Drawing.Point(6, 137);
+            this.btnExportTimeSheetXML.Name = "btnExportTimeSheetXML";
+            this.btnExportTimeSheetXML.Size = new System.Drawing.Size(195, 23);
+            this.btnExportTimeSheetXML.TabIndex = 12;
+            this.btnExportTimeSheetXML.Text = "Экспорт всех табелей в XML";
+            this.btnExportTimeSheetXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnExportTimeSheetXML.UseVisualStyleBackColor = true;
+            this.btnExportTimeSheetXML.Visible = false;
+            this.btnExportTimeSheetXML.Click += new System.EventHandler(this.btnExportTimeSheetXML_Click);
+            // 
+            // btnImport
+            // 
+            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnImport.Image = global::TimeSheetManger.Properties.Resources.Upload_16x16;
+            this.btnImport.Location = new System.Drawing.Point(332, 33);
+            this.btnImport.Name = "btnImport";
+            this.btnImport.Size = new System.Drawing.Size(110, 23);
+            this.btnImport.TabIndex = 11;
+            this.btnImport.Text = "Импорт";
+            this.btnImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnImport.UseVisualStyleBackColor = true;
+            this.btnImport.Visible = false;
+            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
             // 
             // gbColors
             // 
@@ -197,6 +241,20 @@
             this.cpShortDay.Size = new System.Drawing.Size(32, 13);
             this.cpShortDay.TabIndex = 6;
             this.cpShortDay.DoubleClick += new System.EventHandler(this.cpShortDay_DoubleClick);
+            // 
+            // btnEditCatalog
+            // 
+            this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEditCatalog.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditCatalog.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnEditCatalog.Location = new System.Drawing.Point(332, 4);
+            this.btnEditCatalog.Name = "btnEditCatalog";
+            this.btnEditCatalog.Size = new System.Drawing.Size(110, 23);
+            this.btnEditCatalog.TabIndex = 1;
+            this.btnEditCatalog.Text = "Редактировать";
+            this.btnEditCatalog.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnEditCatalog.UseVisualStyleBackColor = true;
+            this.btnEditCatalog.Click += new System.EventHandler(this.btnEditCatalog_Click);
             // 
             // cbCatalogs
             // 
@@ -548,6 +606,20 @@
             this.lbDays.TabIndex = 1;
             this.lbDays.Text = "Дни:";
             // 
+            // btnEditSaveDaysHours
+            // 
+            this.btnEditSaveDaysHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnEditSaveDaysHours.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditSaveDaysHours.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnEditSaveDaysHours.Location = new System.Drawing.Point(63, 75);
+            this.btnEditSaveDaysHours.Name = "btnEditSaveDaysHours";
+            this.btnEditSaveDaysHours.Size = new System.Drawing.Size(111, 23);
+            this.btnEditSaveDaysHours.TabIndex = 4;
+            this.btnEditSaveDaysHours.Text = "Редактировать";
+            this.btnEditSaveDaysHours.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnEditSaveDaysHours.UseVisualStyleBackColor = true;
+            this.btnEditSaveDaysHours.Click += new System.EventHandler(this.btnEditSaveDaysHours_Click);
+            // 
             // gbAddYear
             // 
             this.gbAddYear.Controls.Add(this.tbPYear);
@@ -595,8 +667,8 @@
             this.tabPage3.Controls.Add(this.dtpHolydayMonthPicker);
             this.tabPage3.Controls.Add(this.pbGeneratingWeekEnds);
             this.tabPage3.Controls.Add(this.btnGenerateWeekEnds);
-            this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Controls.Add(this.btnEditSaveDayType);
+            this.tabPage3.Controls.Add(this.cHolydayCalendar);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Size = new System.Drawing.Size(448, 379);
@@ -690,6 +762,19 @@
             this.btnGenerateWeekEnds.UseVisualStyleBackColor = true;
             this.btnGenerateWeekEnds.Click += new System.EventHandler(this.btnGenerateWeekEnds_Click);
             // 
+            // btnEditSaveDayType
+            // 
+            this.btnEditSaveDayType.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditSaveDayType.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnEditSaveDayType.Location = new System.Drawing.Point(182, 110);
+            this.btnEditSaveDayType.Name = "btnEditSaveDayType";
+            this.btnEditSaveDayType.Size = new System.Drawing.Size(112, 23);
+            this.btnEditSaveDayType.TabIndex = 6;
+            this.btnEditSaveDayType.Text = "Редактировать";
+            this.btnEditSaveDayType.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnEditSaveDayType.UseVisualStyleBackColor = true;
+            this.btnEditSaveDayType.Click += new System.EventHandler(this.btnEditSaveDayType_Click);
+            // 
             // cHolydayCalendar
             // 
             this.cHolydayCalendar.DayPadding = 1;
@@ -708,73 +793,13 @@
             this.cHolydayCalendar.TabIndex = 4;
             this.cHolydayCalendar.Year = 2013;
             // 
-            // btnExportTimeSheetXML
+            // progressBar
             // 
-            this.btnExportTimeSheetXML.Image = global::TimeSheetManger.Properties.Resources.Download_16x16;
-            this.btnExportTimeSheetXML.Location = new System.Drawing.Point(6, 137);
-            this.btnExportTimeSheetXML.Name = "btnExportTimeSheetXML";
-            this.btnExportTimeSheetXML.Size = new System.Drawing.Size(195, 23);
-            this.btnExportTimeSheetXML.TabIndex = 12;
-            this.btnExportTimeSheetXML.Text = "Экспорт всех табелей в XML";
-            this.btnExportTimeSheetXML.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnExportTimeSheetXML.UseVisualStyleBackColor = true;
-            this.btnExportTimeSheetXML.Visible = false;
-            this.btnExportTimeSheetXML.Click += new System.EventHandler(this.btnExportTimeSheetXML_Click);
-            // 
-            // btnImport
-            // 
-            this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnImport.Image = global::TimeSheetManger.Properties.Resources.Upload_16x16;
-            this.btnImport.Location = new System.Drawing.Point(332, 33);
-            this.btnImport.Name = "btnImport";
-            this.btnImport.Size = new System.Drawing.Size(110, 23);
-            this.btnImport.TabIndex = 11;
-            this.btnImport.Text = "Импорт";
-            this.btnImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnImport.UseVisualStyleBackColor = true;
-            this.btnImport.Visible = false;
-            this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
-            // 
-            // btnEditCatalog
-            // 
-            this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditCatalog.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
-            this.btnEditCatalog.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditCatalog.Location = new System.Drawing.Point(332, 4);
-            this.btnEditCatalog.Name = "btnEditCatalog";
-            this.btnEditCatalog.Size = new System.Drawing.Size(110, 23);
-            this.btnEditCatalog.TabIndex = 1;
-            this.btnEditCatalog.Text = "Редактировать";
-            this.btnEditCatalog.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnEditCatalog.UseVisualStyleBackColor = true;
-            this.btnEditCatalog.Click += new System.EventHandler(this.btnEditCatalog_Click);
-            // 
-            // btnEditSaveDaysHours
-            // 
-            this.btnEditSaveDaysHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditSaveDaysHours.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
-            this.btnEditSaveDaysHours.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditSaveDaysHours.Location = new System.Drawing.Point(63, 75);
-            this.btnEditSaveDaysHours.Name = "btnEditSaveDaysHours";
-            this.btnEditSaveDaysHours.Size = new System.Drawing.Size(111, 23);
-            this.btnEditSaveDaysHours.TabIndex = 4;
-            this.btnEditSaveDaysHours.Text = "Редактировать";
-            this.btnEditSaveDaysHours.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnEditSaveDaysHours.UseVisualStyleBackColor = true;
-            this.btnEditSaveDaysHours.Click += new System.EventHandler(this.btnEditSaveDaysHours_Click);
-            // 
-            // btnEditSaveDayType
-            // 
-            this.btnEditSaveDayType.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
-            this.btnEditSaveDayType.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnEditSaveDayType.Location = new System.Drawing.Point(182, 110);
-            this.btnEditSaveDayType.Name = "btnEditSaveDayType";
-            this.btnEditSaveDayType.Size = new System.Drawing.Size(112, 23);
-            this.btnEditSaveDayType.TabIndex = 6;
-            this.btnEditSaveDayType.Text = "Редактировать";
-            this.btnEditSaveDayType.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
-            this.btnEditSaveDayType.UseVisualStyleBackColor = true;
-            this.btnEditSaveDayType.Click += new System.EventHandler(this.btnEditSaveDayType_Click);
+            this.progressBar.Location = new System.Drawing.Point(6, 195);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(195, 23);
+            this.progressBar.TabIndex = 14;
+            this.progressBar.Visible = false;
             // 
             // AdminPanelForm
             // 
@@ -872,5 +897,7 @@
         private System.Windows.Forms.Panel groupPandelDayTypes;
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.Button btnExportTimeSheetXML;
+        private System.Windows.Forms.Button btnExportTimeSheetDBF;
+        private System.Windows.Forms.ProgressBar progressBar;
     }
 }

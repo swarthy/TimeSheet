@@ -70,6 +70,7 @@
             this.tspbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.tsslSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ttsVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.msMainMenu = new System.Windows.Forms.MenuStrip();
             this.пользовательToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCurrentUser = new System.Windows.Forms.ToolStripMenuItem();
@@ -81,7 +82,6 @@
             this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.pDesktop = new System.Windows.Forms.Panel();
             this.deskbtnTimeSheets = new System.Windows.Forms.Button();
-            this.ttsVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
@@ -474,18 +474,25 @@
             // 
             this.tspbProgress.Name = "tspbProgress";
             this.tspbProgress.Size = new System.Drawing.Size(100, 16);
+            this.tspbProgress.Value = 55;
             this.tspbProgress.Visible = false;
             // 
             // tsslSpace
             // 
             this.tsslSpace.Name = "tsslSpace";
-            this.tsslSpace.Size = new System.Drawing.Size(588, 17);
+            this.tsslSpace.Size = new System.Drawing.Size(455, 17);
             this.tsslSpace.Spring = true;
             // 
             // tsslStatusRight
             // 
             this.tsslStatusRight.Name = "tsslStatusRight";
             this.tsslStatusRight.Size = new System.Drawing.Size(0, 17);
+            // 
+            // ttsVersion
+            // 
+            this.ttsVersion.Name = "ttsVersion";
+            this.ttsVersion.Size = new System.Drawing.Size(46, 17);
+            this.ttsVersion.Text = "Version";
             // 
             // msMainMenu
             // 
@@ -587,12 +594,6 @@
             this.deskbtnTimeSheets.UseVisualStyleBackColor = true;
             this.deskbtnTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
             // 
-            // ttsVersion
-            // 
-            this.ttsVersion.Name = "ttsVersion";
-            this.ttsVersion.Size = new System.Drawing.Size(46, 17);
-            this.ttsVersion.Text = "Version";
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -672,7 +673,7 @@
         private System.Windows.Forms.Label lbAuthSelectedLPU;
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusLeft;
-        private System.Windows.Forms.ToolStripProgressBar tspbProgress;
+        internal System.Windows.Forms.ToolStripProgressBar tspbProgress;
         private System.Windows.Forms.ToolStripStatusLabel tsslSpace;
         private System.Windows.Forms.ToolStripStatusLabel tsslStatusRight;
         private System.Windows.Forms.Button btnExit;
