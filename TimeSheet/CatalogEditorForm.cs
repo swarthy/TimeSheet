@@ -92,7 +92,8 @@ namespace TimeSheetManger
             EditingComplete += (s, e) => { success = true; };
             grid.RowEditStarted += (s, e) => { beginEditing(); };
             this.catalogTitle = catalogTitle;
-            Text = string.Format("Справочник: {0}", catalogTitle);            
+            Text = string.Format("Справочник: {0}", catalogTitle);
+            setControlsEnabled(false);
         }
         public void MyAfterOpenningInit()//вызывается после Open<Domain>
         {
@@ -804,6 +805,7 @@ namespace TimeSheetManger
         {
             ClearValues(flFilters.Controls);
             grid.KeyDown += (s, e2) => { if (e2.KeyCode == Keys.Delete) btnDelete_Click(sender, e); };
+            setControlsEnabled(true);
         }
 
         private void grid_DataError(object sender, DataGridViewDataErrorEventArgs e)

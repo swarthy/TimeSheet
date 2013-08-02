@@ -98,12 +98,17 @@ namespace TimeSheetManger
                 var dir = string.IsNullOrEmpty(updates) ? @"TabelUpdates\" : updates;
                 if (dir.Last() != '\\')
                     dir += "\\";
-                return Path.Combine(string.Format("\\\\{0}\\{1}\\", ServerIP), dir);
+                return Path.Combine(string.Format("\\\\{0}", ServerIP), dir);
             }
         }
         public static string GetFileVersion(string filePath)
         {                        
             return FileVersionInfo.GetVersionInfo(filePath).FileVersion;       
+        }
+        public static void DirectoryCreateIfNotExists(string path)
+        {
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
         }
     }
 }

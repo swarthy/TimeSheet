@@ -9,6 +9,8 @@ using System.IO;
 using System.Threading;
 using SwarthyComponents;
 using SwarthyComponents.FireBird;
+using System.Xml.Serialization;
+using System.Xml.Linq;
 
 namespace TimeSheetManger
 {
@@ -23,7 +25,7 @@ namespace TimeSheetManger
         public DBList<Post> Posts = new DBList<Post>();
         public DBList<Calendar> Calendars = new DBList<Calendar>();
         public DBList<Flag> Flags = new DBList<Flag>();
-        public static DBList<SpecialDay> specialDays;
+        public static DBList<SpecialDay> specialDays;        
         public LPU currentLPU { get; set; }
         public static User curUsr = null;
         public User currentUser
@@ -76,6 +78,7 @@ namespace TimeSheetManger
         public MainForm()
         {   
             InitializeComponent();
+            ttsVersion.Text = "Версия: " + Helper.GetFileVersion(Application.ExecutablePath);
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
             //ping 1.1.1.1 -n 1 -w 3000 > nul
             //System.Diagnostics.Process.Start("notepad.exe");            
@@ -108,15 +111,32 @@ namespace TimeSheetManger
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
             #endregion                                                                          
-            var test = Personal.Query<Personal>(@"department, personal
-where   personal.department_number=department.department_number
-        and
-        department.lpu_id = 17");
-            var t= test.Count;
+            /*XmlSerializer xs = new XmlSerializer(typeof(User));
+            FileStream stream = new FileStream("test.xml", FileMode.Create);
+            xs.Serialize(stream, User.Find<User>("1=1"));*/
+            /*XDocument doc = new XDocument(new XElement("MyTestRoot"));
+            doc.Root.Add(new XElement("Test1",
+                new XElement("Test11","test11"),
+                new XElement("Test12","test12"),
+                new XElement("Test13","test13")
+                ));
+            doc.Save(@"test.xml");*/            
+            /*TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>{
+                XDocument doc = new XDocument();
+                var tabel = ts.XML<TimeSheetInstance>();
+                ts.Content.ForEach(c => {
+                    var line = c.XML<TimeSheet_Content>();
+                    line.Add(c.Days.XMLSerialization("Days"));
+                    tabel.Add(line);
+                });
+                doc.Add(tabel);
+                doc.Save(string.Format("xml\\{0}_{1}", ts._GetDate.ToShortDateString(), ts.Department.Department_Number));
+            });
+            Environment.Exit(0);*/
         }
         void AdminAfterLoginCheck()
         {
-            Enabled = false;
+            WaitStart();
 
             StatusLeft = "Проверка корректности БД.";
 
@@ -128,7 +148,7 @@ where   personal.department_number=department.department_number
                     invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
                     "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);            
             Ready();
-            Enabled = true;
+            WaitStop();
         }
         Color GetColor(string key)
         {            
@@ -165,8 +185,11 @@ where   personal.department_number=department.department_number
                     if (lastOpened != 0 && !wantChangeLPU)
                     {                        
                         currentLPU = LPU.Get<LPU>(lastOpened);
-                        changeState(AppState.Auth);
-                        return;
+                        if (currentLPU != null)
+                        {
+                            changeState(AppState.Auth);
+                            return;
+                        }
                     }
                     msMainMenu.Hide();
                     HideAllShowThis(pLPUSelection);
@@ -185,6 +208,7 @@ where   personal.department_number=department.department_number
                     msMainMenu.Show();
                     break;                
                 case AppState.EditTimeSheet:                    
+                    WaitStart();
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);                    
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
@@ -193,6 +217,7 @@ where   personal.department_number=department.department_number
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     DrawTimeSheetContent();
                     HideAllShowThis(pWorkspace);
+                    WaitStop();                    
                     break;
             }
             Helper.Log("Смена состояния: {0}", newstate);
@@ -201,7 +226,8 @@ where   personal.department_number=department.department_number
         private void DrawTimeSheetContent()
         {
             dgTimeSheet.Rows.Clear();
-            var content = currentTimeSheet.HM<TimeSheet_Content>("Content", true);
+            //var content = currentTimeSheet.HM<TimeSheet_Content>("Content", true);
+            var content = currentTimeSheet.Content;
             content.Sort((x, y) => x.Personal.Priority == y.Personal.Priority ? x.Personal.LastName.CompareTo(y.Personal.LastName) : y.Personal.Priority.CompareTo(x.Personal.Priority));
             content.ForEach(row =>
             {   
@@ -216,14 +242,33 @@ where   personal.department_number=department.department_number
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();            
         }
-
+        Thread waitingThread;
+        void showwait()
+        {
+            WaitingForm form = new WaitingForm();
+            form.ShowDialog();
+        }
+        public void WaitStart()
+        {
+            Enabled = false;
+            WaitingForm form = new WaitingForm();
+            waitingThread = new Thread(showwait);
+            waitingThread.Start();
+        }
+        public void WaitStop()
+        {
+            if (waitingThread != null && waitingThread.IsAlive)
+                waitingThread.Abort();
+            Enabled = true;
+        }
         private void MainForm_Load(object sender, EventArgs e)
         {
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
-            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); Enabled = true; MessageBox.Show("Экспорт завершен", "Уведомление", MessageBoxButtons.OK, MessageBoxIcon.Information); })); };
+            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); WaitStop(); })); };
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); })); };
+            
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
             foreach (LPU lpu in LPUlist)            
@@ -236,7 +281,7 @@ where   personal.department_number=department.department_number
             currentUser = User.Get<User>(71);            
             changeState(AppState.Desktop);
             miAdminPanel_Click(this, e);
-            #endif
+            #endif            
         }
 
         private void btnLPUChoiceEnter_Click(object sender, EventArgs e)
@@ -380,7 +425,8 @@ where   personal.department_number=department.department_number
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    Enabled = false;
+                    //Enabled = false;
+                    WaitStart();
                     if (cell.Value == null)
                     {
                         var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
@@ -396,7 +442,8 @@ where   personal.department_number=department.department_number
                         existCell.Save();
                     }
                     DrawContent(content, contentPosition, contentOldCount);
-                    Enabled = true;
+                    //Enabled = true;
+                    WaitStop();
                 }
             }
         }
@@ -427,14 +474,16 @@ where   personal.department_number=department.department_number
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    Enabled = false;
+                    //Enabled = false;
+                    WaitStart();
                     int rowStart, rowCount;
                     var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
                     var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
                     content.Days.Add(newCell);
                     newCell.Save();                    
                     DrawContent(content, rowStart, rowCount);
-                    Enabled = true;
+                    //Enabled = true;
+                    WaitStop();
                 }
                 
             }
@@ -450,10 +499,12 @@ where   personal.department_number=department.department_number
                 var roweditor = new RowEditForm(this, content);
                 if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    Enabled = false;
+                    //Enabled = false;
+                    WaitStart();
                     roweditor.TSContent.Save();                    
                     DrawContent(content, rowStart, rowCount);
-                    Enabled = true;
+                    //Enabled = true;
+                    WaitStop();
                 }
             }
         }
@@ -463,8 +514,9 @@ where   personal.department_number=department.department_number
             var roweditor = new RowEditForm(this, null, true);
             if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                Enabled = false;
-                var newContent = roweditor.TSContent;
+                //Enabled = false;
+                WaitStart();
+                var newContent = roweditor.TSContent;                
                 var cal = newContent.Calendar.Months.Find(m => m.CMonth == currentTimeSheet.TS_Month);
                 double avg = 0;
                 if (cal != null)
@@ -494,10 +546,13 @@ where   personal.department_number=department.department_number
                         }
                         newContent.Days.Add(new TimeSheet_Day(date, worked, flag));
                     }
-                    newContent.Save();                    
+                    newContent.Save();
                 }
+                //currentTimeSheet.Content.Add(newContent);
+                //currentTimeSheet.Save();
                 DrawTimeSheetContent();
-                Enabled = true;
+                //Enabled = true;
+                WaitStop();
             }            
         }
 
@@ -507,7 +562,8 @@ where   personal.department_number=department.department_number
                 return;
             if (MessageBox.Show(string.Format("Вы действительно хотите удалить выделенн{0} запис{1}?", dgTimeSheet.SelectedCells.Count > 1 ? "ые" : "ую", dgTimeSheet.SelectedCells.Count > 1 ? "и" : "ь"), "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
                 return;
-            Enabled = false;
+            //Enabled = false;
+            WaitStart();
             var firstCell = dgTimeSheet.SelectedCells[0];
             int rowStart, rowCount;
             var content = GetContentForDayByCell(firstCell, out rowStart, out rowCount);
@@ -520,7 +576,8 @@ where   personal.department_number=department.department_number
                 }
             }
             DrawContent(content, rowStart, rowCount);
-            Enabled = true;
+            //Enabled = true;
+            WaitStop();
         }
 
         private void удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click(object sender, EventArgs e)
@@ -548,7 +605,8 @@ where   personal.department_number=department.department_number
                 FlagsForm ff = new FlagsForm(this, firstCell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    Enabled = false;
+                    //Enabled = false;
+                    WaitStart();
                     foreach (DataGridViewCell cell in dgTimeSheet.SelectedCells)
                     {
                         if (cell.OwningColumn.Tag == null || cell.OwningColumn.Tag.GetType() != typeof(DateTime))
@@ -569,7 +627,8 @@ where   personal.department_number=department.department_number
                         }                        
                     }
                     DrawContent(content, contentPosition, contentOldCount);
-                    Enabled = true;
+                    //Enabled = true;
+                    WaitStop();
                 }
             }
         }
@@ -590,7 +649,7 @@ where   personal.department_number=department.department_number
                     MessageBox.Show("Файл шаблона temp.xlsx не найден!", "Ошибка экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                Enabled = false;
+                WaitStart();
                 try
                 {
                     Thread exprt = new Thread(a => ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx", dlgSaveFile.FileName));
@@ -602,11 +661,11 @@ where   personal.department_number=department.department_number
                 }
                 finally
                 {
-                    Enabled = true;
+                    WaitStop();
                 }                
             }
         }
-
+        
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             #if !DEBUG

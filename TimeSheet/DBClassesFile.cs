@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows.Forms;
 using System.Drawing;
 using SwarthyComponents.FireBird;
+using System.Xml.Serialization;
+using System.Xml.Linq;
 
 namespace TimeSheetManger
 {
@@ -25,7 +27,7 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return Login;
-        }
+        }        
         public string _LoginAndProfile
         {
             get
@@ -872,6 +874,17 @@ where   personal.department_number=department.department_number
             }
         }
         #endregion
+        public XElement XMLSerialize()
+        {
+            var tabel = XML<TimeSheetInstance>();
+            Content.ForEach(c =>
+            {
+                var line = c.XML<TimeSheet_Content>();
+                line.Add(c.Days.XMLSerialization("Days"));
+                tabel.Add(line);
+            });
+            return tabel;
+        }
         public TimeSheetInstance()
             : base(typeof(TimeSheetInstance))
         {
@@ -976,7 +989,7 @@ where   personal.department_number=department.department_number
             {
                 var row = new DataGridViewRow();
                 row.CreateCells(dg);
-                row.SetValues(this, Personal.Table_Number, Post, Rate);
+                row.SetValues(this, Personal.Table_Number, Post, Rate);                
                 return new DataGridViewRow[] { row };
             }
             var groups = Days.GroupBy(d => d.Item_Date);

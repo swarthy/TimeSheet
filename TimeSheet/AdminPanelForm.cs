@@ -10,6 +10,7 @@ using SwarthyComponents;
 using System.Globalization;
 using SwarthyComponents.WinForms;
 using SwarthyComponents.FireBird;
+using System.Xml.Linq;
 
 namespace TimeSheetManger
 {
@@ -50,6 +51,7 @@ namespace TimeSheetManger
                     cbCatalogs.Items.Add(item);
                 gbColors.Show();
                 btnImport.Show();
+                btnExportTimeSheetXML.Show();
             }
             else
                 if (mainform.currentUser._IS_MODERATOR)
@@ -483,6 +485,26 @@ namespace TimeSheetManger
                 return;            
             ImportForm form = new ImportForm(mainForm, cbCatalogs.Text);            
             form.ShowDialog();
+        }
+
+        private void btnExportTimeSheetXML_Click(object sender, EventArgs e)
+        {
+            mainForm.WaitStart();
+            Helper.DirectoryCreateIfNotExists("xml");
+            TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>
+            {
+                XDocument doc = new XDocument();
+                var tabel = ts.XML<TimeSheetInstance>();
+                ts.Content.ForEach(c =>
+                {
+                    var line = c.XML<TimeSheet_Content>();
+                    line.Add(c.Days.XMLSerialization("Days"));
+                    tabel.Add(line);
+                });
+                doc.Add(tabel);
+                doc.Save(string.Format("xml\\{0}_{1}_{2}.xml", ts._GetDate.ToShortDateString(), ts.Department.Department_Number, ts.Department.Name));
+            });
+            mainForm.WaitStop();
         }
     }
 }

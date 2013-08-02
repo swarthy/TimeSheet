@@ -102,6 +102,13 @@ namespace TimeSheetManger.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Download_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Download_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Edit_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Edit_16x16", resourceCulture);
@@ -151,9 +158,16 @@ namespace TimeSheetManger.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Settings_48x48 {
+            get {
+                object obj = ResourceManager.GetObject("Settings_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Text_Document_16x16 {
             get {
-                object obj = ResourceManager.GetObject("Text Document_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("Text_Document_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -174,7 +188,7 @@ namespace TimeSheetManger.Properties {
         
         internal static System.Drawing.Bitmap XLSX_16x16 {
             get {
-                object obj = ResourceManager.GetObject("XLSX-16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("XLSX_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

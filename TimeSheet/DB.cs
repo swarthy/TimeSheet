@@ -7,6 +7,7 @@ using System.Text;
 using FirebirdSql.Data.FirebirdClient;
 using System.Windows.Forms;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace SwarthyComponents.FireBird
 {
@@ -162,11 +163,15 @@ namespace SwarthyComponents.FireBird
     public class DBList<T> : List<T> where T : Domain, new()
     {
         public bool DeleteFromServerOnRemove = false;
-        public DBList(string FieldSource = "", string FieldDestination = "ID")
+        public DBList(string FieldSource = "", string FieldDestination = "ID", EventHandler<DBEventArgs<T>> onAdd = null, EventHandler<DBEventArgs<T>> onRemove = null)
             : base()
         {            
             this.FieldSource = FieldSource;
             this.FieldDestination = FieldDestination;
+            if (onAdd!=null)
+                this.OnAdd += onAdd;
+            if (onRemove!=null)
+                this.OnRemove += onRemove;
         }
         new public T this[int i]
         {
@@ -181,6 +186,17 @@ namespace SwarthyComponents.FireBird
                     OnChange(this, new DBEventArgs<T>(base[i], FieldSource, FieldDestination));
             }
         }        
+        public XDocument XMLSerializationDocument(string DocumentRoot)
+        {
+            return new XDocument(XMLSerialization(DocumentRoot));            
+        }
+        public XElement XMLSerialization(string RootName)
+        {
+            var root = new XElement(RootName);
+            foreach (T item in this)
+                root.Add(item.XML<T>());
+            return root;
+        }
         public DBList<T> Except(DBList<T> ex)
         {
             DBList<T> res = new DBList<T>();            
@@ -467,8 +483,10 @@ namespace SwarthyComponents.FireBird
                 if (HMfetched[key] || (Fields.ContainsKey(key) && Fields[key] != null))
                     return Fields[key] as DBList<T>;
                 else
-                    //throw new Exception("Can't get \"has many\" field. \"this\" is not saved or static \"has_many\" field is not defined correctly");
-                    return new DBList<T>();
+                {
+                    Fields[key] = new DBList<T>(hasmany[key].Field_Source, hasmany[key].Field_Destination, new EventHandler<DBEventArgs<T>>(ListOnAdd), new EventHandler<DBEventArgs<T>>(ListOnRemove));
+                    return Fields[key] as DBList<T>;
+                }
         }
         public static T FindOrCreate<T>(object restrictions) where T : Domain, new()
         {
@@ -747,7 +765,16 @@ namespace SwarthyComponents.FireBird
             }
             _Changed = false;
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as Domain).Save(); });
-            GetHasMany(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k)) (Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save()); });
+            GetHasMany(GetType()).Keys.ToList().ForEach(k =>
+            {
+                if (Fields.ContainsKey(k))
+                {                    
+                    //(Fields[k] as IEnumerable<Domain>).ToList().ForEach(item => item.Save());
+                    var subs = Fields[k] as IEnumerable<Domain>;
+                    foreach (var item in subs)
+                        item.Save();                    
+                }
+            });
             return true;
         }
         /// <summary>
@@ -871,15 +898,36 @@ namespace SwarthyComponents.FireBird
             FbCommand command = new FbCommand(string.Format("select count(*) from {0} where {1};", tableName, where_str), DB.Connection);
             return (int)command.ExecuteScalar();            
         }
+        /// <summary>
+        /// Обновление данных с сервера
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
         public void Fetch<T>() where T: Domain, new()
         {
             if (Fields["ID"] != null)            
                 Fields = Domain.F_All<T>(string.Format("ID = {0}", Fields["ID"]), true, GetType())[0].Fields;            
         }
+        /// <summary>
+        /// Парсинг из строки
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public virtual bool TryParseFromString(string str)
         {
             return false;
         }
+
+        public XElement XML<T>() where T: Domain, new()
+        {
+            if (Fields["ID"] == null)
+                return null;
+            Type type = typeof(T);
+            List<string> fieldNames = GetFieldNames(type);
+            XElement subRoot = new XElement(typeof(T).Name);
+            fieldNames.ForEach(fn => subRoot.Add(new XElement(fn, Fields[fn])));
+            return subRoot;
+        }
+
         public void ListOnAdd<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldSource] = this[args.GetFieldDestination];

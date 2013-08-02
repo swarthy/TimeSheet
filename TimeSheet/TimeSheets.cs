@@ -50,6 +50,7 @@ namespace TimeSheetManger
                 createForm.TimeSheetIns.Save();
                 grid.Rows.Add(createForm.TimeSheetIns.Department.Name, createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy"), createForm.TimeSheetIns.User.Profile, createForm.TimeSheetIns.ID);
             }
+            createForm.Dispose();
         }
 
         private void btnDelete_Click(object sender, EventArgs e)

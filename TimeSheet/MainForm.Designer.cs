@@ -81,6 +81,7 @@
             this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.pDesktop = new System.Windows.Forms.Panel();
             this.deskbtnTimeSheets = new System.Windows.Forms.Button();
+            this.ttsVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
@@ -268,7 +269,7 @@
             // btnExportToExcel
             // 
             this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExportToExcel.Image = global::TimeSheetManger.Properties.Resources.XLSX_16x16;
+            this.btnExportToExcel.Image = ((System.Drawing.Image)(resources.GetObject("btnExportToExcel.Image")));
             this.btnExportToExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnExportToExcel.Location = new System.Drawing.Point(153, 262);
             this.btnExportToExcel.Name = "btnExportToExcel";
@@ -455,7 +456,8 @@
             this.tsslStatusLeft,
             this.tspbProgress,
             this.tsslSpace,
-            this.tsslStatusRight});
+            this.tsslStatusRight,
+            this.ttsVersion});
             this.statusBar.Location = new System.Drawing.Point(0, 415);
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(694, 22);
@@ -477,7 +479,7 @@
             // tsslSpace
             // 
             this.tsslSpace.Name = "tsslSpace";
-            this.tsslSpace.Size = new System.Drawing.Size(634, 17);
+            this.tsslSpace.Size = new System.Drawing.Size(588, 17);
             this.tsslSpace.Spring = true;
             // 
             // tsslStatusRight
@@ -569,7 +571,7 @@
             this.pDesktop.Controls.Add(this.deskbtnTimeSheets);
             this.pDesktop.Location = new System.Drawing.Point(12, 27);
             this.pDesktop.Name = "pDesktop";
-            this.pDesktop.Size = new System.Drawing.Size(670, 371);
+            this.pDesktop.Size = new System.Drawing.Size(670, 380);
             this.pDesktop.TabIndex = 5;
             // 
             // deskbtnTimeSheets
@@ -585,14 +587,20 @@
             this.deskbtnTimeSheets.UseVisualStyleBackColor = true;
             this.deskbtnTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
             // 
+            // ttsVersion
+            // 
+            this.ttsVersion.Name = "ttsVersion";
+            this.ttsVersion.Size = new System.Drawing.Size(46, 17);
+            this.ttsVersion.Text = "Version";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(694, 437);
+            this.Controls.Add(this.pWorkspace);
             this.Controls.Add(this.pDesktop);
             this.Controls.Add(this.statusBar);
-            this.Controls.Add(this.pWorkspace);
             this.Controls.Add(this.msMainMenu);
             this.Controls.Add(this.pLPUSelection);
             this.Controls.Add(this.pAuth);
@@ -679,6 +687,7 @@
         private System.Windows.Forms.Button deskbtnTimeSheets;
         private System.Windows.Forms.ToolStripMenuItem miCurrentUser;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripStatusLabel ttsVersion;
 
 
 

@@ -6,7 +6,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2D7F60B4-6296-4DC0-9CBC-D0A75B02217D}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TimeSheetManger</RootNamespace>
     <AssemblyName>Tabel</AssemblyName>
@@ -156,6 +156,12 @@
     <Compile Include="TimeSheets.Designer.cs">
       <DependentUpon>TimeSheets.cs</DependentUpon>
     </Compile>
+    <Compile Include="WaitingForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="WaitingForm.Designer.cs">
+      <DependentUpon>WaitingForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -199,9 +205,16 @@
     <EmbeddedResource Include="TimeSheets.resx">
       <DependentUpon>TimeSheets.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WaitingForm.resx">
+      <DependentUpon>WaitingForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+    <None Include="Resources\Download_16x16.png" />
+    <None Include="Resources\ajax-loader.gif" />
+    <None Include="Resources\Settings_48x48.png" />
+    <None Include="Resources\Settings_256x256.png" />
     <None Include="Resources\Text Document_16x16.png" />
     <None Include="Resources\Upload_16x16.png" />
     <None Include="Resources\Rename_16x16.png" />
