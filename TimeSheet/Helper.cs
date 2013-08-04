@@ -8,6 +8,8 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Diagnostics;
 using System.IO;
+using System.Windows.Forms;
+using System.Threading;
 
 namespace TimeSheetManger
 {
@@ -97,8 +99,8 @@ namespace TimeSheetManger
                 var updates = Get("server", "updatesPath");
                 var dir = string.IsNullOrEmpty(updates) ? @"TabelUpdates\" : updates;
                 if (dir.Last() != '\\')
-                    dir += "\\";
-                return Path.Combine(string.Format("\\\\{0}", ServerIP), dir);
+                    dir += @"\";
+                return Path.Combine(string.Format(@"\\{0}", ServerIP), dir);
             }
         }
         public static string GetFileVersion(string filePath)
@@ -111,4 +113,82 @@ namespace TimeSheetManger
                 Directory.CreateDirectory(path);
         }
     }
+    public class WaitScreen
+    {        
+        private object lockObject = new object();        
+        private Form waitScreen;
+        public WaitScreen(bool show = false)
+        {
+            if (show)
+                Show();
+        }
+
+                
+        public void Close()
+        {
+            lock (this.lockObject)
+            {
+                if (this.IsShowing)
+                {
+                    try
+                    {
+                        this.waitScreen.Invoke(new MethodInvoker(this.CloseWindow));
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+                    this.waitScreen = null;
+                }
+            }
+        }
+
+        private void CloseWindow()
+        {
+            this.waitScreen.Dispose();
+        }
+
+        public void Show()
+        {
+            if (this.IsShowing)            
+                this.Close();                        
+            using (ManualResetEvent event2 = new ManualResetEvent(false))
+            {
+                Thread thread = new Thread(new ParameterizedThreadStart(this.ThreadStart));
+                thread.SetApartmentState(ApartmentState.STA);
+                thread.Start(event2);
+                event2.WaitOne();
+            }
+        }
+
+        private void ThreadStart(object parameter)
+        {
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
+            ManualResetEvent event2 = (ManualResetEvent)parameter;
+            Application.EnableVisualStyles();
+            this.waitScreen = new WaitingForm();
+            this.waitScreen.Tag = event2;            
+            this.waitScreen.ControlBox = false;            
+            this.waitScreen.Shown += new EventHandler(this.WaitScreenShown);                        
+            Application.Run(this.waitScreen);
+            Application.ExitThread();
+        }
+
+        private void WaitScreenShown(object sender, EventArgs e)
+        {
+            Form form = (Form)sender;
+            form.Shown -= new EventHandler(this.WaitScreenShown);
+            ManualResetEvent tag = (ManualResetEvent)form.Tag;
+            form.Tag = null;
+            tag.Set();
+        }
+                
+        public bool IsShowing
+        {
+            get
+            {
+                return (this.waitScreen != null);
+            }
+        }
+    }
+
 }

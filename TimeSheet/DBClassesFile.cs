@@ -11,17 +11,39 @@ using System.Xml.Linq;
 namespace TimeSheetManger
 {
     //Все классы должны быть инициализированны при создании формы (см MainForm.MainForm())
+    /// <summary>
+    /// Класс пользователя системы
+    /// </summary>
     public class User : Domain
     {
+        /// <summary>
+        /// Имя таблицы
+        /// </summary>
         new public static string tableName = "USERS";
+        /// <summary>
+        /// Режим виртуального удаления
+        /// </summary>
         new public static bool virtualDeletion = true;
+        /// <summary>
+        /// Список полей (автоматически заполняется из на основе свойств класса, должен быть переопределен в каждом классе)
+        /// </summary>
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
+        /// <summary>
+        /// Отношения 1:M
+        /// </summary>
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
-            {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},            
+            //Список сотрудников, которых ведет табельщик
+            {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},
+            //Табели
             {"TimeSheets", new Link("USER_ID",typeof(TimeSheetInstance))}
         };
+        /// <summary>
+        /// Отношения 1:1 - ссылка у привязываемого объекта
+        /// </summary>
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Ссылка на запись сотрудника
             { "PersonalProfile", new Link("PERSONAL_TN", typeof(Personal), "Table_Number") },
+            //ЛПУ
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
         };        
         public override string ToString()
@@ -138,6 +160,9 @@ namespace TimeSheetManger
             }
         }*/
         #endregion
+        /// <summary>
+        /// Констуркторы
+        /// </summary>
         public User()
             : base(typeof(User))
         {
@@ -152,7 +177,10 @@ namespace TimeSheetManger
             //Pass = Helper.getMD5(password);
             Pass = password;
         }
-    }    
+    }
+    /// <summary>
+    /// Отделения
+    /// </summary>
     public class Department : Domain
     {
         new public static string tableName = "DEPARTMENT";
@@ -160,12 +188,16 @@ namespace TimeSheetManger
         new public static string OrderBy = "DEPARTMENT_MANAGER_TN";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
-        {            
+        {
+            //Персонал отделения
             {"PersonalOfDepartment", new Link("DEPARTMENT_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")},
+            //Табели
             {"TimeSheets", new Link("DEPARTMENT_NUMBER",typeof(TimeSheetInstance),"DEPARTMENT_NUMBER")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Заведующий отделения
             {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
+            //ЛПУ
             {"LPU",new Link("LPU_ID",typeof(LPU))}
         };        
         public override string ToString()
@@ -264,14 +296,23 @@ namespace TimeSheetManger
             Department_Number = department_number;
         }
     }
+    /// <summary>
+    /// Персонал
+    /// </summary>
     public class Personal : Domain
     {
         new public static string tableName = "PERSONAL";
+        /// <summary>
+        /// Порядок сортировки
+        /// </summary>
         new public static string OrderBy = "LastName";
         new public static List<string> FieldNames = new List<string>();
-        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Должность
             {"Post", new Link("POST_CODE",typeof(Post), "CODE") },
+            //Отделение
             {"Department", new Link("DEPARTMENT_NUMBER",typeof(Department),"DEPARTMENT_NUMBER")},
+            //Табельщик, ведующий сотрудника
             {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
         };
         public override string ToString()
@@ -442,18 +483,30 @@ where   personal.department_number=department.department_number
             Post = post;
         }
     }
+    /// <summary>
+    /// ЛПУ
+    /// </summary>
     public class LPU : Domain
     {
         new public static string tableName = "LPU";
+        /// <summary>
+        /// Виртуальное удаление
+        /// </summary>
         new public static bool virtualDeletion = true;
+        /// <summary>
+        /// Виртуальное удаление записей связанных отношенями 1:M
+        /// </summary>
         new public static bool virtualSubDeletion = true;
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
+            //Отделения
             {"Departments", new Link("LPU_ID", typeof(Department))},
+            //Пользователи
             {"Users", new Link("LPU_ID", typeof(User))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Главный врач
             {"MainDoc", new Link("MAINDOC_TN",typeof(Personal),"Table_Number")}
         };        
         public override string ToString()
@@ -508,6 +561,9 @@ where   personal.department_number=department.department_number
             Name = name;
         }
     }
+    /// <summary>
+    /// Показатели (Я, В, и т.д.)
+    /// </summary>
     public class Flag : Domain
     {
         new public static string tableName = "FLAGS";
@@ -564,6 +620,9 @@ where   personal.department_number=department.department_number
             Ru_Name = ru_name;
         }
     }
+    /// <summary>
+    /// Должности
+    /// </summary>
     public class Post : Domain
     {
         new public static string tableName = "POSTS";
@@ -624,15 +683,20 @@ where   personal.department_number=department.department_number
             Name = name;
         }
     }
+    /// <summary>
+    /// Производственный календарь
+    /// </summary>
     public class Calendar : Domain
     {
         new public static string tableName = "CALENDAR";
         new public static string OrderBy = "CYear";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
+            //Содержимое календаря (месяцы)
             {"Content", new Link("CALENDAR_ID",typeof(Calendar_Content))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Имя
             {"Name", new Link("NAME_ID",typeof(Calendar_Name))}
         };        
         public override string ToString()
@@ -687,6 +751,9 @@ where   personal.department_number=department.department_number
             CYear = year;            
         }
     }
+    /// <summary>
+    /// Содержимое календаря (месяц)
+    /// </summary>
     public class Calendar_Content : Domain
     {
         new public static string tableName = "CALENDAR_CONTENT";
@@ -758,6 +825,9 @@ where   personal.department_number=department.department_number
             Days = days;
         }
     }
+    /// <summary>
+    /// Имя календаря
+    /// </summary>
     public class Calendar_Name : Domain
     {
         new public static string tableName = "CALENDAR_NAMES";
@@ -799,16 +869,22 @@ where   personal.department_number=department.department_number
             Name = name;
         }
     }
+    /// <summary>
+    /// Табель
+    /// </summary>
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
         new public static string OrderBy = "User_ID, TS_YEAR, TS_MONTH, DEPARTMENT_NUMBER";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
+            //Содержимое
             {"Content", new Link("TimeSheet_ID",typeof(TimeSheet_Content))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() { 
+            //Табельщик
             {"User",new Link("User_ID",typeof(User))},            
+            //Отделение
             {"Department",new Link("DEPARTMENT_NUMBER",typeof(Department), "DEPARTMENT_NUMBER")},
         };
         public override string ToString()
@@ -906,6 +982,9 @@ where   personal.department_number=department.department_number
             TS_Month = month;
         }
     }
+    /// <summary>
+    /// Содержимое табеля
+    /// </summary>
     public class TimeSheet_Content : Domain
     {
         new public static string tableName = "TIMESHEET_CONTENT";
@@ -913,12 +992,17 @@ where   personal.department_number=department.department_number
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
+            //Дни в записи сотрудника
             {"Days", new Link("TimeSheet_Content_ID", typeof(TimeSheet_Day))}            
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
+            //Сотрудник
             {"Personal", new Link("Personal_TN",typeof(Personal), "TABLE_NUMBER")},
+            //Производственный календарь
             {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
+            //Табель
             {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))},
+            //Должность
             {"Post", new Link("POST_CODE",typeof(Post), "CODE") }            
         };
         public override string ToString()
@@ -1097,13 +1181,18 @@ where   personal.department_number=department.department_number
             Rate = rate;
         }
     }
+    /// <summary>
+    /// День табеля
+    /// </summary>
     public class TimeSheet_Day : Domain
     {
         new public static string tableName = "TIMESHEET_DAYS";
         new public static string OrderBy = "Item_Date";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>(){
+            //Контент табеля (привязка к строке)
             {"TimeSheetContent", new Link("TimeSheet_Content_ID",typeof(TimeSheet_Content))},
+            //Показатель
             {"Flag", new Link("Flag_ID",typeof(Flag))},
         };
         public override string ToString()
@@ -1176,6 +1265,9 @@ where   personal.department_number=department.department_number
             Flag = flag;
         }
     }
+    /// <summary>
+    /// Специальные дни (выходные, сокращенные, праздники)
+    /// </summary>
     public class SpecialDay : Domain
     {
         new public static string tableName = "SPECIALDAYS";
@@ -1223,6 +1315,9 @@ where   personal.department_number=department.department_number
             Spec_Date = date;
         }
     }
+    /// <summary>
+    /// Глобальные настройки системы
+    /// </summary>
     public class DBSettings : Domain
     {
         new public static string tableName = "SETTINGS";

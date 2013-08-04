@@ -179,6 +179,13 @@ namespace TimeSheetManger.Properties {
             }
         }
         
+        internal static byte[] Updater {
+            get {
+                object obj = ResourceManager.GetObject("Updater", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Upload_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Upload_16x16", resourceCulture);

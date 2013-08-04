@@ -63,12 +63,10 @@ namespace SwarthyComponents.FireBird
                 if (connection.State != System.Data.ConnectionState.Open)
                     try
                     {
-                        connection.Open();
-                        DBHelper.Log("Подключение к БД...");
+                        connection.Open();                        
                     }
                     catch
-                    {
-                        DBHelper.Log("Создаю новый экземпляр подключения");
+                    {                        
                         connection = GetNewConnection;
                         connection.Open();
                     }
@@ -97,8 +95,7 @@ namespace SwarthyComponents.FireBird
         }        
         public static object Query(string query)
         {
-            FbCommand command = new FbCommand(query, DB.Connection);
-            DBHelper.Log("Query запрос к БД: {0}", query);
+            FbCommand command = new FbCommand(query, DB.Connection);            
             return command.ExecuteScalar();
         }
     }
@@ -163,11 +160,16 @@ namespace SwarthyComponents.FireBird
     public class DBList<T> : List<T> where T : Domain, new()
     {
         public bool DeleteFromServerOnRemove = false;
-        public DBList(string FieldSource = "", string FieldDestination = "ID", EventHandler<DBEventArgs<T>> onAdd = null, EventHandler<DBEventArgs<T>> onRemove = null)
+        public string FieldSource = "";
+        public string FieldDestination = "";
+        public event EventHandler<DBEventArgs<T>> OnAdd, OnRemove, OnChange;
+        public Domain Owner;
+        public DBList(Domain owner = null, string FieldSource = "", string FieldDestination = "ID", EventHandler<DBEventArgs<T>> onAdd = null, EventHandler<DBEventArgs<T>> onRemove = null)
             : base()
         {            
             this.FieldSource = FieldSource;
             this.FieldDestination = FieldDestination;
+            this.Owner = owner;
             if (onAdd!=null)
                 this.OnAdd += onAdd;
             if (onRemove!=null)
@@ -228,10 +230,7 @@ namespace SwarthyComponents.FireBird
         new public void RemoveAt(int i)
         {
             Remove(this[i]);
-        }
-        public string FieldSource = "";
-        public string FieldDestination = "";
-        public event EventHandler<DBEventArgs<T>> OnAdd, OnRemove, OnChange;
+        }        
         new public void Add(T item)
         {
             if (OnAdd != null)
@@ -255,7 +254,7 @@ namespace SwarthyComponents.FireBird
             base.Remove(item);
             if (delete_removable_object || DeleteFromServerOnRemove)
                 item.Delete();
-        }
+        }        
     }
     public struct Link
     {
@@ -305,9 +304,9 @@ namespace SwarthyComponents.FireBird
         /// <summary>
         /// Загружена ли модель из БД?
         /// </summary>
-        protected Dictionary<string, bool> BTfetched = new Dictionary<string, bool>();
-        protected Dictionary<string, bool> H1fetched = new Dictionary<string, bool>();
-        protected Dictionary<string, bool> HMfetched = new Dictionary<string, bool>();        
+        //protected Dictionary<string, bool> BTfetched = new Dictionary<string, bool>();
+        //protected Dictionary<string, bool> H1fetched = new Dictionary<string, bool>();
+        //protected Dictionary<string, bool> HMfetched = new Dictionary<string, bool>();        
         /// <summary>
         /// Имя таблицы
         /// </summary>
@@ -343,8 +342,8 @@ namespace SwarthyComponents.FireBird
             {
                 Fields[key] = value;
                 _Changed = true;
-                if (value!=null && value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
-                    BTfetched[key] = true;                    
+                //if (value!=null && value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    //BTfetched[key] = true;                    
             }
         }
         public T BT<T>(string key, bool getFromServer = false) where T : Domain, new()
@@ -399,9 +398,9 @@ namespace SwarthyComponents.FireBird
         {
             List<string> field_names = GetFieldNames(type);
             field_names.ForEach(fn => Fields[fn] = null);//инициализация ключей в словаре
-            GetBelongsTo(type).Keys.ToList().ForEach(k => {  BTfetched[k] = false; });
-            GetHasMany(type).Keys.ToList().ForEach(k => {  HMfetched[k] = false; });
-            GetHasOne(type).Keys.ToList().ForEach(k => { H1fetched[k] = false; });
+            //GetBelongsTo(type).Keys.ToList().ForEach(k => {  BTfetched[k] = false; });
+            //GetHasMany(type).Keys.ToList().ForEach(k => {  HMfetched[k] = false; });
+            //GetHasOne(type).Keys.ToList().ForEach(k => { H1fetched[k] = false; });
         }        
         /// <summary>
         /// Инициализация класса перед началом работы. Заполнение списка, содержащего имена полей в БД
@@ -423,68 +422,64 @@ namespace SwarthyComponents.FireBird
             Dictionary<string, Link> belongsto = GetBelongsTo(GetType());
             if (typeof(T) != belongsto[key].Type)
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
-            if (belongsto.Count > 0 && (!BTfetched[key] || refetch))
+            if (!Fields.ContainsKey(key) || refetch)
             {
-                if (this[belongsto[key].Field_Source]==null || this[belongsto[key].Field_Source].ToString() == "")
+                if (this[belongsto[key].Field_Source]==null)
                     return null;
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", belongsto[key].Field_Destination, this[belongsto[key].Field_Source]), true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
-                Fields[key] = temp;
-                BTfetched[key] = true;
+                Fields[key] = temp;                
                 return temp;
             }
-            else
-                if (BTfetched[key])
-                    return Fields[key] as T;
-                else
-                    //throw new Exception("Can't get \"belongs to\" field");
-                    return null;
+            else                
+                return Fields[key] as T;//если поле не пусто - значит либо уже загружено либо присвоено. в обоих случаях загрузка с сервера не нужна (а если нужна - вызывать BT<>(... ,refetch = true))                
         }
         protected T FetchHasOne<T>(string key, bool refetch = false) where T : Domain, new()
         {
             Dictionary<string, Link> hasOne = GetHasOne(GetType());
             if (typeof(T) != hasOne[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if (hasOne.Count > 0 && Fields[hasOne[key].Field_Destination] != null && (!H1fetched[key] || refetch))
+            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasOne[key].Field_Destination] != null)
             {
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasOne[key].Field_Source, Fields[hasOne[key].Field_Destination]), true);
-                T result;
                 if (temp.Count == 0)
+                {
+                    Fields[key] = null;
                     return null;
+                }
                 else
-                    result = temp[0];
-                H1fetched[key] = true;
-                Fields[key] = result;
-                return result;
+                {
+                    Fields[key] = temp[0];
+                    return temp[0];
+                }                 
             }
-            else
-                if (H1fetched[key] || (Fields.ContainsKey(key) && Fields[key] != null))
-                    return Fields[key] as T;
-                else
-                    //throw new Exception("Can't get \"has one\" field. \"this\" is not saved or static \"has_one\" field is not defined correctly");
-                    return null;
+            else                
+                return Fields[key] as T;
         }
         protected DBList<T> FetchHasMany<T>(string key, bool refetch = false) where T : Domain, new()
         {
             Dictionary<string, Link> hasmany = GetHasMany(GetType());
             if (typeof(T) != hasmany[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if (hasmany.Count > 0 && Fields[hasmany[key].Field_Destination] != null && (!HMfetched[key] || refetch))
+            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasmany[key].Field_Destination] != null)
             {
-                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasmany[key].Field_Source, Fields[hasmany[key].Field_Destination]));
-                HMfetched[key] = true;
+                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasmany[key].Field_Source, Fields[hasmany[key].Field_Destination]));                
                 temp.FieldSource = hasmany[key].Field_Source;
-                temp.FieldDestination = hasmany[key].Field_Destination;
+                temp.FieldDestination = hasmany[key].Field_Destination;                
+                var btRelation = GetBelongsTo(typeof(T)).Where(kvp => kvp.Value.Field_Destination.ToLower() == hasmany[key].Field_Destination.ToLower() && kvp.Value.Field_Source.ToLower() == hasmany[key].Field_Source.ToLower() && kvp.Value.Type == GetType());
+                if (btRelation.Count() > 0)                
+                    foreach (var item in temp)
+                        item[btRelation.First().Key] = this;                                    
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
                 Fields[key] = temp;
                 return temp;
             }
             else
-                if (HMfetched[key] || (Fields.ContainsKey(key) && Fields[key] != null))
+                if (Fields[key] != null)
                     return Fields[key] as DBList<T>;
                 else
                 {
-                    Fields[key] = new DBList<T>(hasmany[key].Field_Source, hasmany[key].Field_Destination, new EventHandler<DBEventArgs<T>>(ListOnAdd), new EventHandler<DBEventArgs<T>>(ListOnRemove));
+                    Fields[key] = new DBList<T>(this, hasmany[key].Field_Source, hasmany[key].Field_Destination, new EventHandler<DBEventArgs<T>>(ListOnAdd), new EventHandler<DBEventArgs<T>>(ListOnRemove));
                     return Fields[key] as DBList<T>;
                 }
         }

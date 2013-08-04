@@ -125,31 +125,32 @@ namespace TimeSheetManger
                     if (Helper.GetFileVersion(serverExe) != Helper.GetFileVersion(Application.ExecutablePath))
                     {
                         //Обновляем
-                        if (File.Exists("updater.exe"))
+                        if (!File.Exists("Updater.exe"))
                         {
-                            ProcessStartInfo si = new ProcessStartInfo("cmd", "/C ping 127.0.0.1 -n 2 > nul && updater.exe " + updPath);
-                            si.CreateNoWindow = false;
-                            si.WindowStyle = ProcessWindowStyle.Hidden;
-                            Process.Start(si);
-                            Environment.Exit(0);
+                            using (FileStream exeFile = new FileStream("Updater.exe", FileMode.Create))
+                                exeFile.Write(Properties.Resources.Updater, 0, Properties.Resources.Updater.Length);
                         }
+                        ProcessStartInfo si = new ProcessStartInfo("cmd", string.Format("/C ping 127.0.0.1 -n 2 > nul && updater.exe {0} {1}", updPath, Path.GetFileName(Application.ExecutablePath)));
+                        si.CreateNoWindow = false;
+                        si.UseShellExecute = false;
+                        si.WindowStyle = ProcessWindowStyle.Hidden;
+                        Process.Start(si);
+                        Environment.Exit(0);
                     }
                 }
-            }                        
+            }
         }
         void AdminAfterLoginCheck()
         {
             WaitScreen waitScreen = new WaitScreen(true);
-
             StatusLeft = "Проверка корректности БД.";
-
             if (currentLPU.MainDoc==null)
                 MessageBox.Show("У данного ЛПУ не указан главный врач.\r\nВозможно нарушение отчетности.", "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
             var invalidDepartments = currentLPU.Departments.FindAll(d => d.DepartmentManager == null);
             if (invalidDepartments.Count != 0)
                 MessageBox.Show("У следующих отделений не указан заведующий: " +
                     invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
-                    "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);            
+                    "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
             Ready();
             waitScreen.Close();
         }

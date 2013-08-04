@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Diagnostics;
 
 namespace Updater
 {
@@ -15,8 +16,11 @@ namespace Updater
             Console.Title = "Updater";            
             string updaterDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);            
             string UpdatesPath = args.Length > 0 ? args[0] : defaultUpdatesPath;
+            List<string> executeList = new List<string>();
+            for (int i = 1; i < args.Length; i++)
+                executeList.Add(args[i]);
             if (UpdatesPath.Last() != '\\')
-                UpdatesPath += "\\";            
+                UpdatesPath += @"\";            
             Console.WriteLine("Путь обновлений: {0}", UpdatesPath);
             if (!Directory.Exists(UpdatesPath))
             {
@@ -29,16 +33,26 @@ namespace Updater
                 return;
             }
             var filelist = File.ReadAllLines(Path.Combine(UpdatesPath, updateListName));
-            Console.WriteLine("Начато обновление...");
-            int i=0;
+            Console.WriteLine("Начато обновление...");            
+            int count=0;
             foreach (var file in filelist)
             {
-                i++;
+                count++;
                 Console.Clear();
-                Console.WriteLine("Начато обновление... {0}%", Math.Round((double)i * 100 / (double)filelist.Length, 2));
-                FileCopy(Path.Combine(UpdatesPath, file), Path.Combine(updaterDir, file), true);                
+                Console.WriteLine("Начато обновление... {0}%", Math.Round((double)count * 100 / (double)filelist.Length, 2));
+                try
+                {
+                    FileCopy(Path.Combine(UpdatesPath, file), Path.Combine(updaterDir, file), true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Исключение: "+ex.Message);
+                }
             }
             Console.WriteLine("Обновление завершено.");
+            foreach (var exe in executeList)
+                if (File.Exists(exe))
+                    Process.Start(exe);
         }
         static void FileCopy(string source, string destination, bool rewrite = false)
         {

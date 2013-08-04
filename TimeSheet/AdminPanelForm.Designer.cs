@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AdminPanelForm));
             this.tbContent = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.pbExportProgress = new System.Windows.Forms.ProgressBar();
             this.btnExportTimeSheetDBF = new System.Windows.Forms.Button();
             this.btnExportTimeSheetXML = new System.Windows.Forms.Button();
             this.btnImport = new System.Windows.Forms.Button();
@@ -88,7 +89,7 @@
             this.btnEditSaveDayType = new System.Windows.Forms.Button();
             this.cHolydayCalendar = new SwarthyComponents.WinForms.CalendarView();
             this.cdDayColors = new System.Windows.Forms.ColorDialog();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.lbExportStatus = new System.Windows.Forms.Label();
             this.tbContent.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.gbColors.SuspendLayout();
@@ -120,7 +121,8 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.progressBar);
+            this.tabPage1.Controls.Add(this.lbExportStatus);
+            this.tabPage1.Controls.Add(this.pbExportProgress);
             this.tabPage1.Controls.Add(this.btnExportTimeSheetDBF);
             this.tabPage1.Controls.Add(this.btnExportTimeSheetXML);
             this.tabPage1.Controls.Add(this.btnImport);
@@ -134,6 +136,14 @@
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Справочники";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // pbExportProgress
+            // 
+            this.pbExportProgress.Location = new System.Drawing.Point(6, 195);
+            this.pbExportProgress.Name = "pbExportProgress";
+            this.pbExportProgress.Size = new System.Drawing.Size(195, 23);
+            this.pbExportProgress.TabIndex = 14;
+            this.pbExportProgress.Visible = false;
             // 
             // btnExportTimeSheetDBF
             // 
@@ -793,13 +803,13 @@
             this.cHolydayCalendar.TabIndex = 4;
             this.cHolydayCalendar.Year = 2013;
             // 
-            // progressBar
+            // lbExportStatus
             // 
-            this.progressBar.Location = new System.Drawing.Point(6, 195);
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(195, 23);
-            this.progressBar.TabIndex = 14;
-            this.progressBar.Visible = false;
+            this.lbExportStatus.AutoSize = true;
+            this.lbExportStatus.Location = new System.Drawing.Point(6, 221);
+            this.lbExportStatus.Name = "lbExportStatus";
+            this.lbExportStatus.Size = new System.Drawing.Size(0, 13);
+            this.lbExportStatus.TabIndex = 15;
             // 
             // AdminPanelForm
             // 
@@ -817,6 +827,7 @@
             this.Load += new System.EventHandler(this.AdminPanelForm_Load);
             this.tbContent.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.gbColors.ResumeLayout(false);
             this.gbColors.PerformLayout();
             this.tabPage2.ResumeLayout(false);
@@ -898,6 +909,7 @@
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.Button btnExportTimeSheetXML;
         private System.Windows.Forms.Button btnExportTimeSheetDBF;
-        private System.Windows.Forms.ProgressBar progressBar;
+        private System.Windows.Forms.ProgressBar pbExportProgress;
+        private System.Windows.Forms.Label lbExportStatus;
     }
 }

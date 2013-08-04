@@ -62,12 +62,17 @@ namespace TimeSheetManger
                     foreach (var item in AdminCatalogs)
                         cbCatalogs.Items.Add(item);
         }
+        DateTime ExportStartTime;
         private void AdminPanelForm_Load(object sender, EventArgs e)
         {
             UpdateSpecialDaysFromServer(DateTime.Today.Year);            
             RenderPCalendars();
-            OnDBFExportProgress += delegate { Invoke((Action)(() => progressBar.Increment(1))); };
-            OnDBFExportEnd += delegate { Invoke((Action)(() => { progressBar.Visible = false; Enabled = true; MessageBox.Show("Экспорт в DBF завершен."); })); };
+            OnDBFExportProgress += delegate {
+                pbExportProgress.Increment(1);
+                lbExportStatus.Text = string.Format("Обработано записей: {0}/{1}\r\nДо окончания операции: {2}", pbExportProgress.Value, pbExportProgress.Maximum, TimeSpan.FromSeconds(((DateTime.Now - ExportStartTime).TotalSeconds / pbExportProgress.Value) * (pbExportProgress.Maximum - pbExportProgress.Value)));
+
+            };
+            OnDBFExportEnd += delegate { pbExportProgress.Visible = false; Enabled = true; MessageBox.Show("Экспорт в DBF завершен."); lbExportStatus.Text = ""; };
         }
 
         #region Справочники
@@ -495,9 +500,10 @@ namespace TimeSheetManger
 
         private void btnExportTimeSheetXML_Click(object sender, EventArgs e)
         {
-            mainForm.WaitStart();
+            WaitScreen waitScreen = new WaitScreen(true);
             Helper.DirectoryCreateIfNotExists("export\\xml");
-            TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>
+            //TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>
+            mainForm.currentLPU.Departments.SelectMany<Department, TimeSheetInstance>(d => d.TimeSheets).ToList().ForEach(ts=>
             {
                 XDocument doc = new XDocument();
                 var tabel = ts.XML<TimeSheetInstance>();
@@ -510,8 +516,9 @@ namespace TimeSheetManger
                 doc.Add(tabel);
                 doc.Save(string.Format("export\\xml\\{0}_{1}_{2}.xml", ts._GetDate.ToShortDateString(), ts.Department.Department_Number, ts.Department.Name));
             });
-            mainForm.WaitStop();
-        }        
+            waitScreen.Close();
+            MessageBox.Show("Экспорт в XML завершен");
+        }
         public static EventHandler OnDBFExportProgress, OnDBFExportBegin, OnDBFExportEnd;
         void DBFTimeSheetsExport()
         {
@@ -545,6 +552,24 @@ namespace TimeSheetManger
                 insrtcmd.Parameters.AddWithValue("@DayDate", day.Item_Date);
                 insrtcmd.Parameters.AddWithValue("@DayHours", day.Worked_Time.TotalHours);
                 insrtcmd.Parameters.AddWithValue("@DayFlag", day.Flag.Name);
+                #region ConstTest
+                /*insrtcmd.Parameters.AddWithValue("@USERTN", 1);//тн сотрудника в табеле
+                insrtcmd.Parameters.AddWithValue("@TN", 1);//тн сотрудника в табеле
+                insrtcmd.Parameters.AddWithValue("@LName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@FName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@MName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@DNumber", 2);
+                insrtcmd.Parameters.AddWithValue("@DName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@TSYear", 1234);
+                insrtcmd.Parameters.AddWithValue("@TSMonth", 1234);
+                insrtcmd.Parameters.AddWithValue("@PCode", 1234);
+                insrtcmd.Parameters.AddWithValue("@PName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@CID", 123);
+                insrtcmd.Parameters.AddWithValue("@CName", "asdf");
+                insrtcmd.Parameters.AddWithValue("@DayDate", DateTime.Today);
+                insrtcmd.Parameters.AddWithValue("@DayHours", 123.5f);
+                insrtcmd.Parameters.AddWithValue("@DayFlag", "v");*/
+                #endregion
                 insrtcmd.ExecuteNonQuery();
                 if (OnDBFExportProgress!=null)
                     OnDBFExportProgress(this, EventArgs.Empty);
@@ -557,25 +582,18 @@ namespace TimeSheetManger
         private void btnExportTimeSheetDBF_Click(object sender, EventArgs e)
         {
             //daysForDBF = TimeSheet_Day.All<TimeSheet_Day>();//без сортировки и по всем ЛПУ
-            Enabled = false;
-            progressBar.Value = 0;
-            progressBar.Visible = true;            
+            Enabled = false;            
+            pbExportProgress.Value = 0;
+            pbExportProgress.Visible = true;
+            lbExportStatus.Text = "Загрузка данных...";
             daysForDBF = mainForm.currentLPU.Departments.SelectMany<Department, TimeSheetInstance>(d => d.TimeSheets).SelectMany<TimeSheetInstance, TimeSheet_Content>(ts => ts.Content).SelectMany<TimeSheet_Content, TimeSheet_Day>(tc => tc.Days).ToDBList();
-            progressBar.Maximum = daysForDBF.Count;
-            
+            pbExportProgress.Maximum = daysForDBF.Count;
+            ExportStartTime = DateTime.Now;
             var destinationDir = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "export\\dbf");
             Helper.DirectoryCreateIfNotExists(destinationDir);
             File.Delete(Path.Combine(destinationDir, "Tabel.dbf"));            
-            try
-            {
-                Thread exprt = new Thread(DBFTimeSheetsExport);
-                exprt.Start();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Ошибка DBF экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Enabled = true;
-            }
+            DBFTimeSheetsExport();
+            Enabled = true;
         }
     }
 }

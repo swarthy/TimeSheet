@@ -57,13 +57,10 @@ namespace TimeSheetManger
                 if (EditingComplete != null)
                     EditingComplete(sender, e);
             if (success)
-            {
-                Helper.Log("Success!");
+            {                
                 cancelEditing();
                 ClearValues(flEditBox.Controls);
-            }
-            else
-                Helper.Log("Fail!");
+            }            
         }
         void beginEditing()
         {
@@ -806,11 +803,6 @@ namespace TimeSheetManger
             ClearValues(flFilters.Controls);
             grid.KeyDown += (s, e2) => { if (e2.KeyCode == Keys.Delete) btnDelete_Click(sender, e); };
             setControlsEnabled(true);
-        }
-
-        private void grid_DataError(object sender, DataGridViewDataErrorEventArgs e)
-        {
-            //Helper.Log(e.ToString());
         }
 
         private void btnPrint_Click(object sender, EventArgs e)

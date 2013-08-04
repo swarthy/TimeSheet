@@ -21,6 +21,7 @@ namespace TimeSheetManger
         public static EventHandler OnProgress = null, OnSavingStart = null, OnExportEnd = null;
         public static void ExportContent(TimeSheetInstance timeSheet, string templatePath, string newFilePath)
         {
+            WaitScreen waitScreen = new WaitScreen(true);
             FileInfo templateFile = new FileInfo(templatePath);
             FileInfo newFile = new FileInfo(newFilePath);
             lastRow = 30;
@@ -195,6 +196,7 @@ namespace TimeSheetManger
                 if (OnExportEnd != null)
                     OnExportEnd(null, EventArgs.Empty);
             }
+            waitScreen.Close();
         }
         static ExcelRange template
         {
