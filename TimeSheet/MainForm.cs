@@ -11,6 +11,7 @@ using SwarthyComponents;
 using SwarthyComponents.FireBird;
 using System.Xml.Serialization;
 using System.Xml.Linq;
+using System.Diagnostics;
 
 namespace TimeSheetManger
 {
@@ -80,10 +81,11 @@ namespace TimeSheetManger
             InitializeComponent();
             ttsVersion.Text = "Версия: " + Helper.GetFileVersion(Application.ExecutablePath);
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
+            checkUpdates();
             //ping 1.1.1.1 -n 1 -w 3000 > nul
-            //System.Diagnostics.Process.Start("notepad.exe");            
+            //System.Diagnostics.Process.Start("notepad.exe");
             //SelfUpdater.Update();
-            //Environment.Exit(0);         
+            //Environment.Exit(0);
 
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             
@@ -110,33 +112,34 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
-            #endregion                                                                          
-            /*XmlSerializer xs = new XmlSerializer(typeof(User));
-            FileStream stream = new FileStream("test.xml", FileMode.Create);
-            xs.Serialize(stream, User.Find<User>("1=1"));*/
-            /*XDocument doc = new XDocument(new XElement("MyTestRoot"));
-            doc.Root.Add(new XElement("Test1",
-                new XElement("Test11","test11"),
-                new XElement("Test12","test12"),
-                new XElement("Test13","test13")
-                ));
-            doc.Save(@"test.xml");*/            
-            /*TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>{
-                XDocument doc = new XDocument();
-                var tabel = ts.XML<TimeSheetInstance>();
-                ts.Content.ForEach(c => {
-                    var line = c.XML<TimeSheet_Content>();
-                    line.Add(c.Days.XMLSerialization("Days"));
-                    tabel.Add(line);
-                });
-                doc.Add(tabel);
-                doc.Save(string.Format("xml\\{0}_{1}", ts._GetDate.ToShortDateString(), ts.Department.Department_Number));
-            });
-            Environment.Exit(0);*/
+            #endregion            
+        }
+        void checkUpdates()
+        {
+            var updPath = Helper.ServerUpdatePath;
+            if (Directory.Exists(updPath))
+            {
+                var serverExe = Path.Combine(Helper.ServerUpdatePath,Path.GetFileName(Application.ExecutablePath));
+                if (File.Exists(serverExe))
+                {
+                    if (Helper.GetFileVersion(serverExe) != Helper.GetFileVersion(Application.ExecutablePath))
+                    {
+                        //Обновляем
+                        if (File.Exists("updater.exe"))
+                        {
+                            ProcessStartInfo si = new ProcessStartInfo("cmd", "/C ping 127.0.0.1 -n 2 > nul && updater.exe " + updPath);
+                            si.CreateNoWindow = false;
+                            si.WindowStyle = ProcessWindowStyle.Hidden;
+                            Process.Start(si);
+                            Environment.Exit(0);
+                        }
+                    }
+                }
+            }                        
         }
         void AdminAfterLoginCheck()
         {
-            WaitStart();
+            WaitScreen waitScreen = new WaitScreen(true);
 
             StatusLeft = "Проверка корректности БД.";
 
@@ -148,7 +151,7 @@ namespace TimeSheetManger
                     invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
                     "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);            
             Ready();
-            WaitStop();
+            waitScreen.Close();
         }
         Color GetColor(string key)
         {            
@@ -160,11 +163,8 @@ namespace TimeSheetManger
         void HideAllShowThis(Panel p)
         {            
             foreach (Control c in Controls)
-                if (c.GetType() == typeof(Panel))
-                {
-                    c.Hide();
-                    Helper.Log(c.Name);
-                }
+                if (c.GetType() == typeof(Panel))                
+                    c.Hide();                                    
             p.Show();
         }
         public void Ready()
@@ -207,8 +207,8 @@ namespace TimeSheetManger
                    );
                     msMainMenu.Show();
                     break;                
-                case AppState.EditTimeSheet:                    
-                    WaitStart();
+                case AppState.EditTimeSheet:   
+                    WaitScreen waitScreen = new WaitScreen(true);                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);                    
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
@@ -217,10 +217,10 @@ namespace TimeSheetManger
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     DrawTimeSheetContent();
                     HideAllShowThis(pWorkspace);
-                    WaitStop();                    
+                    waitScreen.Close();                                    
                     break;
             }
-            Helper.Log("Смена состояния: {0}", newstate);
+            State = newstate;
         }
 
         private void DrawTimeSheetContent()
@@ -242,32 +242,15 @@ namespace TimeSheetManger
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();            
         }
-        void showwait()
-        {
-            var waitform = new WaitingForm();
-            waitform.ShowDialog();
-        }
-        Thread waitingThread;
-        public void WaitStart()
-        {
-            Enabled = false;            
-            waitingThread = new Thread(showwait);
-            waitingThread.Start();
-        }
-        public void WaitStop()
-        {
-            if (waitingThread != null && waitingThread.IsAlive)
-                waitingThread.Abort();
-            Enabled = true;
-        }
+                
         private void MainForm_Load(object sender, EventArgs e)
         {
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
-            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); WaitStop(); })); };
+            ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); })); };
                         
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
-            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR(); WaitStop();})); };
+            Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR();})); };
             
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
@@ -408,7 +391,9 @@ namespace TimeSheetManger
         {
             AdminPanelForm admin = new AdminPanelForm(this);
             admin.ShowDialog();
-            MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Требуется перезапуск программы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (State == AppState.EditTimeSheet)
+                changeState(AppState.EditTimeSheet);
+            //MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Требуется перезапуск программы", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         
         private void dgTimeSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
@@ -426,7 +411,7 @@ namespace TimeSheetManger
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //Enabled = false;
-                    WaitStart();
+                    WaitScreen waitScreen = new WaitScreen(true);
                     if (cell.Value == null)
                     {
                         var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
@@ -443,7 +428,7 @@ namespace TimeSheetManger
                     }
                     DrawContent(content, contentPosition, contentOldCount);
                     //Enabled = true;
-                    WaitStop();
+                    waitScreen.Close();
                 }
             }
         }
@@ -475,7 +460,7 @@ namespace TimeSheetManger
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //Enabled = false;
-                    WaitStart();
+                    WaitScreen waitScreen = new WaitScreen(true);
                     int rowStart, rowCount;
                     var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
                     var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
@@ -483,7 +468,7 @@ namespace TimeSheetManger
                     newCell.Save();                    
                     DrawContent(content, rowStart, rowCount);
                     //Enabled = true;
-                    WaitStop();
+                    waitScreen.Close();
                 }
                 
             }
@@ -500,11 +485,11 @@ namespace TimeSheetManger
                 if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //Enabled = false;
-                    WaitStart();
+                    WaitScreen waitScreen = new WaitScreen(true);
                     roweditor.TSContent.Save();                    
                     DrawContent(content, rowStart, rowCount);
                     //Enabled = true;
-                    WaitStop();
+                    waitScreen.Close();
                 }
             }
         }
@@ -515,7 +500,7 @@ namespace TimeSheetManger
             if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 //Enabled = false;
-                WaitStart();
+                WaitScreen waitScreen = new WaitScreen(true);
                 var newContent = roweditor.TSContent;                
                 var cal = newContent.Calendar.Months.Find(m => m.CMonth == currentTimeSheet.TS_Month);
                 double avg = 0;
@@ -552,7 +537,7 @@ namespace TimeSheetManger
                 //currentTimeSheet.Save();
                 DrawTimeSheetContent();
                 //Enabled = true;
-                WaitStop();
+                waitScreen.Close();
             }            
         }
 
@@ -563,7 +548,7 @@ namespace TimeSheetManger
             if (MessageBox.Show(string.Format("Вы действительно хотите удалить выделенн{0} запис{1}?", dgTimeSheet.SelectedCells.Count > 1 ? "ые" : "ую", dgTimeSheet.SelectedCells.Count > 1 ? "и" : "ь"), "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
                 return;
             //Enabled = false;
-            WaitStart();
+            WaitScreen waitScreen = new WaitScreen(true);
             var firstCell = dgTimeSheet.SelectedCells[0];
             int rowStart, rowCount;
             var content = GetContentForDayByCell(firstCell, out rowStart, out rowCount);
@@ -577,7 +562,7 @@ namespace TimeSheetManger
             }
             DrawContent(content, rowStart, rowCount);
             //Enabled = true;
-            WaitStop();
+            waitScreen.Close();
         }
 
         private void удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click(object sender, EventArgs e)
@@ -606,7 +591,7 @@ namespace TimeSheetManger
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //Enabled = false;
-                    WaitStart();
+                    WaitScreen waitScreen = new WaitScreen(true);
                     foreach (DataGridViewCell cell in dgTimeSheet.SelectedCells)
                     {
                         if (cell.OwningColumn.Tag == null || cell.OwningColumn.Tag.GetType() != typeof(DateTime))
@@ -628,7 +613,7 @@ namespace TimeSheetManger
                     }
                     DrawContent(content, contentPosition, contentOldCount);
                     //Enabled = true;
-                    WaitStop();
+                    waitScreen.Close();
                 }
             }
         }
@@ -649,7 +634,7 @@ namespace TimeSheetManger
                     MessageBox.Show("Файл шаблона temp.xlsx не найден!", "Ошибка экспорта", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                WaitStart();
+                WaitScreen waitScreen = new WaitScreen(true);
                 try
                 {
                     Thread exprt = new Thread(a => ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx", dlgSaveFile.FileName));
@@ -661,7 +646,7 @@ namespace TimeSheetManger
                 }
                 finally
                 {
-                    WaitStop();
+                    waitScreen.Close();
                 }                
             }
         }
