@@ -183,7 +183,7 @@ namespace TimeSheetManger
                     success = false;
                     return;
                 }
-                usr.Role = tempRole;
+                usr.Role = tempRole;                
                 if (!usr.Save())
                 {
                     success = false;
@@ -266,7 +266,7 @@ namespace TimeSheetManger
             aF(middleNameFTB);
             var middleNameETB = new MyTB();
             aE(middleNameETB);
-
+            /*
             DataGridViewTextBoxColumn post = new DataGridViewTextBoxColumn();
             post.DataPropertyName = "Post";
             post.HeaderText = "Должность";
@@ -274,7 +274,7 @@ namespace TimeSheetManger
             var postFB = new MyCB(Post.All<Post>(), (box) => { view.ApplyFilter(u => u.Post.Name.Contains(box.Text)); });
             aF(postFB);
             var postEB = new MyCB(Post.All<Post>());
-            aE(postEB);
+            aE(postEB);*/
 
             DataGridViewTextBoxColumn department = new DataGridViewTextBoxColumn();
             department.DataPropertyName = "Department";
@@ -316,7 +316,7 @@ namespace TimeSheetManger
                 lastNameETB.Text= personal.LastName;
                 middleNameETB.Text = personal.MiddleName;
                 firstNameETB.Text = personal.FirstName;
-                postEB.SelectedItem = personal.Post;
+                //postEB.SelectedItem = personal.Post;
                 DepartmentEB.SelectedItem = personal.Department;
                 //tsManagerEB.SelectedItem = personal.TimeSheetManager;                
                 priorityETB.Text = personal.Priority.ToString();
@@ -337,7 +337,7 @@ namespace TimeSheetManger
                 personal.FirstName = firstNameETB.Text;
                 personal.LastName = lastNameETB.Text;
                 personal.MiddleName = middleNameETB.Text;
-                personal.Post = postEB.SelectedItem as Post;
+                //personal.Post = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
                 //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
                                 
@@ -371,7 +371,7 @@ namespace TimeSheetManger
                 personal.FirstName = firstNameETB.Text;
                 personal.LastName = lastNameETB.Text;
                 personal.MiddleName = middleNameETB.Text;
-                personal.Post = postEB.SelectedItem as Post;
+                //personal.Post = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
                 //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
 

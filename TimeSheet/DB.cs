@@ -424,11 +424,12 @@ namespace SwarthyComponents.FireBird
                 throw new Exception("Fetch error: Type mismatch");//на случай, если в коде будет ошибка
             if (!Fields.ContainsKey(key) || refetch)
             {
-                if (this[belongsto[key].Field_Source]==null)
+                if (this[belongsto[key].Field_Source] == null || this[belongsto[key].Field_Source] == DBNull.Value)
                     return null;
-                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", belongsto[key].Field_Destination, this[belongsto[key].Field_Source]), true, belongsto[key].Type)[0]; //раньше было Domain.F_ALL<DOmain>(...)[0].ParseTo<T>();
-                Fields[key] = temp;                
-                return temp;
+                var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", belongsto[key].Field_Destination, this[belongsto[key].Field_Source]), true, belongsto[key].Type);
+                var r = temp.Count > 0 ? temp[0] : null;                
+                Fields[key] = temp;
+                return r;
             }
             else                
                 return Fields[key] as T;//если поле не пусто - значит либо уже загружено либо присвоено. в обоих случаях загрузка с сервера не нужна (а если нужна - вызывать BT<>(... ,refetch = true))                
@@ -438,7 +439,7 @@ namespace SwarthyComponents.FireBird
             Dictionary<string, Link> hasOne = GetHasOne(GetType());
             if (typeof(T) != hasOne[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasOne[key].Field_Destination] != null)
+            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasOne[key].Field_Destination] != null && Fields[hasOne[key].Field_Destination] != DBNull.Value)
             {
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasOne[key].Field_Source, Fields[hasOne[key].Field_Destination]), true);
                 if (temp.Count == 0)
@@ -460,15 +461,19 @@ namespace SwarthyComponents.FireBird
             Dictionary<string, Link> hasmany = GetHasMany(GetType());
             if (typeof(T) != hasmany[key].Type)
                 throw new Exception("Fetch error: Type mismatch");
-            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasmany[key].Field_Destination] != null)
+            if ((!Fields.ContainsKey(key) || refetch) && Fields[hasmany[key].Field_Destination] != null && Fields[hasmany[key].Field_Destination] != DBNull.Value)
             {
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", hasmany[key].Field_Source, Fields[hasmany[key].Field_Destination]));                
                 temp.FieldSource = hasmany[key].Field_Source;
                 temp.FieldDestination = hasmany[key].Field_Destination;                
                 var btRelation = GetBelongsTo(typeof(T)).Where(kvp => kvp.Value.Field_Destination.ToLower() == hasmany[key].Field_Destination.ToLower() && kvp.Value.Field_Source.ToLower() == hasmany[key].Field_Source.ToLower() && kvp.Value.Type == GetType());
-                if (btRelation.Count() > 0)                
+                if (btRelation.Count() > 0)
                     foreach (var item in temp)
-                        item[btRelation.First().Key] = this;                                    
+                    {
+                        var tempp = item;
+                        var addr = btRelation.First().Key;
+                        item[btRelation.First().Key] = this;
+                    }
                 temp.OnAdd += new EventHandler<DBEventArgs<T>>(ListOnAdd);
                 temp.OnRemove += new EventHandler<DBEventArgs<T>>(ListOnRemove);
                 Fields[key] = temp;
@@ -495,6 +500,14 @@ namespace SwarthyComponents.FireBird
             else
                 result.changed = false;            
             return result;
+        }
+        public virtual string Validation()
+        {
+            return "";
+        }
+        public bool isValid()
+        {
+            return Validation().Length == 0;
         }
         /// <summary>
         /// Получить список полей для типа type
@@ -730,6 +743,8 @@ namespace SwarthyComponents.FireBird
         {
             if (!_Changed && !hard_save)
                 return true;
+            if (!isValid())
+                return false;
             GetBelongsTo(GetType()).Keys.ToList().ForEach(k =>
             {
                 if (Fields.ContainsKey(k))

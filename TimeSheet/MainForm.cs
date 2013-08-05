@@ -81,11 +81,8 @@ namespace TimeSheetManger
             InitializeComponent();
             ttsVersion.Text = "Версия: " + Helper.GetFileVersion(Application.ExecutablePath);
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
-            checkUpdates();
-            //ping 1.1.1.1 -n 1 -w 3000 > nul
-            //System.Diagnostics.Process.Start("notepad.exe");
-            //SelfUpdater.Update();
-            //Environment.Exit(0);
+            checkUpdates();    
+        
 
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             
@@ -101,8 +98,7 @@ namespace TimeSheetManger
             Personal.Initialize<Personal>();
             LPU.Initialize<LPU>();
             Post.Initialize<Post>();
-            Department.Initialize<Department>();
-            //UserDepartment.Initialize<UserDepartment>();
+            Department.Initialize<Department>();            
             Calendar.Initialize<Calendar>();
             Calendar_Name.Initialize<Calendar_Name>();
             Calendar_Content.Initialize<Calendar_Content>();
@@ -112,7 +108,8 @@ namespace TimeSheetManger
             Flag.Initialize<Flag>();
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
-            #endregion            
+            UserPDP.Initialize<UserPDP>();
+            #endregion                        
         }
         void checkUpdates()
         {
@@ -147,12 +144,12 @@ namespace TimeSheetManger
             if (currentLPU.MainDoc==null)
                 MessageBox.Show("У данного ЛПУ не указан главный врач.\r\nВозможно нарушение отчетности.", "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
             var invalidDepartments = currentLPU.Departments.FindAll(d => d.DepartmentManager == null);
-            if (invalidDepartments.Count != 0)
-                MessageBox.Show("У следующих отделений не указан заведующий: " +
-                    invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n"+d.Name),
-                    "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            Ready();
             waitScreen.Close();
+            Ready();
+            if (invalidDepartments.Count != 0)            
+                MessageBox.Show("У следующих отделений не указан заведующий: " +
+                       invalidDepartments.Aggregate<Department, string>("", (s, d) => s += "\r\n" + d.Name),
+                       "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         Color GetColor(string key)
         {            

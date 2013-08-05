@@ -19,7 +19,7 @@ namespace TimeSheetManger
             {
                 MessageBox.Show("Приложение уже запущено", "Ограничение доступа", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
-            }   
+            }
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);            
             Application.Run(new MainForm());            

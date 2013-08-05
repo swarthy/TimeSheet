@@ -493,9 +493,13 @@ namespace TimeSheetManger
         private void btnImport_Click(object sender, EventArgs e)
         {
             if (cbCatalogs.SelectedIndex == -1)
-                return;            
-            ImportForm form = new ImportForm(mainForm, cbCatalogs.Text);            
-            form.ShowDialog();
+                return;
+            string[] allowImport = new string[] { "Персонал", "Должности", "Отделения" };
+            if (allowImport.Contains(cbCatalogs.Text))
+            {
+                ImportForm form = new ImportForm(mainForm, cbCatalogs.Text);
+                form.ShowDialog();
+            }
         }
 
         private void btnExportTimeSheetXML_Click(object sender, EventArgs e)

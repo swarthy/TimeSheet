@@ -31,7 +31,7 @@ namespace TimeSheetManger
             {
                 TSContent.Personal = per_sel.SelectedPersonal;
                 tbName.Text = per_sel.SelectedPersonal._ShortName;
-                cbPost.SelectedItem = per_sel.SelectedPersonal.Post;                
+                //cbPost.SelectedItem = per_sel.SelectedPersonal.Post;                
             }
         }
 

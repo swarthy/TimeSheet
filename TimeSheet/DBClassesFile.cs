@@ -31,25 +31,38 @@ namespace TimeSheetManger
         /// <summary>
         /// Отношения 1:M
         /// </summary>
-        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
-            //Список сотрудников, которых ведет табельщик
-            {"PersonalList", new Link("TIMESHEET_MANAGER",typeof(Personal))},
+        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {             
             //Табели
-            {"TimeSheets", new Link("USER_ID",typeof(TimeSheetInstance))}
+            {"TimeSheets", new Link("User_ID",typeof(TimeSheetInstance))},
+            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))}
         };
         /// <summary>
         /// Отношения 1:1 - ссылка у привязываемого объекта
         /// </summary>
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Ссылка на запись сотрудника
-            { "PersonalProfile", new Link("PERSONAL_TN", typeof(Personal), "Table_Number") },
+            { "PersonalProfile", new Link("Personal_TN", typeof(Personal), "Table_Number") },
             //ЛПУ
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
         };        
         public override string ToString()
         {
             return Login;
-        }        
+        }
+        public override string Validation()
+        {
+            if (Login.Length == 0)
+                return "Логин введен неверно";
+            if (Pass.Length == 0)
+                return "Пароль введен неверно";
+            if (LPU == null)
+                return "Не указано ЛПУ";
+            if (Profile == null)
+                return "Не указан профиль";
+            if (Role < 0)
+                return "Роль введена неверно";
+            return "";
+        }
         public string _LoginAndProfile
         {
             get
@@ -140,25 +153,14 @@ namespace TimeSheetManger
             {
                 return HM<TimeSheetInstance>("TimeSheets");
             }
-            set
-            {
-                this["TimeSheets"] = value;
-            }
         }
-        public DBList<Personal> PersonalLink
+        public DBList<UserPDP> UserPDP
         {
             get
             {
-                return this.HM<Personal>("PersonalList");
+                return HM<UserPDP>("UserPDP");
             }
         }
-        /*public DBList<UserDepartment> UserDepartments
-        {
-            get
-            {
-                return HM<UserDepartment>("UserDepartments");
-            }
-        }*/
         #endregion
         /// <summary>
         /// Констуркторы
@@ -189,10 +191,12 @@ namespace TimeSheetManger
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
+            //UserPDP
+            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))},
             //Персонал отделения
-            {"PersonalOfDepartment", new Link("DEPARTMENT_NUMBER",typeof(Personal),"DEPARTMENT_NUMBER")},
+            {"PersonalOfDepartment", new Link("Department_Number",typeof(Personal),"Department_Number")},
             //Табели
-            {"TimeSheets", new Link("DEPARTMENT_NUMBER",typeof(TimeSheetInstance),"DEPARTMENT_NUMBER")}
+            {"TimeSheets", new Link("Department_Number",typeof(TimeSheetInstance),"Department_Number")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Заведующий отделения
@@ -203,6 +207,18 @@ namespace TimeSheetManger
         public override string ToString()
         {
             return Name;
+        }
+        public override string Validation()
+        {
+            if (Name.Length == 0)
+                return "Не введено название отделения";
+            if (Department_Number == 0)
+                return "Не указан номер отделения";
+            if (LPU == null)
+                return "Не указано ЛПУ";
+            if (DepartmentManager == null)
+                return "Не указан заведующий отделения";
+            return "";
         }
         #region Properties
         public string Name
@@ -263,6 +279,13 @@ namespace TimeSheetManger
                 return HM<TimeSheetInstance>("TimeSheets");
             }
         }
+        public DBList<UserPDP> UserPDP
+        {
+            get
+            {
+                return HM<UserPDP>("UserPDP");
+            }
+        }
         #endregion
         /// <summary>
         /// Название|Номер отделения|Табельный номер заведующего
@@ -288,12 +311,12 @@ namespace TimeSheetManger
             : base(typeof(Department))
         {
         }
-        public Department(string name, int department_number, LPU lpu)
+        public Department(string name, int Department_Number, LPU lpu)
             : base(typeof(Department))
         {
             Name = name;
             LPU = lpu;
-            Department_Number = department_number;
+            Department_Number = Department_Number;
         }
     }
     /// <summary>
@@ -307,22 +330,29 @@ namespace TimeSheetManger
         /// </summary>
         new public static string OrderBy = "LastName";
         new public static List<string> FieldNames = new List<string>();
+        /// <summary>
+        /// Отношения 1:M
+        /// </summary>
+        new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
+            //Профессии
+            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))}
+        };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
-            //Должность
-            {"Post", new Link("POST_CODE",typeof(Post), "CODE") },
+            //Основная должность
+            {"MainPost", new Link("Post_Code",typeof(Department),"Post_Code")},
             //Отделение
-            {"Department", new Link("DEPARTMENT_NUMBER",typeof(Department),"DEPARTMENT_NUMBER")},
+            {"Department", new Link("Department_Number",typeof(Department),"Department_Number")},
             //Табельщик, ведующий сотрудника
-            {"TimeSheetManager", new Link("TIMESHEET_MANAGER",typeof(User))}
+            {"TimeSheetManager", new Link("Timesheet_Manager",typeof(User))}
         };
         public override string ToString()
         {
             return _ShortName;
-        }
+        }        
         public static DBList<Personal> GetPersonalOfLPU(int lpu_id)
         {
             return Personal.Query<Personal>(@"department, personal
-where   personal.department_number=department.department_number
+where   personal.Department_Number=department.Department_Number
         and
         department.lpu_id = " + lpu_id);
         }
@@ -339,18 +369,22 @@ where   personal.department_number=department.department_number
         public string _ShortNameAndNumber
         {
             get
-            {
-                if (FirstName.Length == 0 || MiddleName.Length == 0)
-                    return LastName;
-                return string.Format("{0} {1}.{2}. ({3})", LastName, FirstName[0], MiddleName[0], Table_Number);
+            {                
+                return string.Format("{0} ({3})", _ShortName, Table_Number);
             }
         }
-
         public string _FullName
         {
             get
             {
                 return string.Format("{0} {1} {2}",LastName, FirstName, MiddleName);
+            }
+        }
+        public string _FullNameAndNumber
+        {
+            get
+            {
+                return string.Format("{0} ({3})", _FullName, Table_Number);
             }
         }
         public string FirstName
@@ -408,17 +442,28 @@ where   personal.department_number=department.department_number
                 this["Priority"] = value;
             }
         }
-        public Post Post
+        public Post MainPost
         {
             get
             {
-                return BT<Post>("Post");
+                return BT<Post>("MainPost");
             }
             set
             {
-                this["Post"] = value;
+                this["MainPost"] = value;
             }
         }
+        public DBList<UserPDP> UserPDP
+        {
+            get
+            {
+                return HM<UserPDP>("UserPDP");
+            }
+            set
+            {
+                this["UserPDP"] = value;
+            }
+        }        
         public Department Department
         {
             get
@@ -460,10 +505,10 @@ where   personal.department_number=department.department_number
             personal.Table_Number = temp;
             if (!int.TryParse(values[4], out temp))
                 return false;
-            personal["POST_CODE"] = temp;
+            personal["Post_Code"] = temp;
             if (!int.TryParse(values[5], out temp))
                 return false;
-            personal["DEPARTMENT_NUMBER"] = temp;
+            personal["Department_Number"] = temp;
             if (!int.TryParse(values[6], out temp))
                 return false;
             personal["Priority"] = temp;
@@ -480,7 +525,7 @@ where   personal.department_number=department.department_number
             MiddleName = middleName;
             LastName = lastName;
             Department = department;
-            Post = post;
+            //Post = post;
         }
     }
     /// <summary>
@@ -693,11 +738,11 @@ where   personal.department_number=department.department_number
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             //Содержимое календаря (месяцы)
-            {"Content", new Link("CALENDAR_ID",typeof(Calendar_Content))}
+            {"Content", new Link("Calendar_ID",typeof(Calendar_Content))}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Имя
-            {"Name", new Link("NAME_ID",typeof(Calendar_Name))}
+            {"Name", new Link("Name_ID",typeof(Calendar_Name))}
         };        
         public override string ToString()
         {
@@ -760,7 +805,7 @@ where   personal.department_number=department.department_number
         new public static string OrderBy = "CMonth";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {            
-            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar)) }
+            {"Calendar", new Link("Calendar_ID",typeof(Calendar)) }
         };
         public override string ToString()
         {
@@ -833,7 +878,7 @@ where   personal.department_number=department.department_number
         new public static string tableName = "CALENDAR_NAMES";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
-            {"Calendars", new Link("NAME_ID",typeof(Calendar))}
+            {"Calendars", new Link("Name_ID",typeof(Calendar))}
         };
         public override string ToString()
         {
@@ -875,7 +920,7 @@ where   personal.department_number=department.department_number
     public class TimeSheetInstance : Domain
     {
         new public static string tableName = "TIMESHEET";
-        new public static string OrderBy = "User_ID, TS_YEAR, TS_MONTH, DEPARTMENT_NUMBER";
+        new public static string OrderBy = "User_ID, TS_YEAR, TS_MONTH, Department_Number";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {
             //Содержимое
@@ -885,7 +930,7 @@ where   personal.department_number=department.department_number
             //Табельщик
             {"User",new Link("User_ID",typeof(User))},            
             //Отделение
-            {"Department",new Link("DEPARTMENT_NUMBER",typeof(Department), "DEPARTMENT_NUMBER")},
+            {"Department",new Link("Department_Number",typeof(Department), "Department_Number")},
         };
         public override string ToString()
         {
@@ -999,11 +1044,11 @@ where   personal.department_number=department.department_number
             //Сотрудник
             {"Personal", new Link("Personal_TN",typeof(Personal), "TABLE_NUMBER")},
             //Производственный календарь
-            {"Calendar", new Link("CALENDAR_ID",typeof(Calendar))},
+            {"Calendar", new Link("Calendar_ID",typeof(Calendar))},
             //Табель
-            {"TimeSheet", new Link("TIMESHEET_ID",typeof(TimeSheetInstance))},
+            {"TimeSheet", new Link("TimeSheet_ID",typeof(TimeSheetInstance))},
             //Должность
-            {"Post", new Link("POST_CODE",typeof(Post), "CODE") }            
+            {"Post", new Link("Post_Code",typeof(Post), "CODE") }            
         };
         public override string ToString()
         {
@@ -1371,5 +1416,106 @@ where   personal.department_number=department.department_number
             Setting_Key = key;
             Setting_Value = value;
         }
-    }    
+    }
+    /// <summary>
+    /// Указание для табельщика, какая профессия у сотрудика в данном отделении
+    /// </summary>
+    public class UserPDP : Domain
+    {
+        /// <summary>
+        /// Имя таблицы
+        /// </summary>
+        new public static string tableName = "USERPDP";        
+        /// <summary>
+        /// Список полей (автоматически заполняется из на основе свойств класса, должен быть переопределен в каждом классе)
+        /// </summary>
+        new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
+        /// <summary>
+        /// Отношения 1:1 - ссылка у привязываемого объекта
+        /// </summary>
+        new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
+            //Ссылка на запись сотрудника
+            {"Personal", new Link("Personal_TN", typeof(Personal), "Table_Number")},
+            {"Department", new Link("Department_Number", typeof(Department), "Department_Number")},
+            {"Post", new Link("Post_Code", typeof(Department), "Post_Code")},
+            {"User", new Link("User_ID", typeof(Department))}
+        };
+        public override string ToString()
+        {
+            return string.Format("{0}: {1} в {2} - {3}", User.Login, Personal._ShortName, Department.Name, Post.Name);
+        }
+        public override string Validation()
+        {
+            if (User == null)
+                return "Не указан пользователь";
+            if (Personal == null)
+                return "Не указан сотрудник";
+            if (Department == null)
+                return "Не указано отделение";
+            if (Post == null)
+                return "Не указана должность";
+            return "";
+        }        
+        #region Properties        
+        public User User
+        {
+            get
+            {
+                return BT<User>("User");
+            }
+            set
+            {
+                this["User"] = value;
+            }
+        }
+        public Department Department
+        {
+            get
+            {
+                return BT<Department>("Department");
+            }
+            set
+            {
+                this["Department"] = value;
+            }
+        }
+        public Personal Personal
+        {
+            get
+            {
+                return BT<Personal>("Personal");
+            }
+            set
+            {
+                this["Personal"] = value;
+            }
+        }
+        public Post Post
+        {
+            get
+            {
+                return BT<Post>("Post");
+            }
+            set
+            {
+                this["Post"] = value;
+            }
+        }
+        #endregion
+        /// <summary>
+        /// Констуркторы
+        /// </summary>
+        public UserPDP()
+            : base(typeof(UserPDP))
+        {
+        }
+        public UserPDP(User user, Personal personal, Department department, Post post)
+            : base(typeof(UserPDP))
+        {
+            User = user;
+            Personal = personal;
+            Department = department;
+            Post = post;
+        }
+    }
 }
