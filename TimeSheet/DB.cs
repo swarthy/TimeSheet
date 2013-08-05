@@ -427,8 +427,8 @@ namespace SwarthyComponents.FireBird
                 if (this[belongsto[key].Field_Source] == null || this[belongsto[key].Field_Source] == DBNull.Value)
                     return null;
                 var temp = Domain.F_All<T>(string.Format("{0} = \'{1}\'", belongsto[key].Field_Destination, this[belongsto[key].Field_Source]), true, belongsto[key].Type);
-                var r = temp.Count > 0 ? temp[0] : null;                
-                Fields[key] = temp;
+                var r = temp.Count > 0 ? temp[0] : null;
+                Fields[key] = r;
                 return r;
             }
             else                
@@ -761,18 +761,18 @@ namespace SwarthyComponents.FireBird
                 }
             });
             
-            try
-            {
+            //try
+            //{
                 if (Fields["ID"] != null)
                     Update();
                 else
                     Create();
-            }
+            /*}
             catch (FbException ex)
             {
                 MessageBox.Show(ex.Message, "DataBase: Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
-            }
+            }*/
             _Changed = false;
             GetHasOne(GetType()).Keys.ToList().ForEach(k => { if (Fields.ContainsKey(k) && Fields[k] != null) (Fields[k] as Domain).Save(); });
             GetHasMany(GetType()).Keys.ToList().ForEach(k =>

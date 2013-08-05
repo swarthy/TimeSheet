@@ -33,8 +33,8 @@ namespace TimeSheetManger
         /// </summary>
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() {             
             //Табели
-            {"TimeSheets", new Link("User_ID",typeof(TimeSheetInstance))},
-            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))}
+            {"TimeSheets", new Link("User_ID", typeof(TimeSheetInstance))},
+            {"UserPDP", new Link("User_ID", typeof(UserPDP))}
         };
         /// <summary>
         /// Отношения 1:1 - ссылка у привязываемого объекта
@@ -192,11 +192,11 @@ namespace TimeSheetManger
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
             //UserPDP
-            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))},
+            {"UserPDP", new Link("Department_Number", typeof(UserPDP), "Department_Number")},
             //Персонал отделения
-            {"PersonalOfDepartment", new Link("Department_Number",typeof(Personal),"Department_Number")},
+            {"PersonalOfDepartment", new Link("Department_Number", typeof(Personal), "Department_Number")},
             //Табели
-            {"TimeSheets", new Link("Department_Number",typeof(TimeSheetInstance),"Department_Number")}
+            {"TimeSheets", new Link("Department_Number", typeof(TimeSheetInstance),"Department_Number")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Заведующий отделения
@@ -212,7 +212,7 @@ namespace TimeSheetManger
         {
             if (Name.Length == 0)
                 return "Не введено название отделения";
-            if (Department_Number == 0)
+            if (Department_Number <= 0)
                 return "Не указан номер отделения";
             if (LPU == null)
                 return "Не указано ЛПУ";
@@ -335,20 +335,36 @@ namespace TimeSheetManger
         /// </summary>
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>() { 
             //Профессии
-            {"UserPDP", new Link("UserPDP_ID",typeof(UserPDP))}
+            {"UserPDP", new Link("Personal_TN",typeof(UserPDP), "Table_Number")}
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Основная должность
-            {"MainPost", new Link("Post_Code",typeof(Department),"Post_Code")},
+            {"MainPost", new Link("Post_Code",typeof(Post),"Code")},
             //Отделение
             {"Department", new Link("Department_Number",typeof(Department),"Department_Number")},
             //Табельщик, ведующий сотрудника
-            {"TimeSheetManager", new Link("Timesheet_Manager",typeof(User))}
+            {"TimeSheetManager", new Link("TimeSheet_Manager",typeof(User))}
         };
         public override string ToString()
         {
             return _ShortName;
-        }        
+        }
+        public override string Validation()
+        {
+            if (Department == null)
+                return "Не указано отделение";
+            if (string.IsNullOrEmpty(LastName))
+                return "Фамилия заполнена неверно";
+            if (string.IsNullOrEmpty(FirstName))
+                return "Имя заполнено неверно";
+            if (string.IsNullOrEmpty(MiddleName))
+                return "Отчество заполнено неверно";
+            if (Table_Number <= 0)
+                return "Табельный номер заполнен неверно";            
+            if (Priority <= 0)
+                return "Приоритет заполнен неверно";
+            return "";
+        }
         public static DBList<Personal> GetPersonalOfLPU(int lpu_id)
         {
             return Personal.Query<Personal>(@"department, personal
@@ -370,7 +386,7 @@ where   personal.Department_Number=department.Department_Number
         {
             get
             {                
-                return string.Format("{0} ({3})", _ShortName, Table_Number);
+                return string.Format("{0} ({1})", _ShortName, Table_Number);
             }
         }
         public string _FullName
@@ -458,11 +474,7 @@ where   personal.Department_Number=department.Department_Number
             get
             {
                 return HM<UserPDP>("UserPDP");
-            }
-            set
-            {
-                this["UserPDP"] = value;
-            }
+            }            
         }        
         public Department Department
         {
@@ -558,6 +570,12 @@ where   personal.Department_Number=department.Department_Number
         {
             return Name;
         }
+        public override string Validation()
+        {
+            if (string.IsNullOrEmpty(Name))
+                return "Название ЛПУ задано неверно";
+            return "";
+        }
         #region Properties
         public string Name
         {
@@ -618,7 +636,15 @@ where   personal.Department_Number=department.Department_Number
         public override string ToString()
         {
             return Ru_Name;
-        }        
+        }
+        public override string Validation()
+        {
+            if (string.IsNullOrEmpty(Name))
+                return "Флаг введен неверно";
+            if (string.IsNullOrEmpty(Ru_Name))
+                return "Визуальный код флага введен неверно";            
+            return "";
+        }
         #region Properties
         public string Name
         {
@@ -677,6 +703,14 @@ where   personal.Department_Number=department.Department_Number
         public override string ToString()
         {
             return Name;
+        }
+        public override string Validation()
+        {
+            if (Name == "")
+                return "Название должности указано неверно";
+            if (Code == 0)
+                return "Код должности указан неверно";
+            return "";
         }
         #region Properties
         public string Name
@@ -1048,7 +1082,7 @@ where   personal.Department_Number=department.Department_Number
             //Табель
             {"TimeSheet", new Link("TimeSheet_ID",typeof(TimeSheetInstance))},
             //Должность
-            {"Post", new Link("Post_Code",typeof(Post), "CODE") }            
+            {"Post", new Link("Post_Code",typeof(Post), "Code") }            
         };
         public override string ToString()
         {
@@ -1437,12 +1471,12 @@ where   personal.Department_Number=department.Department_Number
             //Ссылка на запись сотрудника
             {"Personal", new Link("Personal_TN", typeof(Personal), "Table_Number")},
             {"Department", new Link("Department_Number", typeof(Department), "Department_Number")},
-            {"Post", new Link("Post_Code", typeof(Department), "Post_Code")},
-            {"User", new Link("User_ID", typeof(Department))}
+            {"Post", new Link("Post_Code", typeof(Post), "Code")},
+            {"User", new Link("User_ID", typeof(User))}
         };
         public override string ToString()
         {
-            return string.Format("{0}: {1} в {2} - {3}", User.Login, Personal._ShortName, Department.Name, Post.Name);
+            return string.Format("{0} - {1}", Personal._ShortNameAndNumber, Post.Name);
         }
         public override string Validation()
         {

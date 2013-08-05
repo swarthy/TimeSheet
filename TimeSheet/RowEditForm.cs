@@ -29,9 +29,10 @@ namespace TimeSheetManger
             var per_sel = new PersonalListForm(mainForm);            
             if (per_sel.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                TSContent.Personal = per_sel.SelectedPersonal;
-                tbName.Text = per_sel.SelectedPersonal._ShortName;
-                //cbPost.SelectedItem = per_sel.SelectedPersonal.Post;                
+                per_sel.SelectedUserPDP.Save();
+                TSContent.Personal = per_sel.SelectedUserPDP.Personal;
+                tbName.Text = per_sel.SelectedUserPDP.Personal._ShortName;
+                cbPost.SelectedItem = per_sel.SelectedUserPDP.Post;                
             }
         }
 

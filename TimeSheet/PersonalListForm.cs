@@ -12,20 +12,20 @@ namespace TimeSheetManger
     public partial class PersonalListForm : Form
     {
         MainForm mainform;
-        public List<Personal> personals;
-        public Personal SelectedPersonal { get; set; }
+        public List<UserPDP> usersPDP;
+        public UserPDP SelectedUserPDP{ get; set; }
         public PersonalListForm(MainForm mainForm)
         {
             InitializeComponent();
             this.mainform = mainForm;
-            SelectedPersonal = null;
+            SelectedUserPDP = null;
         }
 
         private void btnSelectPersonal_Click(object sender, EventArgs e)
         {
-            if (lbPersonal.SelectedIndex >= 0)
+            if (lbUsersPDP.SelectedIndex >= 0)
             {
-                SelectedPersonal = personals[lbPersonal.SelectedIndex];
+                SelectedUserPDP = lbUsersPDP.SelectedItem as UserPDP;                
                 this.DialogResult = DialogResult.OK;
                 Close();
             }
@@ -33,27 +33,27 @@ namespace TimeSheetManger
                 MessageBox.Show("Выберите сотрудника");
         }
 
-        void DrawPersonal(List<Personal> list)
+        void DrawUserPDP(List<UserPDP> list)
         {
-            lbPersonal.Items.Clear();
-            list.ForEach(p => lbPersonal.Items.Add(p));
+            lbUsersPDP.Items.Clear();
+            list.ForEach(p => lbUsersPDP.Items.Add(p));
         }
 
         private void PersonalListForm_Load(object sender, EventArgs e)
-        {   
-            personals = mainform.currentUser.PersonalLink.Where(p => p.Department.Department_Number == mainform.currentTimeSheet.Department.Department_Number).ToList();
-            lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;            
-            DrawPersonal(personals);
+        {
+            usersPDP = mainform.currentUser.UserPDP.Where(updp => updp.Department.Department_Number == mainform.currentTimeSheet.Department.Department_Number).ToList();
+            lbDepartmentName.Text = mainform.currentTimeSheet.Department.Name;
+            DrawUserPDP(usersPDP);
         }
 
         private void lbPersonal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            btnSelectPersonal.Enabled = lbPersonal.SelectedIndex != -1;
+            btnSelectPersonal.Enabled = lbUsersPDP.SelectedIndex != -1;
         }
 
         private void lbPersonal_DoubleClick(object sender, EventArgs e)
         {
-            if (lbPersonal.SelectedIndex!=-1)
+            if (lbUsersPDP.SelectedIndex!=-1)
                 btnSelectPersonal_Click(this, EventArgs.Empty);
         }
 
@@ -64,11 +64,11 @@ namespace TimeSheetManger
             var res = add_per.ShowDialog();
             if (res == System.Windows.Forms.DialogResult.OK)
             {
-                mainform.currentUser.PersonalLink.Add(add_per.SelectedPersonal);                
-                mainform.currentUser.Save();            
-                if (!personals.Contains(add_per.SelectedPersonal))
-                    personals.Add(add_per.SelectedPersonal);
-                DrawPersonal(personals);
+                mainform.currentUser.UserPDP.Add(add_per.UPDP);
+                mainform.currentUser.Save();
+                if (!usersPDP.Contains(add_per.UPDP))
+                    usersPDP.Add(add_per.UPDP);
+                DrawUserPDP(usersPDP);
             }
         }
         
@@ -76,21 +76,22 @@ namespace TimeSheetManger
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Right && e.Clicks==1)
             {                
-                lbPersonal.SelectedIndex = lbPersonal.IndexFromPoint(e.Location);
-                if (lbPersonal.SelectedIndex != -1)
+                lbUsersPDP.SelectedIndex = lbUsersPDP.IndexFromPoint(e.Location);
+                if (lbUsersPDP.SelectedIndex != -1)
                     cmsItem.Show(Cursor.Position);
             }
         }
 
         private void удалитьИзЭтогоСпискаToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (lbPersonal.SelectedIndex != -1)
+            if (lbUsersPDP.SelectedIndex != -1)
             {
-                if (MessageBox.Show(string.Format("Вы действительно хотите удалить сотрудника {0} из этого списка?", lbPersonal.SelectedItem), "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                if (MessageBox.Show(string.Format("Вы действительно хотите удалить сотрудника {0} из этого списка?", lbUsersPDP.SelectedItem), "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    mainform.currentUser.PersonalLink.Remove((Personal)lbPersonal.SelectedItem);
-                    personals.Remove((Personal)lbPersonal.SelectedItem);
-                    lbPersonal.Items.Remove(lbPersonal.SelectedItem);
+                    mainform.currentUser.UserPDP.Remove((UserPDP)lbUsersPDP.SelectedItem);
+                    usersPDP.Remove((UserPDP)lbUsersPDP.SelectedItem);
+                    (lbUsersPDP.SelectedItem as UserPDP).Delete();
+                    lbUsersPDP.Items.Remove(lbUsersPDP.SelectedItem);                    
                 }
             }
         }

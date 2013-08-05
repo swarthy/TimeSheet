@@ -31,7 +31,7 @@
             this.components = new System.ComponentModel.Container();
             this.lbDepartmentLabel = new System.Windows.Forms.Label();
             this.lbDepartmentName = new System.Windows.Forms.Label();
-            this.lbPersonal = new System.Windows.Forms.ListBox();
+            this.lbUsersPDP = new System.Windows.Forms.ListBox();
             this.cmsItem = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.удалитьИзЭтогоСпискаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.llbAddPersonal = new System.Windows.Forms.LinkLabel();
@@ -58,20 +58,20 @@
             this.lbDepartmentName.TabIndex = 1;
             this.lbDepartmentName.Text = "отделение";
             // 
-            // lbPersonal
+            // lbUsersPDP
             // 
-            this.lbPersonal.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.lbUsersPDP.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbPersonal.ContextMenuStrip = this.cmsItem;
-            this.lbPersonal.FormattingEnabled = true;
-            this.lbPersonal.Location = new System.Drawing.Point(12, 38);
-            this.lbPersonal.Name = "lbPersonal";
-            this.lbPersonal.Size = new System.Drawing.Size(289, 277);
-            this.lbPersonal.TabIndex = 2;
-            this.lbPersonal.SelectedIndexChanged += new System.EventHandler(this.lbPersonal_SelectedIndexChanged);
-            this.lbPersonal.DoubleClick += new System.EventHandler(this.lbPersonal_DoubleClick);
-            this.lbPersonal.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbPersonal_MouseDown);
+            this.lbUsersPDP.ContextMenuStrip = this.cmsItem;
+            this.lbUsersPDP.FormattingEnabled = true;
+            this.lbUsersPDP.Location = new System.Drawing.Point(12, 38);
+            this.lbUsersPDP.Name = "lbUsersPDP";
+            this.lbUsersPDP.Size = new System.Drawing.Size(289, 277);
+            this.lbUsersPDP.TabIndex = 2;
+            this.lbUsersPDP.SelectedIndexChanged += new System.EventHandler(this.lbPersonal_SelectedIndexChanged);
+            this.lbUsersPDP.DoubleClick += new System.EventHandler(this.lbPersonal_DoubleClick);
+            this.lbUsersPDP.MouseDown += new System.Windows.Forms.MouseEventHandler(this.lbPersonal_MouseDown);
             // 
             // cmsItem
             // 
@@ -129,7 +129,7 @@
             this.ControlBox = false;
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnSelectPersonal);
-            this.Controls.Add(this.lbPersonal);
+            this.Controls.Add(this.lbUsersPDP);
             this.Controls.Add(this.llbAddPersonal);
             this.Controls.Add(this.lbDepartmentName);
             this.Controls.Add(this.lbDepartmentLabel);
@@ -147,7 +147,7 @@
 
         private System.Windows.Forms.Label lbDepartmentLabel;
         private System.Windows.Forms.Label lbDepartmentName;
-        private System.Windows.Forms.ListBox lbPersonal;
+        private System.Windows.Forms.ListBox lbUsersPDP;
         private System.Windows.Forms.LinkLabel llbAddPersonal;
         private System.Windows.Forms.Button btnSelectPersonal;
         private System.Windows.Forms.ContextMenuStrip cmsItem;

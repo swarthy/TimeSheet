@@ -49,6 +49,7 @@ namespace TimeSheetManger
                         worksheet.Cells[insertPos, 1].Value = ++personalCount;
                         worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                         worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
+                        worksheet.Cells[insertPos, 4].Value = content.Rate;
                         continue;
                     }
                     var groups = content.Days.GroupBy(d => d.Item_Date);
@@ -71,12 +72,13 @@ namespace TimeSheetManger
                     worksheet.Cells[rangeStart, 1].Value = personalCount;
                     worksheet.Cells[rangeStart, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                     worksheet.Cells[rangeStart, 3].Value = content.Personal.Table_Number;
+                    worksheet.Cells[rangeStart, 4].Value = content.Rate;
                     #endregion
                     #region Заполнение дней                    
                     #region Верхняя строка
                     foreach (var gr in topRowDays)
                     {
-                        int col = gr.Key.Day + 3;
+                        int col = gr.Key.Day + 4;
                         int i = 0;                        
                         foreach (var day in gr)
                         {
@@ -119,7 +121,7 @@ namespace TimeSheetManger
                     #region Нижняя строка
                     foreach (var gr in bottomRowDays)
                     {
-                        int col = gr.Key.Day - 15 + 3;
+                        int col = gr.Key.Day - 15 + 4;
                         int i = 0;
                         foreach (var day in gr)
                         {
@@ -158,36 +160,36 @@ namespace TimeSheetManger
                     for (int i = 0; i < needRows; i++)
                         for (int j = timeSheet._DaysInMonth + 1; j <= 31; j++)
                         {
-                            worksheet.Cells[rangeStart + i * 4 + 2, j - 15 + 3].Value = "X";
-                            worksheet.Cells[rangeStart + i * 4 + 3, j - 15 + 3].Value = "X";
+                            worksheet.Cells[rangeStart + i * 4 + 3, j - 15 + 4].Value = "X";
+                            worksheet.Cells[rangeStart + i * 4 + 4, j - 15 + 4].Value = "X";
                         }
                     #endregion
                     #endregion
                     #region Summary
                     for (int i = 0; i < needRows; i++)
                     {
-                        worksheet.Cells[rangeStart + i * 4, 20].Value = daysCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 20].Value = daysCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 20].Value = daysCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * 4, 21].Value = daysCount[i].AllSum;
+                        worksheet.Cells[rangeStart + i * 4 + 1, 21].Value = daysCount[i].TopRow;
+                        worksheet.Cells[rangeStart + i * 4 + 3, 21].Value = daysCount[i].BottomRow;
 
-                        worksheet.Cells[rangeStart + i * 4, 21].Value = totalHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 21].Value = totalHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 21].Value = totalHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * 4, 22].Value = totalHoursCount[i].AllSum;
+                        worksheet.Cells[rangeStart + i * 4 + 1, 22].Value = totalHoursCount[i].TopRow;
+                        worksheet.Cells[rangeStart + i * 4 + 3, 22].Value = totalHoursCount[i].BottomRow;
 
-                        worksheet.Cells[rangeStart + i * 4, 22].Value = nightHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 22].Value = nightHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 22].Value = nightHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * 4, 23].Value = nightHoursCount[i].AllSum;
+                        worksheet.Cells[rangeStart + i * 4 + 1, 23].Value = nightHoursCount[i].TopRow;
+                        worksheet.Cells[rangeStart + i * 4 + 3, 23].Value = nightHoursCount[i].BottomRow;
 
-                        worksheet.Cells[rangeStart + i * 4, 23].Value = holydayHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 23].Value = holydayHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 23].Value = holydayHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * 4, 24].Value = holydayHoursCount[i].AllSum;
+                        worksheet.Cells[rangeStart + i * 4 + 1, 24].Value = holydayHoursCount[i].TopRow;
+                        worksheet.Cells[rangeStart + i * 4 + 3, 24].Value = holydayHoursCount[i].BottomRow;
                     }
                     #endregion                    
                     if (OnProgress != null)
                         OnProgress(null, new ProgressEventArgs(personalCount));
                 }
-                worksheet.Cells[lastRow + 1, 14].Value = timeSheet.Department.DepartmentManager._ShortName;
-                worksheet.Cells[lastRow + 3, 14].Value = MainForm.curUsr.Profile._ShortName;                
+                worksheet.Cells[lastRow + 1, 15].Value = timeSheet.Department.DepartmentManager._ShortName;
+                worksheet.Cells[lastRow + 3, 15].Value = MainForm.curUsr.Profile._ShortName;                
                 template.Value = "";
                 template.StyleName = "Normal";
                 if (OnSavingStart != null)
@@ -202,14 +204,14 @@ namespace TimeSheetManger
         {
             get
             {
-                return worksheet.Cells[string.Format("A{0}:Y{1}", templateStartRow + rowCount * 4, templateStartRow + rowCount * 4 + 3)];
+                return worksheet.Cells[string.Format("A{0}:X{1}", templateStartRow + rowCount * 4, templateStartRow + rowCount * 4 + 3)];
             }
         }
         static void AddRow()
         {
             worksheet.InsertRow(lastRow, 4);
             rowCount++;
-            template.Copy(worksheet.Cells[string.Format("A{0}:Y{1}", lastRow, lastRow + 3)]);
+            template.Copy(worksheet.Cells[string.Format("A{0}:X{1}", lastRow, lastRow + 3)]);
             lastRow += 4;
         }
         struct DayCounter
