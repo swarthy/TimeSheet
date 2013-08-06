@@ -294,12 +294,12 @@ namespace TimeSheetManger
             if (user == null)
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
-            {                
-                Helper.Set("user", "lastLogin", tbAuthLogin.Text);                
+            {
+                Client.Send(new NetData(Command.Login, user.ID.ToString()));
+                Helper.Set("user", "lastLogin", tbAuthLogin.Text);
                 currentUser = user;
                 changeState(AppState.Desktop);
-                tbAuthPass.Text = "";
-                Client.Send(new NetData(Command.Login, user.ID.ToString()));
+                tbAuthPass.Text = "";                
             }
         }
 
