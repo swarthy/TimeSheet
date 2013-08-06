@@ -395,7 +395,7 @@ where   personal.Department_Number=department.Department_Number
         {
             get
             {
-                return string.Format("{0} ({3})", _FullName, Table_Number);
+                return string.Format("{0} ({1})", _FullName, Table_Number);
             }
         }
         public string FirstName
