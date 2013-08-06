@@ -123,6 +123,13 @@ namespace TimeSheetManger.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap Hard_Disk_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Hard_Disk_16x16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap Information_16x16 {
             get {
                 object obj = ResourceManager.GetObject("Information_16x16", resourceCulture);
@@ -132,7 +139,7 @@ namespace TimeSheetManger.Properties {
         
         internal static System.Drawing.Bitmap Log_Out_16x16 {
             get {
-                object obj = ResourceManager.GetObject("Log Out_16x16", resourceCulture);
+                object obj = ResourceManager.GetObject("Log_Out_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -168,6 +175,13 @@ namespace TimeSheetManger.Properties {
         internal static System.Drawing.Bitmap Settings_48x48 {
             get {
                 object obj = ResourceManager.GetObject("Settings_48x48", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap Synchronize_16x16 {
+            get {
+                object obj = ResourceManager.GetObject("Synchronize_16x16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -67,8 +67,7 @@ namespace TimeSheetManger
             TSContent.Rate = rate;
             defaultval = cbDefaultValues.Checked;
             if (isNew)
-                mainForm.currentTimeSheet.Content.Add(TSContent);
-            //TSContent.TimeSheetManger = mainForm.currentTimeSheet;
+                mainForm.currentTimeSheet.Content.Add(TSContent);            
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }

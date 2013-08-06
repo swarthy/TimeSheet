@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Drawing;
 using SwarthyComponents.FireBird;
-using System.Xml.Serialization;
 using System.Xml.Linq;
 
 namespace TimeSheetManger
@@ -215,9 +212,7 @@ namespace TimeSheetManger
             if (Department_Number <= 0)
                 return "Не указан номер отделения";
             if (LPU == null)
-                return "Не указано ЛПУ";
-            if (DepartmentManager == null)
-                return "Не указан заведующий отделения";
+                return "Не указано ЛПУ";            
             return "";
         }
         #region Properties
@@ -301,9 +296,9 @@ namespace TimeSheetManger
             if (!int.TryParse(values[1], out temp))
                 return false;
             department.Department_Number = temp;
-            if (!int.TryParse(values[2], out temp))
-                return false;
-            department["DEPARTMENT_MANAGER_TN"] = temp;
+            //if (!int.TryParse(values[2], out temp))
+                //return false;
+            //department["DEPARTMENT_MANAGER_TN"] = temp;
             department["LPU_ID"] = MainForm.curUsr.LPU.ID;
             return department.Save();            
         }

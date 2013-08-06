@@ -342,8 +342,20 @@ namespace SwarthyComponents.FireBird
             {
                 Fields[key] = value;
                 _Changed = true;
-                //if (value!=null && value.GetType().IsSubclassOf(typeof(Domain)) && BTfetched.Keys.Contains(key, StringComparer.OrdinalIgnoreCase))
-                    //BTfetched[key] = true;                    
+                #region Пока не придумал как оптимизировать               
+                /*
+                if (value.GetType().IsSubclassOf(typeof(Domain)))
+                {
+                    if (GetHasOne(GetType()).Keys.Contains(key))
+                    {
+                        //заполнить поля у has_one связи
+                    }else
+                        if (GetHasMany(GetType()).Keys.Contains(key))
+                        {
+                            //заполнить поля у has_many списка(!)
+                        }
+                }*/
+                #endregion
             }
         }
         public T BT<T>(string key, bool getFromServer = false) where T : Domain, new()

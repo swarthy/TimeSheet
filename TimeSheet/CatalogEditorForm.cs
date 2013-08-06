@@ -483,18 +483,36 @@ namespace TimeSheetManger
             var nameETB = new MyTB();
             aE(nameETB);
 
+            DataGridViewTextBoxColumn code = new DataGridViewTextBoxColumn();
+            code.DataPropertyName = "Code";
+            code.HeaderText = "Код должности";
+            grid.Columns.Add(code);
+            var codeFTB = new MyTB((box) => { view.ApplyFilter(p => p.Code.ToString().Contains(box.Text)); });
+            aF(codeFTB);
+            var codeETB = new MyTB();
+            aE(codeETB);
+
 
             grid.RowEditStarted +=
             delegate
             {
                 var post = (bs.Current as ObjectView<Post>).Object;
-                nameETB.Text = post.Name;                
+                nameETB.Text = post.Name;
+                codeETB.Text = post.Code.ToString();
             };
 
             EditingComplete += (s, e) =>
             {
                 var post = (bs.Current as ObjectView<Post>).Object;
+                int temp;
                 post.Name = nameETB.Text;
+                if (!int.TryParse(codeETB.Text, out temp))
+                {
+                    MessageBox.Show("Код должности введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                post.Code = temp;
                 if (!post.Save())
                 {
                     success = false;
@@ -506,7 +524,15 @@ namespace TimeSheetManger
             AddingComplete += (s, e) =>
             {
                 var post = new Post();
+                int temp;
                 post.Name = nameETB.Text;
+                if (!int.TryParse(codeETB.Text, out temp))
+                {
+                    MessageBox.Show("Код должности введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    success = false;
+                    return;
+                }
+                post.Code = temp;
                 if (!post.Save())
                 {
                     success = false;
@@ -834,10 +860,10 @@ namespace TimeSheetManger
         {
             DataSource = source;
             PreviewKeyDown += (s, e) => { if (e.KeyCode == Keys.Escape) e.IsInputKey = true; };
-            FormattingEnabled = true;            
+            FormattingEnabled = true;
             textChanged = cb;
             AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;            
+            AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
         }
         protected override void OnTextChanged(EventArgs e)
         {

@@ -7,11 +7,10 @@ using System.Windows.Forms;
 using System.Globalization;
 using System.IO;
 using System.Threading;
-using SwarthyComponents;
 using SwarthyComponents.FireBird;
-using System.Xml.Serialization;
-using System.Xml.Linq;
 using System.Diagnostics;
+using NetWork;
+using Client;
 
 namespace TimeSheetManger
 {
@@ -48,6 +47,7 @@ namespace TimeSheetManger
             }
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
+        public ClientIOAsync Client;
 
         public string StatusLeft
         {
@@ -87,7 +87,9 @@ namespace TimeSheetManger
             dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             
             #region DB Initialization
-            DBHelper.Log += Helper.Log;//подписываемся на логи (DEBUG)
+            #if DEBUG
+            DBHelper.Log += Helper.Log;//подписываемся на логи
+            #endif            
             DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
             
             Domain.VirtualDeletionField = "DELDATE";
@@ -141,8 +143,12 @@ namespace TimeSheetManger
         {
             WaitScreen waitScreen = new WaitScreen(true);
             StatusLeft = "Проверка корректности БД.";
-            if (currentLPU.MainDoc==null)
+            if (currentLPU.MainDoc == null)
+            {
+                waitScreen.Close();
                 MessageBox.Show("У данного ЛПУ не указан главный врач.\r\nВозможно нарушение отчетности.", "Нарушена целостность данных", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            waitScreen.Show();
             var invalidDepartments = currentLPU.Departments.FindAll(d => d.DepartmentManager == null);
             waitScreen.Close();
             Ready();
@@ -205,7 +211,7 @@ namespace TimeSheetManger
                    );
                     msMainMenu.Show();
                     break;                
-                case AppState.EditTimeSheet:   
+                case AppState.EditTimeSheet:
                     WaitScreen waitScreen = new WaitScreen(true);                    
                     specialDays = SpecialDay.GetAllForYear(currentTimeSheet._GetDate.Year);                    
                     UpdateColumns(currentTimeSheet);                    
@@ -249,7 +255,14 @@ namespace TimeSheetManger
                         
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR();})); };
-            
+
+            Client = new ClientIOAsync();
+            Client.OnReceiveData += (data) => { MessageParse(data); };
+            Client.OnConnecting += delegate { tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; };
+            Client.OnConnected += delegate { tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { msMainMenu.Enabled = pWorkspace.Enabled = pAuth.Enabled = pLPUSelection.Enabled = pDesktop.Enabled = true; })); };
+            Client.OnServerNotAvailable += delegate { tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { msMainMenu.Enabled = pWorkspace.Enabled = pAuth.Enabled = pLPUSelection.Enabled = pDesktop.Enabled = false; })); };
+            Client.Connect(Helper.ServerIP, 23069);
+
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
             foreach (LPU lpu in LPUlist)            
@@ -258,7 +271,7 @@ namespace TimeSheetManger
             Flags = Flag.All<Flag>();            
             changeState(AppState.LPUselect);  //release
             #if DEBUG
-            currentLPU = LPU.Get<LPU>(17);            
+            currentLPU = LPU.Get<LPU>(1);            
             currentUser = User.Get<User>(71);            
             changeState(AppState.Desktop);
             miAdminPanel_Click(this, e);
@@ -283,9 +296,10 @@ namespace TimeSheetManger
             else
             {                
                 Helper.Set("user", "lastLogin", tbAuthLogin.Text);                
-                currentUser = user;                
+                currentUser = user;
                 changeState(AppState.Desktop);
                 tbAuthPass.Text = "";
+                Client.Send(new NetData(Command.Login, user.ID.ToString()));
             }
         }
 
@@ -382,6 +396,7 @@ namespace TimeSheetManger
         private void miLogout_Click(object sender, EventArgs e)
         {
             currentUser = null;
+            Client.Send(new NetData(Command.Logout, ""));
             changeState(AppState.Auth);
         }
 
@@ -636,7 +651,7 @@ namespace TimeSheetManger
                 try
                 {
                     Thread exprt = new Thread(a => ExcelManager.ExportContent(currentTimeSheet, System.IO.Path.GetDirectoryName(Application.ExecutablePath) + @"\template\temp.xlsx", dlgSaveFile.FileName));
-                    exprt.Start();                    
+                    exprt.Start();
                 }
                 catch (Exception ex)
                 {
@@ -645,7 +660,8 @@ namespace TimeSheetManger
                 finally
                 {
                     waitScreen.Close();
-                }                
+                }
+                waitScreen.Close();
             }
         }
         
@@ -688,6 +704,27 @@ namespace TimeSheetManger
             bool state = firstCell.OwningColumn.Tag != null && firstCell.OwningColumn.Tag.GetType() == typeof(DateTime);                            
             редактироватьВыделеннуюЗаписьToolStripMenuItem.Enabled = miAddMore.Enabled = удалитьВыделеннуюЗаписьToolStripMenuItem.Enabled = state;
             miEditPersonal.Enabled = удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Enabled = !state;            
+        }
+
+        private void reconnectTimer_Tick(object sender, EventArgs e)
+        {
+            if (!Client.Connected)
+                Client.Reconnect();            
+        }
+        private void MessageParse(NetData data)
+        {            
+            switch(data.CMD)
+            {
+                case Command.Notification:
+                    MessageBox.Show(data.Text, "Системное сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    break;
+                case Command.ServerIsShutingDown:
+                    MessageBox.Show("Сервер завершает работу. Приложение будет закрыто.", "Системное сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    DB.Connection.Close();
+                    Client.Disconnect();
+                    Environment.Exit(0);
+                    break;
+            }
         }
     }
     public enum AppState
