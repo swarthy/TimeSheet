@@ -144,7 +144,7 @@ namespace TimeSheetManger
             profile.DataPropertyName = "Profile";
             profile.HeaderText = "Профиль";
             grid.Columns.Add(profile);
-            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile.ToString().Contains(box.Text)); });
+            var profileFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(u => u.Profile==null || u.Profile.ToString().Contains(box.Text)); });
             aF(profileFB);
             var profileEB = new MyCB(LPUPersonals);            
             aE(profileEB);
@@ -266,21 +266,21 @@ namespace TimeSheetManger
             aF(middleNameFTB);
             var middleNameETB = new MyTB();
             aE(middleNameETB);
-            /*
+            
             DataGridViewTextBoxColumn post = new DataGridViewTextBoxColumn();
-            post.DataPropertyName = "Post";
+            post.DataPropertyName = "MainPost";
             post.HeaderText = "Должность";
             grid.Columns.Add(post);
-            var postFB = new MyCB(Post.All<Post>(), (box) => { view.ApplyFilter(u => u.Post.Name.Contains(box.Text)); });
+            var postFB = new MyCB(Post.All<Post>(), (box) => { view.ApplyFilter(p => p.MainPost == null || p.MainPost.Name.Contains(box.Text)); });
             aF(postFB);
             var postEB = new MyCB(Post.All<Post>());
-            aE(postEB);*/
+            aE(postEB);
 
             DataGridViewTextBoxColumn department = new DataGridViewTextBoxColumn();
             department.DataPropertyName = "Department";
             department.HeaderText = "Отделение";
             grid.Columns.Add(department);
-            var DepartmentFB = new MyCB(mainForm.currentLPU.HM<Department>("Departments", true), (box) => { view.ApplyFilter(u => u.Department.Name.Contains(box.Text)); });
+            var DepartmentFB = new MyCB(mainForm.currentLPU.HM<Department>("Departments", true), (box) => { view.ApplyFilter(u => u.Department==null || u.Department.Name.Contains(box.Text)); });
             aF(DepartmentFB);
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
@@ -316,7 +316,7 @@ namespace TimeSheetManger
                 lastNameETB.Text= personal.LastName;
                 middleNameETB.Text = personal.MiddleName;
                 firstNameETB.Text = personal.FirstName;
-                //postEB.SelectedItem = personal.Post;
+                postEB.SelectedItem = personal.MainPost;
                 DepartmentEB.SelectedItem = personal.Department;
                 //tsManagerEB.SelectedItem = personal.TimeSheetManager;                
                 priorityETB.Text = personal.Priority.ToString();
@@ -337,7 +337,7 @@ namespace TimeSheetManger
                 personal.FirstName = firstNameETB.Text;
                 personal.LastName = lastNameETB.Text;
                 personal.MiddleName = middleNameETB.Text;
-                //personal.Post = postEB.SelectedItem as Post;
+                personal.MainPost = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
                 //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
                                 
@@ -371,7 +371,7 @@ namespace TimeSheetManger
                 personal.FirstName = firstNameETB.Text;
                 personal.LastName = lastNameETB.Text;
                 personal.MiddleName = middleNameETB.Text;
-                //personal.Post = postEB.SelectedItem as Post;
+                personal.MainPost = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
                 //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
 
@@ -419,7 +419,7 @@ namespace TimeSheetManger
             maindoc.DataPropertyName = "MainDoc";
             maindoc.HeaderText = "Главный врач";
             grid.Columns.Add(maindoc);
-            var maindocFB = new MyCB(Personal.All<Personal>(), (box) => { view.ApplyFilter(l => l.MainDoc.ToString().Contains(box.Text)); });
+            var maindocFB = new MyCB(Personal.All<Personal>(), (box) => { view.ApplyFilter(l => l.MainDoc==null|| l.MainDoc.ToString().Contains(box.Text)); });
             aF(maindocFB);
             var maindocEB = new MyCB(Personal.All<Personal>());
             aE(maindocEB);
@@ -551,41 +551,7 @@ namespace TimeSheetManger
         }
 
         public void OpenDepartments()
-        {
-            #region old
-            /*
-            departments = mainForm.currentLPU.Departments;
-            grid.Columns.Clear();
-
-            DataGridViewTextBoxColumn name = new DataGridViewTextBoxColumn();
-            name.DataPropertyName = "Name";
-            name.HeaderText = "Название";
-            grid.Columns.Add(name);
-
-            DataGridViewTextBoxColumn departmentNumber = new DataGridViewTextBoxColumn();
-            departmentNumber.DataPropertyName = "Department_Number";
-            departmentNumber.HeaderText = "Номер отделения";
-            grid.Columns.Add(departmentNumber);
-
-            DataGridViewComboBoxColumn departmentmanager = new DataGridViewComboBoxColumn();
-            departmentmanager.ValueMember = "_Self";
-            departmentmanager.DataPropertyName = "DepartmentManager";
-            departmentmanager.DisplayMember = "_ShortNameAndNumber";
-            departmentmanager.HeaderText = "Заведующий отделения";
-            departmentmanager.DataSource = mainForm.currentLPU.Departments.SelectMany(d => d.PersonalOfDepartment).ToDBList();
-            grid.Columns.Add(departmentmanager);
-
-            DataGridViewComboBoxColumn lpu = new DataGridViewComboBoxColumn();
-            lpu.ValueMember = "_Self";
-            lpu.DataPropertyName = "LPU";
-            lpu.DisplayMember = "Name";
-            lpu.HeaderText = "ЛПУ";
-            lpu.DataSource = LPU.All<LPU>();
-            grid.Columns.Add(lpu);
-
-            bs.DataSource = departments;
-            grid.DataSource = bs;*/
-            #endregion
+        {            
             departments = mainForm.currentLPU.HM<Department>("Departments", true);
             #region Поля
             BindingListView<Department> view = new BindingListView<Department>(departments);
@@ -613,7 +579,7 @@ namespace TimeSheetManger
             manager.DataPropertyName = "DepartmentManager";            
             manager.HeaderText = "Заведующий отделения";
             grid.Columns.Add(manager);
-            var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => { if (d.DepartmentManager == null) return true; return d.DepartmentManager.ToString().Contains(box.Text); }); });
+            var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => d.DepartmentManager == null || d.DepartmentManager.ToString().Contains(box.Text)); });
             aF(managerFB);
             var managerEB = new MyCB(LPUPersonals);
             aE(managerEB);

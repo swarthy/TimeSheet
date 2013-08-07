@@ -61,19 +61,23 @@ namespace TimeSheetManger
             while (!sr.EndOfStream && isImporting)
             {
                 string str = sr.ReadLine();
+                if (str.Trim().Length == 0)
+                    continue;
                 bool res;
                 try
                 {
                     res = code == 0 ? Personal.TryParseFromString(str) : code == 1 ? Post.TryParseFromString(str) : code == 2 ? Department.TryParseFromString(str) : false;
                     if (res)
-                        successCount++;                    
+                        successCount++;
+                    else
+                        AppendTextBox(string.Format("[{0}] Ошибка: \"{1}\" - Не сохранился\r\n", totalCount, str));                                        
                 }
                 catch (Exception ex)
                 {                    
                     AppendTextBox(string.Format("[{0}] Ошибка: \"{1}\" - {2}\r\n", totalCount, str, ex.Message));                                        
                 }
                 totalCount++;
-                SetStatusLabel(string.Format("Испортировано: {0}/{1}", successCount, totalCount));                
+                SetStatusLabel(string.Format("Импортировано: {0}/{1}", successCount, totalCount));                
             }            
             MessageBox.Show(string.Format("Количество ошибок: {0}/{1}", totalCount-successCount,totalCount), "Импорт завершен", MessageBoxButtons.OK, MessageBoxIcon.Information);
             btnStartImport.Enabled = true;

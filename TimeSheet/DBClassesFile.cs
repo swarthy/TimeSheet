@@ -336,7 +336,7 @@ namespace TimeSheetManger
             //Основная должность
             {"MainPost", new Link("Post_Code",typeof(Post),"Code")},
             //Отделение
-            {"Department", new Link("Department_Number",typeof(Department),"Department_Number")},
+            {"Department", new Link("Department_Number",typeof(Department),"Department_Number")},                        
             //Табельщик, ведующий сотрудника
             {"TimeSheetManager", new Link("TimeSheet_Manager",typeof(User))}
         };
