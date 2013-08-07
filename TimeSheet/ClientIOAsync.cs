@@ -33,7 +33,8 @@ namespace Client
         {
             get
             {
-                return clientSocket.IsConnected();
+                //return clientSocket.IsConnected();
+                return clientSocket.Connected;
             }
         }
         public void Connect(string ip, int port)

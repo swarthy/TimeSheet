@@ -38,7 +38,6 @@
             this.tbMessage = new System.Windows.Forms.TextBox();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.btnDrop = new System.Windows.Forms.Button();
             this.rbAll = new System.Windows.Forms.RadioButton();
             this.rbSelected = new System.Windows.Forms.RadioButton();
             this.lbOnline = new System.Windows.Forms.ListBox();
@@ -56,6 +55,7 @@
             this.tssOnlineCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerInfoUpdater = new System.Windows.Forms.Timer(this.components);
+            this.lbCountDown = new System.Windows.Forms.Label();
             this.tcWorkspace.SuspendLayout();
             this.tbUsers.SuspendLayout();
             this.gbManagment.SuspendLayout();
@@ -101,7 +101,6 @@
             this.gbManagment.Controls.Add(this.tbMessage);
             this.gbManagment.Controls.Add(this.btnDisconnect);
             this.gbManagment.Controls.Add(this.label4);
-            this.gbManagment.Controls.Add(this.btnDrop);
             this.gbManagment.Controls.Add(this.rbAll);
             this.gbManagment.Controls.Add(this.rbSelected);
             this.gbManagment.Location = new System.Drawing.Point(236, 123);
@@ -114,7 +113,7 @@
             // btnSendMsg
             // 
             this.btnSendMsg.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSendMsg.Location = new System.Drawing.Point(360, 143);
+            this.btnSendMsg.Location = new System.Drawing.Point(360, 147);
             this.btnSendMsg.Name = "btnSendMsg";
             this.btnSendMsg.Size = new System.Drawing.Size(85, 23);
             this.btnSendMsg.TabIndex = 8;
@@ -125,7 +124,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 86);
+            this.label5.Location = new System.Drawing.Point(6, 47);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 7;
@@ -136,15 +135,15 @@
             this.tbMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbMessage.Location = new System.Drawing.Point(9, 102);
+            this.tbMessage.Location = new System.Drawing.Point(9, 63);
             this.tbMessage.Multiline = true;
             this.tbMessage.Name = "tbMessage";
-            this.tbMessage.Size = new System.Drawing.Size(345, 68);
+            this.tbMessage.Size = new System.Drawing.Size(345, 107);
             this.tbMessage.TabIndex = 6;
             // 
             // btnDisconnect
             // 
-            this.btnDisconnect.Location = new System.Drawing.Point(9, 42);
+            this.btnDisconnect.Location = new System.Drawing.Point(274, 18);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(130, 23);
             this.btnDisconnect.TabIndex = 5;
@@ -160,16 +159,6 @@
             this.label4.Size = new System.Drawing.Size(83, 13);
             this.label4.TabIndex = 4;
             this.label4.Text = "Пользователи:";
-            // 
-            // btnDrop
-            // 
-            this.btnDrop.Location = new System.Drawing.Point(145, 42);
-            this.btnDrop.Name = "btnDrop";
-            this.btnDrop.Size = new System.Drawing.Size(150, 23);
-            this.btnDrop.TabIndex = 1;
-            this.btnDrop.Text = "Разорвать соединение";
-            this.btnDrop.UseVisualStyleBackColor = true;
-            this.btnDrop.Click += new System.EventHandler(this.btnDrop_Click);
             // 
             // rbAll
             // 
@@ -238,6 +227,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.lbCountDown);
             this.groupBox1.Controls.Add(this.btnShutDown);
             this.groupBox1.Controls.Add(this.tbReason);
             this.groupBox1.Controls.Add(this.label3);
@@ -271,7 +261,7 @@
             this.tbReason.Name = "tbReason";
             this.tbReason.Size = new System.Drawing.Size(326, 108);
             this.tbReason.TabIndex = 4;
-            this.tbReason.Text = "Плановые техническое обслуживание.\r\nРабота будет возобновлена через 1 час.";
+            this.tbReason.Text = "Плановое техническое обслуживание.\r\nРабота будет возобновлена через 1 час.";
             // 
             // label3
             // 
@@ -345,6 +335,14 @@
             this.timerInfoUpdater.Interval = 1000;
             this.timerInfoUpdater.Tick += new System.EventHandler(this.timerInfoUpdater_Tick);
             // 
+            // lbCountDown
+            // 
+            this.lbCountDown.AutoSize = true;
+            this.lbCountDown.Location = new System.Drawing.Point(6, 186);
+            this.lbCountDown.Name = "lbCountDown";
+            this.lbCountDown.Size = new System.Drawing.Size(0, 13);
+            this.lbCountDown.TabIndex = 6;
+            // 
             // ServerForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -383,7 +381,6 @@
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.GroupBox gbUserInfo;
         private System.Windows.Forms.Label lbUserInfoText;
-        private System.Windows.Forms.Button btnDrop;
         private System.Windows.Forms.Timer timerInfoUpdater;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.GroupBox groupBox1;
@@ -401,6 +398,7 @@
         private System.Windows.Forms.Button btnSendMsg;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbMessage;
+        private System.Windows.Forms.Label lbCountDown;
 
     }
 }

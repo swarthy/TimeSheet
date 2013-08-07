@@ -68,15 +68,7 @@ namespace Server
                 return rbAll.Checked ? Server.server.Connections : lbOnline.SelectedItems.Cast<ConnectionInfo>().ToList();
             }
         }
-
-        private void btnDrop_Click(object sender, EventArgs e)
-        {
-            selected = null;
-            foreach (var item in Connections)
-                Server.server.CloseConnection(item, false);
-            refreshOnlineList();
-        }
-
+                
         private void btnSendMsg_Click(object sender, EventArgs e)
         {
             if (tbMessage.Text.Trim().Length > 0)
@@ -94,20 +86,27 @@ namespace Server
         }
         bool shutingDown = false;
         IDisposable timer;
+        IDisposable interval;
+        DateTime ShutDownTime;
         private void btnShutDown_Click(object sender, EventArgs e)
         {
             shutingDown = !shutingDown;
             if (shutingDown)
             {
                 btnShutDown.Text = "Отмена";
+                ShutDownTime = DateTime.Now + TimeSpan.FromMinutes((int)timeout.Value);
                 timer = EasyTimer.SetTimeout(() => {
                     Server.server.Connections.ForEach(c => Server.server.SendToClient(c,new NetData(Command.ServerIsShutingDown,"")));
                     EasyTimer.SetTimeout(() => { Environment.Exit(0);}, 20000); },//вырубать не сразу
                     (int)timeout.Value * 60000);
+                interval = EasyTimer.SetInterval(() => { Invoke((Action)(() => { lbCountDown.Text = string.Format("До выключения сервера: {0}", ShutDownTime - DateTime.Now); })); }, 1000);
             }
             else
             {
+                lbCountDown.Text = "";                
                 btnShutDown.Text = "Ок";
+                if (interval != null)
+                    interval.Dispose();
                 if (timer!=null)
                     timer.Dispose();
             }

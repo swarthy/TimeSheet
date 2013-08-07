@@ -244,7 +244,9 @@ namespace TimeSheetManger
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (DB.Connection.State == ConnectionState.Open)
-                DB.Connection.Close();            
+                DB.Connection.Close();
+            if (Client.Connected)
+                Client.Disconnect();
         }
                 
         private void MainForm_Load(object sender, EventArgs e)
