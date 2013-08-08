@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.OleDb;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     static public class DBFmanager
     {

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using NetWork;
 using System.Net.Sockets;
-using TimeSheetManger;
+using TimeSheetManager;
+using System.IO;
 
 namespace Server
 {
@@ -14,9 +15,8 @@ namespace Server
         internal static AsynchronousIoServer server;
         public static void Initialize()
         {
-            int port = 23069;
-            string ip = "127.0.0.1";
-            server = new AsynchronousIoServer(ip, port);
+            int port = 23069;            
+            server = new AsynchronousIoServer(port);
             server.LogMethod += (msg) => { Console.WriteLine(msg); };
             server.OnReceiveData += new DataEvent(OnReceive);            
         }
@@ -51,7 +51,11 @@ namespace Server
                 case Command.Message:
                     Console.WriteLine("[{0}] {1}", ci.User.Login, data.Text);
                     break;
+                case Command.ClientVersion:
+                    if (Program.Version != "" && Program.Version != data.Text)
+                        server.SendToClient(ci, new NetData(Command.LetsUpdate, ""));
+                    break;
             }            
-        }
+        }        
     }
 }

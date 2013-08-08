@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class AboutBox : Form
     {

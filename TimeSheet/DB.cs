@@ -8,6 +8,7 @@ using FirebirdSql.Data.FirebirdClient;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.Xml.Linq;
+using TimeSheetManager;
 
 namespace SwarthyComponents.FireBird
 {
@@ -25,7 +26,7 @@ namespace SwarthyComponents.FireBird
         }        
     }
     public static class Extensions
-    {
+    {            
         public static DBList<T> ToDBList<T>(this IEnumerable<T> ien) where T : Domain, new()
         {
             DBList<T> res = new DBList<T>();
@@ -54,8 +55,15 @@ namespace SwarthyComponents.FireBird
     }
     public static class DB
     {
-        private static FbConnection connection = GetNewConnection;
-        public static string ConnectionString = "";        
+        public static EventHandler OnExit;
+        private static FbConnection connection;
+        static string _ConnectionString = "";
+        public static string ConnectionString
+        {
+            get { return _ConnectionString; }
+            set { _ConnectionString = value; connection = GetNewConnection; }
+        }
+        public static bool Connected { get; private set; }
         internal static FbConnection Connection
         {
             get
@@ -63,13 +71,23 @@ namespace SwarthyComponents.FireBird
                 if (connection.State != System.Data.ConnectionState.Open)
                     try
                     {
-                        connection.Open();                        
-                    }
-                    catch
-                    {                        
-                        connection = GetNewConnection;
                         connection.Open();
                     }
+                    catch(FbException excep)
+                    {
+                        if (excep.ErrorCode == 335544721)
+                        {
+                            MessageBox.Show("Невозможно подключиться к серверу базы данных.\r\nПроверьте подключение или обратитесь к администратору.", "Ошибка подключения", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            Connected = false;
+                            //ДОДЕЛАТЬ!
+                            //if (MainForm.Client != null && MainForm.Client.Connected)
+                                //MainForm.Client.Disconnect();                            
+                            Environment.Exit(0);
+                        }
+                        connection = GetNewConnection;                        
+                        connection.Open();
+                    }
+                Connected = true;
                 return connection;
             }
         }

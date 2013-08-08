@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using SwarthyComponents.FireBird;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class AddUserToFavoriteForm : Form
     {
@@ -51,7 +51,7 @@ namespace TimeSheetManger
 
         private void cbPersonal_SelectedIndexChanged(object sender, EventArgs e)
         {
-            cbPost.SelectedItem = cbPersonal.SelectedItem == null ? (cbPersonal.SelectedItem as Personal).MainPost : null;
+            cbPost.SelectedItem = cbPersonal.SelectedItem != null ? (cbPersonal.SelectedItem as Personal).MainPost : null;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class WaitingForm
     {
@@ -48,7 +48,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = global::TimeSheetManger.Properties.Resources.Settings_48x48;
+            this.pictureBox1.Image = global::TimeSheetManager.Properties.Resources.Settings_48x48;
             this.pictureBox1.Location = new System.Drawing.Point(11, 11);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(50, 53);

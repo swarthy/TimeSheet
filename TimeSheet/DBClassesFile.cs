@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using SwarthyComponents.FireBird;
 using System.Xml.Linq;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     //Все классы должны быть инициализированны при создании формы (см MainForm.MainForm())
     /// <summary>

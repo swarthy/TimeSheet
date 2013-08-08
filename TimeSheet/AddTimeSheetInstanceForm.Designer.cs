@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class AddTimeSheetInstanceForm
     {
@@ -40,12 +40,14 @@
             // 
             this.cbDepartment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbDepartment.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbDepartment.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbDepartment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDepartment.FormattingEnabled = true;
             this.cbDepartment.Location = new System.Drawing.Point(83, 6);
             this.cbDepartment.Name = "cbDepartment";
-            this.cbDepartment.Size = new System.Drawing.Size(189, 21);
-            this.cbDepartment.TabIndex = 0;
+            this.cbDepartment.Size = new System.Drawing.Size(305, 21);
+            this.cbDepartment.TabIndex = 1;
             // 
             // label1
             // 
@@ -64,7 +66,7 @@
             this.dtpTS_Date.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpTS_Date.Location = new System.Drawing.Point(83, 33);
             this.dtpTS_Date.Name = "dtpTS_Date";
-            this.dtpTS_Date.Size = new System.Drawing.Size(189, 20);
+            this.dtpTS_Date.Size = new System.Drawing.Size(305, 20);
             this.dtpTS_Date.TabIndex = 2;
             // 
             // label2
@@ -79,7 +81,7 @@
             // btCreate
             // 
             this.btCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btCreate.Location = new System.Drawing.Point(116, 66);
+            this.btCreate.Location = new System.Drawing.Point(232, 66);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(75, 23);
             this.btCreate.TabIndex = 3;
@@ -91,7 +93,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(197, 66);
+            this.btnCancel.Location = new System.Drawing.Point(313, 66);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 4;
@@ -103,7 +105,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(284, 101);
+            this.ClientSize = new System.Drawing.Size(400, 101);
             this.ControlBox = false;
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btCreate);

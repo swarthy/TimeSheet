@@ -15,7 +15,7 @@ using System.IO;
 using System.Data.OleDb;
 using System.Threading;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class AdminPanelForm : Form
     {

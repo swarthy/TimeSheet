@@ -5,7 +5,7 @@ using Equin.ApplicationFramework;
 using SwarthyComponents.FireBird;
 using SwarthyComponents.WinForms;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class CatalogEditorForm : Form
     {

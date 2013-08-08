@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class PersonalListForm
     {

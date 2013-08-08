@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class RowEditForm : Form
     {

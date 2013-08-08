@@ -12,7 +12,7 @@ using System.Diagnostics;
 using NetWork;
 using Client;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class MainForm : Form
     {        
@@ -47,7 +47,7 @@ namespace TimeSheetManger
             }
         }
         public TimeSheetInstance currentTimeSheet { get; set; }
-        public ClientIOAsync Client;
+        public static ClientIOAsync Client;
 
         public string StatusLeft
         {
@@ -78,20 +78,15 @@ namespace TimeSheetManger
 
         public MainForm()
         {   
-            InitializeComponent();
+            InitializeComponent();            
             ttsVersion.Text = "Версия: " + Helper.GetFileVersion(Application.ExecutablePath);
             Helper.settings = new IniFile(Environment.CurrentDirectory + @"\settings.ini");
-            checkUpdates();    
-        
-
-            dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            
+            dlgSaveFile.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);            
             #region DB Initialization
             #if DEBUG
             DBHelper.Log += Helper.Log;//подписываемся на логи
             #endif            
-            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);
-            
+            DB.ConnectionString = string.Format("UserID=SYSDBA;Password=masterkey;Database={0}:{1};Charset=NONE;", Helper.ServerIP, Helper.ServerFile);            
             Domain.VirtualDeletionField = "DELDATE";
             Domain.VirtualDeletionNotDeletedRecord = "DELDATE is null";
             Domain.VirtualDeletedValue = () => { return DateTime.Today; };
@@ -113,31 +108,22 @@ namespace TimeSheetManger
             UserPDP.Initialize<UserPDP>();
             #endregion                        
         }
-        void checkUpdates()
+        void Update()
         {
-            var updPath = Helper.ServerUpdatePath;
-            if (Directory.Exists(updPath))
+            if (!File.Exists("Updater.exe"))
             {
-                var serverExe = Path.Combine(Helper.ServerUpdatePath,Path.GetFileName(Application.ExecutablePath));
-                if (File.Exists(serverExe))
-                {
-                    if (Helper.GetFileVersion(serverExe) != Helper.GetFileVersion(Application.ExecutablePath))
-                    {
-                        //Обновляем
-                        if (!File.Exists("Updater.exe"))
-                        {
-                            using (FileStream exeFile = new FileStream("Updater.exe", FileMode.Create))
-                                exeFile.Write(Properties.Resources.Updater, 0, Properties.Resources.Updater.Length);
-                        }
-                        ProcessStartInfo si = new ProcessStartInfo("cmd", string.Format("/C ping 127.0.0.1 -n 2 > nul && updater.exe {0} {1}", updPath, Path.GetFileName(Application.ExecutablePath)));
-                        si.CreateNoWindow = false;
-                        si.UseShellExecute = false;
-                        si.WindowStyle = ProcessWindowStyle.Hidden;
-                        Process.Start(si);
-                        Environment.Exit(0);
-                    }
-                }
+                using (FileStream exeFile = new FileStream("Updater.exe", FileMode.Create))
+                    exeFile.Write(Properties.Resources.Updater, 0, Properties.Resources.Updater.Length);
             }
+            //if (Client != null && Client.Connected)
+                //Client.Disconnect();
+            ProcessStartInfo si = new ProcessStartInfo("cmd", string.Format("/C ping 127.0.0.1 -n 3 > nul && updater.exe {0} {1}", Helper.ServerUpdatePath, Path.GetFileName(Application.ExecutablePath)));
+            si.CreateNoWindow = false;
+            si.UseShellExecute = false;
+            si.WindowStyle = ProcessWindowStyle.Hidden;
+            Process.Start(si);
+            //Helper.EnvExitWithSocketAndDBClosing();
+            Environment.Exit(0);
         }
         void AdminAfterLoginCheck()
         {
@@ -180,7 +166,7 @@ namespace TimeSheetManger
             StatusRight = "";
         }
         bool wantChangeLPU = false;
-        void changeState(AppState newstate)
+        public void changeState(AppState newstate)
         {
             switch (newstate)
             {
@@ -217,7 +203,7 @@ namespace TimeSheetManger
                     UpdateColumns(currentTimeSheet);                    
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
-                    tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager._FullName;
+                    tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager == null ? "" : currentTimeSheet.Department.DepartmentManager._FullName;
                     lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
                     DrawTimeSheetContent();
                     HideAllShowThis(pWorkspace);
@@ -245,12 +231,19 @@ namespace TimeSheetManger
         {
             if (DB.Connection.State == ConnectionState.Open)
                 DB.Connection.Close();
-            if (Client.Connected)
+            if (Client!=null && Client.Connected)
                 Client.Disconnect();
         }
-                
+        void SetControlsEnabled(bool value)
+        {            
+            foreach (Control c in Controls)
+                if (c.Name != "statusBar")
+                    c.Enabled = value;
+        }
+
+        WaitScreen connectWaitScreen = new WaitScreen();
         private void MainForm_Load(object sender, EventArgs e)
-        {
+        {            
             ExcelManager.OnProgress += delegate { Invoke((Action)(() => tspbProgress.Increment(1))); };
             ExcelManager.OnSavingStart += delegate { Invoke((Action)(() => { StatusLeft = "Сохранение..."; tspbProgress.Visible = false; })); };
             ExcelManager.OnExportEnd += delegate { Invoke((Action)(() => { Ready(); })); };
@@ -260,9 +253,9 @@ namespace TimeSheetManger
 
             Client = new ClientIOAsync();
             Client.OnReceiveData += (data) => { MessageParse(data); };
-            Client.OnConnecting += delegate { tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; };
-            Client.OnConnected += delegate { tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { msMainMenu.Enabled = pWorkspace.Enabled = pAuth.Enabled = pLPUSelection.Enabled = pDesktop.Enabled = true; })); };
-            Client.OnServerNotAvailable += delegate { tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { msMainMenu.Enabled = pWorkspace.Enabled = pAuth.Enabled = pLPUSelection.Enabled = pDesktop.Enabled = false; })); };
+            Client.OnConnecting += delegate { tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Show(); })); };
+            Client.OnConnected += delegate { tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { Client.Send(new NetData(Command.ClientVersion, Helper.AppVersion)); SetControlsEnabled(true); connectWaitScreen.Close(); })); };
+            Client.OnServerNotAvailable += delegate { tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Close(); })); MessageBox.Show("Сервер недоступен.\r\nПроверьте подключение к сети или обратитесь к администратору.\r\n[Server]", "Ошибка подключения к серверу", MessageBoxButtons.OK, MessageBoxIcon.Error); };
             Client.Connect(Helper.ServerIP, 23069);
 
             LPUlist = LPU.All<LPU>();            
@@ -686,7 +679,7 @@ namespace TimeSheetManger
 
         private void btnExit_Click(object sender, EventArgs e)
         {
-            Environment.Exit(0);
+            Helper.EnvExitWithSocketAndDBClosing();
         }
 
         private void miAbout_Click(object sender, EventArgs e)
@@ -710,7 +703,7 @@ namespace TimeSheetManger
 
         private void reconnectTimer_Tick(object sender, EventArgs e)
         {
-            if (!Client.Connected)
+            if (Client != null && !Client.Connected)            
                 Client.Reconnect();            
         }
         private void MessageParse(NetData data)
@@ -722,9 +715,12 @@ namespace TimeSheetManger
                     break;
                 case Command.ServerIsShutingDown:
                     MessageBox.Show("Сервер завершает работу. Приложение будет закрыто.", "Системное сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    DB.Connection.Close();
-                    Client.Disconnect();
                     Environment.Exit(0);
+                    //Helper.EnvExitWithSocketAndDBClosing();
+                    break;
+                case Command.LetsUpdate:
+                    MessageBox.Show("Требуется обновить программу. Нажмите Ок для продолжения.", "Системное сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    Update();
                     break;
             }
         }

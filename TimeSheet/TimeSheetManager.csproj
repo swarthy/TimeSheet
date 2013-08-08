@@ -8,7 +8,7 @@
     <ProjectGuid>{2D7F60B4-6296-4DC0-9CBC-D0A75B02217D}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TimeSheetManger</RootNamespace>
+    <RootNamespace>TimeSheetManager</RootNamespace>
     <AssemblyName>Tabel</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
@@ -154,7 +154,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="SelfUpdater.cs" />
     <Compile Include="TimeSheets.cs">
       <SubType>Form</SubType>
     </Compile>

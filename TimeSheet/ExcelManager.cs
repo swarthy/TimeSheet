@@ -9,7 +9,7 @@ using OfficeOpenXml.Drawing;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public static class ExcelManager
     {

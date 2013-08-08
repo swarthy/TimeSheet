@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using SwarthyComponents.FireBird;
-using TimeSheetManger;
+using TimeSheetManager;
 using System.IO;
+using System.Diagnostics;
 
 namespace Server
 {
@@ -13,12 +14,15 @@ namespace Server
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
+        public static string Version = "";
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
+            Application.SetCompatibleTextRenderingDefault(false);            
+            Console.Title = "Tabel Server Console";
             DBInit();
+            GetServerVersion();
             Server.Initialize();
             Server.OnLogin += (data, ci) => { Console.WriteLine("Auth user {0} from {1}", ci.User.Login, ci.Socket.RemoteEndPoint); };
             Server.OnLogout += (data, ci) => { Console.WriteLine("Logout user {0}", ci.User.Login); };            
@@ -29,7 +33,15 @@ namespace Server
                 inp = Console.ReadLine();
                 if (inp.ToLower() == "gui")
                     Application.Run(new ServerForm());
-            } while (inp.ToLower() != "shutdown");
+                if (inp.ToLower() == "status")
+                {
+                    Console.WriteLine("-------Online users-------");
+                    foreach (var item in Server.server.Connections)
+                        Console.WriteLine(item.ShortInfo);
+                    Console.WriteLine("--------------------------");
+                }
+            } while (inp.ToLower() != "shutdown" && inp.ToLower() != "exit");
+            Console.WriteLine("Server is shutting down...");
             Server.Stop();
         }
         static void DBInit()
@@ -50,6 +62,15 @@ namespace Server
             if (!File.Exists(path))
                 throw new Exception("DB File not exsits! "+path);
             return path;
+        }
+        static void GetServerVersion()
+        {
+            if (File.Exists(@"Updates\updatelist.txt"))
+            {
+                string[] files = File.ReadAllLines(@"Updates\updatelist.txt");
+                if (files.Length > 0 && File.Exists("Updates\\"+files[0]))                
+                    Version = FileVersionInfo.GetVersionInfo("Updates\\"+files[0]).FileVersion;                
+            }            
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class AddUserToFavoriteForm
     {
@@ -45,7 +45,7 @@
             this.btnSelectPersonal.Location = new System.Drawing.Point(230, 118);
             this.btnSelectPersonal.Name = "btnSelectPersonal";
             this.btnSelectPersonal.Size = new System.Drawing.Size(85, 23);
-            this.btnSelectPersonal.TabIndex = 9;
+            this.btnSelectPersonal.TabIndex = 3;
             this.btnSelectPersonal.Text = "Выбор";
             this.btnSelectPersonal.UseVisualStyleBackColor = true;
             this.btnSelectPersonal.Click += new System.EventHandler(this.btnSelectPersonal_Click);
@@ -75,7 +75,7 @@
             this.btnCancel.Location = new System.Drawing.Point(321, 118);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 10;
+            this.btnCancel.TabIndex = 4;
             this.btnCancel.Text = "Отмена";
             this.btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -85,7 +85,7 @@
             this.cbShowAll.Location = new System.Drawing.Point(15, 58);
             this.cbShowAll.Name = "cbShowAll";
             this.cbShowAll.Size = new System.Drawing.Size(153, 17);
-            this.cbShowAll.TabIndex = 11;
+            this.cbShowAll.TabIndex = 5;
             this.cbShowAll.Text = "Показать весь персонал";
             this.cbShowAll.UseVisualStyleBackColor = true;
             this.cbShowAll.CheckedChanged += new System.EventHandler(this.cbShowAll_CheckedChanged);
@@ -101,7 +101,7 @@
             this.cbPersonal.Location = new System.Drawing.Point(86, 31);
             this.cbPersonal.Name = "cbPersonal";
             this.cbPersonal.Size = new System.Drawing.Size(310, 21);
-            this.cbPersonal.TabIndex = 12;
+            this.cbPersonal.TabIndex = 1;
             this.cbPersonal.SelectedIndexChanged += new System.EventHandler(this.cbPersonal_SelectedIndexChanged);
             // 
             // label1
@@ -119,11 +119,12 @@
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.cbPost.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
             this.cbPost.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbPost.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbPost.FormattingEnabled = true;
             this.cbPost.Location = new System.Drawing.Point(86, 81);
             this.cbPost.Name = "cbPost";
             this.cbPost.Size = new System.Drawing.Size(310, 21);
-            this.cbPost.TabIndex = 14;
+            this.cbPost.TabIndex = 2;
             // 
             // label2
             // 

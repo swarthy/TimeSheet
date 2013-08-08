@@ -45,6 +45,7 @@
             this.lbUserInfoText = new System.Windows.Forms.Label();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lbCountDown = new System.Windows.Forms.Label();
             this.btnShutDown = new System.Windows.Forms.Button();
             this.tbReason = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -55,7 +56,6 @@
             this.tssOnlineCount = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerInfoUpdater = new System.Windows.Forms.Timer(this.components);
-            this.lbCountDown = new System.Windows.Forms.Label();
             this.tcWorkspace.SuspendLayout();
             this.tbUsers.SuspendLayout();
             this.gbManagment.SuspendLayout();
@@ -211,9 +211,8 @@
             this.lbUserInfoText.AutoSize = true;
             this.lbUserInfoText.Location = new System.Drawing.Point(6, 16);
             this.lbUserInfoText.Name = "lbUserInfoText";
-            this.lbUserInfoText.Size = new System.Drawing.Size(35, 13);
+            this.lbUserInfoText.Size = new System.Drawing.Size(0, 13);
             this.lbUserInfoText.TabIndex = 0;
-            this.lbUserInfoText.Text = "label1";
             // 
             // tabPage1
             // 
@@ -240,6 +239,14 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Выключение сервера";
+            // 
+            // lbCountDown
+            // 
+            this.lbCountDown.AutoSize = true;
+            this.lbCountDown.Location = new System.Drawing.Point(6, 186);
+            this.lbCountDown.Name = "lbCountDown";
+            this.lbCountDown.Size = new System.Drawing.Size(0, 13);
+            this.lbCountDown.TabIndex = 6;
             // 
             // btnShutDown
             // 
@@ -334,14 +341,6 @@
             // 
             this.timerInfoUpdater.Interval = 1000;
             this.timerInfoUpdater.Tick += new System.EventHandler(this.timerInfoUpdater_Tick);
-            // 
-            // lbCountDown
-            // 
-            this.lbCountDown.AutoSize = true;
-            this.lbCountDown.Location = new System.Drawing.Point(6, 186);
-            this.lbCountDown.Name = "lbCountDown";
-            this.lbCountDown.Size = new System.Drawing.Size(0, 13);
-            this.lbCountDown.TabIndex = 6;
             // 
             // ServerForm
             // 

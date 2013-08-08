@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class ImportForm
     {
@@ -51,7 +51,7 @@
             // 
             this.btnStartImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnStartImport.Enabled = false;
-            this.btnStartImport.Image = global::TimeSheetManger.Properties.Resources.Upload_16x16;
+            this.btnStartImport.Image = global::TimeSheetManager.Properties.Resources.Upload_16x16;
             this.btnStartImport.Location = new System.Drawing.Point(402, 204);
             this.btnStartImport.Name = "btnStartImport";
             this.btnStartImport.Size = new System.Drawing.Size(96, 23);
@@ -64,7 +64,7 @@
             // btnSelectFile
             // 
             this.btnSelectFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelectFile.Image = global::TimeSheetManger.Properties.Resources.Text_Document_16x16;
+            this.btnSelectFile.Image = global::TimeSheetManager.Properties.Resources.Text_Document_16x16;
             this.btnSelectFile.Location = new System.Drawing.Point(517, 12);
             this.btnSelectFile.Name = "btnSelectFile";
             this.btnSelectFile.Size = new System.Drawing.Size(72, 23);
@@ -82,7 +82,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Image = global::TimeSheetManger.Properties.Resources.Cancel_16x16;
+            this.btnCancel.Image = global::TimeSheetManager.Properties.Resources.Cancel_16x16;
             this.btnCancel.Location = new System.Drawing.Point(504, 204);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(85, 23);

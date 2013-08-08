@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Globalization;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class TimeSheets : Form
     {
@@ -59,8 +59,13 @@ namespace TimeSheetManger
             {
                 var id = Convert.ToInt32(grid.SelectedRows[0].Cells["clmID"].Value);
                 TimeSheetInstance.Get<TimeSheetInstance>(id).Delete();
-                grid.Rows.Remove(grid.SelectedRows[0]);                
-            }            
+                if (mainForm.currentTimeSheet.ID == id)
+                {
+                    mainForm.changeState(AppState.Desktop);
+                    mainForm.currentTimeSheet = null;
+                }
+                grid.Rows.Remove(grid.SelectedRows[0]);
+            }
         }
 
         private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)

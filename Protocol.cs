@@ -13,9 +13,11 @@ namespace NetWork
         Login,
         Logout,
         Message,
+        ClientVersion,
 
         //серверные
         Notification,
+        LetsUpdate,
         ServerIsShutingDown        
     }
     
@@ -37,6 +39,13 @@ namespace NetWork
             CMD = cmd;            
             Text = message;
         }       
+        public static Command GetCommand(byte[] data)
+        {
+            if (data.Length >= 4)
+                return (Command)BitConverter.ToInt32(data, 0);
+            else
+                return Command.Null;
+        }
         public NetData(byte[] data)
         {
             //команда

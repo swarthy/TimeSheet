@@ -40,12 +40,14 @@ namespace Client
         public void Connect(string ip, int port)
         {
             clientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPAddress ipAddress = IPAddress.Parse(ip);            
+            IPAddress ipAddress = IPAddress.Parse(ip);
             serverPoint = new IPEndPoint(ipAddress, port);
             clientSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);            
             try
             {
-                clientSocket.BeginConnect(serverPoint, new AsyncCallback(ConnectCallBack), null);
+                if (OnConnecting != null)
+                    OnConnecting(this, EventArgs.Empty);
+                clientSocket.BeginConnect(serverPoint, new AsyncCallback(ConnectCallBack), null);                
             }
             catch (SocketException ex)
             {

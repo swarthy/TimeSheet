@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class MainForm
     {
@@ -37,13 +37,16 @@
             this.cbLPUList = new System.Windows.Forms.ComboBox();
             this.pAuth = new System.Windows.Forms.Panel();
             this.lbAuthSelectedLPU = new System.Windows.Forms.Label();
+            this.btnLPUSelect = new System.Windows.Forms.Button();
             this.tbAuthPass = new System.Windows.Forms.TextBox();
             this.tbAuthLogin = new System.Windows.Forms.TextBox();
             this.lbPassword = new System.Windows.Forms.Label();
             this.lbLogin = new System.Windows.Forms.Label();
+            this.btnLoginEnter = new System.Windows.Forms.Button();
             this.pWorkspace = new System.Windows.Forms.Panel();
             this.lbCurrentTimeSheetName = new System.Windows.Forms.Label();
             this.pTimeSheetEditor = new System.Windows.Forms.Panel();
+            this.btnExportToExcel = new System.Windows.Forms.Button();
             this.pDepartment = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
@@ -56,19 +59,16 @@
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.miEditPersonal = new System.Windows.Forms.ToolStripMenuItem();
             this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnNewRow = new System.Windows.Forms.Button();
             this.dlgSaveFile = new System.Windows.Forms.SaveFileDialog();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.tsslStatusLeft = new System.Windows.Forms.ToolStripStatusLabel();
             this.tspbProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.tsslSpace = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslStatusRight = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tssServerConnection = new System.Windows.Forms.ToolStripStatusLabel();
             this.ttsVersion = new System.Windows.Forms.ToolStripStatusLabel();
             this.msMainMenu = new System.Windows.Forms.MenuStrip();
-            this.pDesktop = new System.Windows.Forms.Panel();
-            this.btnExportToExcel = new System.Windows.Forms.Button();
-            this.btnNewRow = new System.Windows.Forms.Button();
-            this.deskbtnTimeSheets = new System.Windows.Forms.Button();
-            this.tssServerConnection = new System.Windows.Forms.ToolStripStatusLabel();
             this.пользовательToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miCurrentUser = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
@@ -77,10 +77,10 @@
             this.miTimeSheets = new System.Windows.Forms.ToolStripMenuItem();
             this.miAdminPanel = new System.Windows.Forms.ToolStripMenuItem();
             this.miAbout = new System.Windows.Forms.ToolStripMenuItem();
-            this.btnLPUSelect = new System.Windows.Forms.Button();
-            this.btnLoginEnter = new System.Windows.Forms.Button();
+            this.pDesktop = new System.Windows.Forms.Panel();
+            this.deskbtnTimeSheets = new System.Windows.Forms.Button();
             this.reconnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.dgTimeSheet = new TimeSheetManger.MyDataGridView();
+            this.dgTimeSheet = new TimeSheetManager.MyDataGridView();
             this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -107,6 +107,7 @@
             this.pLPUSelection.Name = "pLPUSelection";
             this.pLPUSelection.Size = new System.Drawing.Size(400, 62);
             this.pLPUSelection.TabIndex = 0;
+            this.pLPUSelection.Visible = false;
             // 
             // btnExit
             // 
@@ -161,6 +162,7 @@
             this.pAuth.Name = "pAuth";
             this.pAuth.Size = new System.Drawing.Size(214, 121);
             this.pAuth.TabIndex = 1;
+            this.pAuth.Visible = false;
             // 
             // lbAuthSelectedLPU
             // 
@@ -171,6 +173,19 @@
             this.lbAuthSelectedLPU.Size = new System.Drawing.Size(158, 13);
             this.lbAuthSelectedLPU.TabIndex = 6;
             this.lbAuthSelectedLPU.Text = "ГБУЗ Саракташская ЦРБ";
+            // 
+            // btnLPUSelect
+            // 
+            this.btnLPUSelect.Image = ((System.Drawing.Image)(resources.GetObject("btnLPUSelect.Image")));
+            this.btnLPUSelect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnLPUSelect.Location = new System.Drawing.Point(15, 83);
+            this.btnLPUSelect.Name = "btnLPUSelect";
+            this.btnLPUSelect.Size = new System.Drawing.Size(84, 23);
+            this.btnLPUSelect.TabIndex = 5;
+            this.btnLPUSelect.Text = "Выход";
+            this.btnLPUSelect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnLPUSelect.UseVisualStyleBackColor = true;
+            this.btnLPUSelect.Click += new System.EventHandler(this.btnLPUSelect_Click);
             // 
             // tbAuthPass
             // 
@@ -207,6 +222,19 @@
             this.lbLogin.TabIndex = 1;
             this.lbLogin.Text = "Логин:";
             // 
+            // btnLoginEnter
+            // 
+            this.btnLoginEnter.Image = global::TimeSheetManager.Properties.Resources.Check_16x16;
+            this.btnLoginEnter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnLoginEnter.Location = new System.Drawing.Point(108, 83);
+            this.btnLoginEnter.Name = "btnLoginEnter";
+            this.btnLoginEnter.Size = new System.Drawing.Size(84, 23);
+            this.btnLoginEnter.TabIndex = 0;
+            this.btnLoginEnter.Text = "Вход";
+            this.btnLoginEnter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.btnLoginEnter.UseVisualStyleBackColor = true;
+            this.btnLoginEnter.Click += new System.EventHandler(this.btnLoginEnter_Click);
+            // 
             // pWorkspace
             // 
             this.pWorkspace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
@@ -218,6 +246,7 @@
             this.pWorkspace.Name = "pWorkspace";
             this.pWorkspace.Size = new System.Drawing.Size(670, 380);
             this.pWorkspace.TabIndex = 2;
+            this.pWorkspace.Visible = false;
             // 
             // lbCurrentTimeSheetName
             // 
@@ -241,6 +270,19 @@
             this.pTimeSheetEditor.Name = "pTimeSheetEditor";
             this.pTimeSheetEditor.Size = new System.Drawing.Size(664, 354);
             this.pTimeSheetEditor.TabIndex = 4;
+            // 
+            // btnExportToExcel
+            // 
+            this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnExportToExcel.Image = ((System.Drawing.Image)(resources.GetObject("btnExportToExcel.Image")));
+            this.btnExportToExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnExportToExcel.Location = new System.Drawing.Point(153, 262);
+            this.btnExportToExcel.Name = "btnExportToExcel";
+            this.btnExportToExcel.Size = new System.Drawing.Size(132, 23);
+            this.btnExportToExcel.TabIndex = 5;
+            this.btnExportToExcel.Text = "Экспорт в Excel";
+            this.btnExportToExcel.UseVisualStyleBackColor = true;
+            this.btnExportToExcel.Click += new System.EventHandler(this.btnExportToExcel_Click);
             // 
             // pDepartment
             // 
@@ -350,6 +392,19 @@
             this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.ToolTipText = "Shift + Delete";
             this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem.Click += new System.EventHandler(this.удалитьЗаписиЭтогоСотрудникаToolStripMenuItem_Click);
             // 
+            // btnNewRow
+            // 
+            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnNewRow.Image = global::TimeSheetManager.Properties.Resources.Add_16x16;
+            this.btnNewRow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNewRow.Location = new System.Drawing.Point(3, 262);
+            this.btnNewRow.Name = "btnNewRow";
+            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
+            this.btnNewRow.TabIndex = 3;
+            this.btnNewRow.Text = "Добавить запись";
+            this.btnNewRow.UseVisualStyleBackColor = true;
+            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
+            // 
             // dlgSaveFile
             // 
             this.dlgSaveFile.Filter = "Книга Excel|*.xlsx";
@@ -394,6 +449,13 @@
             this.tsslStatusRight.Name = "tsslStatusRight";
             this.tsslStatusRight.Size = new System.Drawing.Size(0, 17);
             // 
+            // tssServerConnection
+            // 
+            this.tssServerConnection.Image = ((System.Drawing.Image)(resources.GetObject("tssServerConnection.Image")));
+            this.tssServerConnection.Name = "tssServerConnection";
+            this.tssServerConnection.Size = new System.Drawing.Size(63, 17);
+            this.tssServerConnection.Text = "Сервер";
+            // 
             // ttsVersion
             // 
             this.ttsVersion.Name = "ttsVersion";
@@ -413,63 +475,6 @@
             this.msMainMenu.TabIndex = 4;
             this.msMainMenu.Text = "menuStrip1";
             // 
-            // pDesktop
-            // 
-            this.pDesktop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.pDesktop.Controls.Add(this.deskbtnTimeSheets);
-            this.pDesktop.Location = new System.Drawing.Point(12, 27);
-            this.pDesktop.Name = "pDesktop";
-            this.pDesktop.Size = new System.Drawing.Size(670, 380);
-            this.pDesktop.TabIndex = 5;
-            // 
-            // btnExportToExcel
-            // 
-            this.btnExportToExcel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnExportToExcel.Image = ((System.Drawing.Image)(resources.GetObject("btnExportToExcel.Image")));
-            this.btnExportToExcel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnExportToExcel.Location = new System.Drawing.Point(153, 262);
-            this.btnExportToExcel.Name = "btnExportToExcel";
-            this.btnExportToExcel.Size = new System.Drawing.Size(132, 23);
-            this.btnExportToExcel.TabIndex = 5;
-            this.btnExportToExcel.Text = "Экспорт в Excel";
-            this.btnExportToExcel.UseVisualStyleBackColor = true;
-            this.btnExportToExcel.Click += new System.EventHandler(this.btnExportToExcel_Click);
-            // 
-            // btnNewRow
-            // 
-            this.btnNewRow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnNewRow.Image = global::TimeSheetManger.Properties.Resources.Add_16x16;
-            this.btnNewRow.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNewRow.Location = new System.Drawing.Point(3, 262);
-            this.btnNewRow.Name = "btnNewRow";
-            this.btnNewRow.Size = new System.Drawing.Size(144, 23);
-            this.btnNewRow.TabIndex = 3;
-            this.btnNewRow.Text = "Добавить запись";
-            this.btnNewRow.UseVisualStyleBackColor = true;
-            this.btnNewRow.Click += new System.EventHandler(this.btnNewRow_Click);
-            // 
-            // deskbtnTimeSheets
-            // 
-            this.deskbtnTimeSheets.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.deskbtnTimeSheets.Image = global::TimeSheetManger.Properties.Resources.Calendar_32x32;
-            this.deskbtnTimeSheets.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.deskbtnTimeSheets.Location = new System.Drawing.Point(15, 13);
-            this.deskbtnTimeSheets.Name = "deskbtnTimeSheets";
-            this.deskbtnTimeSheets.Size = new System.Drawing.Size(140, 40);
-            this.deskbtnTimeSheets.TabIndex = 0;
-            this.deskbtnTimeSheets.Text = "Табели";
-            this.deskbtnTimeSheets.UseVisualStyleBackColor = true;
-            this.deskbtnTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
-            // 
-            // tssServerConnection
-            // 
-            this.tssServerConnection.Image = ((System.Drawing.Image)(resources.GetObject("tssServerConnection.Image")));
-            this.tssServerConnection.Name = "tssServerConnection";
-            this.tssServerConnection.Size = new System.Drawing.Size(63, 17);
-            this.tssServerConnection.Text = "Сервер";
-            // 
             // пользовательToolStripMenuItem
             // 
             this.пользовательToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -477,7 +482,7 @@
             this.toolStripMenuItem2,
             this.miLogout,
             this.miExit});
-            this.пользовательToolStripMenuItem.Image = global::TimeSheetManger.Properties.Resources.User_16x16;
+            this.пользовательToolStripMenuItem.Image = global::TimeSheetManager.Properties.Resources.User_16x16;
             this.пользовательToolStripMenuItem.Name = "пользовательToolStripMenuItem";
             this.пользовательToolStripMenuItem.Size = new System.Drawing.Size(112, 20);
             this.пользовательToolStripMenuItem.Text = "Пользователь";
@@ -511,7 +516,7 @@
             // 
             // miTimeSheets
             // 
-            this.miTimeSheets.Image = global::TimeSheetManger.Properties.Resources.Calendar_16x16;
+            this.miTimeSheets.Image = global::TimeSheetManager.Properties.Resources.Calendar_16x16;
             this.miTimeSheets.Name = "miTimeSheets";
             this.miTimeSheets.Size = new System.Drawing.Size(75, 20);
             this.miTimeSheets.Text = "Табели";
@@ -519,7 +524,7 @@
             // 
             // miAdminPanel
             // 
-            this.miAdminPanel.Image = global::TimeSheetManger.Properties.Resources.Settings_16x16;
+            this.miAdminPanel.Image = global::TimeSheetManager.Properties.Resources.Settings_16x16;
             this.miAdminPanel.Name = "miAdminPanel";
             this.miAdminPanel.Size = new System.Drawing.Size(170, 20);
             this.miAdminPanel.Text = "Панель администратора";
@@ -527,37 +532,36 @@
             // 
             // miAbout
             // 
-            this.miAbout.Image = global::TimeSheetManger.Properties.Resources.Information_16x16;
+            this.miAbout.Image = global::TimeSheetManager.Properties.Resources.Information_16x16;
             this.miAbout.Name = "miAbout";
             this.miAbout.Size = new System.Drawing.Size(110, 20);
             this.miAbout.Text = "О программе";
             this.miAbout.Click += new System.EventHandler(this.miAbout_Click);
             // 
-            // btnLPUSelect
+            // pDesktop
             // 
-            this.btnLPUSelect.Image = ((System.Drawing.Image)(resources.GetObject("btnLPUSelect.Image")));
-            this.btnLPUSelect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLPUSelect.Location = new System.Drawing.Point(15, 83);
-            this.btnLPUSelect.Name = "btnLPUSelect";
-            this.btnLPUSelect.Size = new System.Drawing.Size(84, 23);
-            this.btnLPUSelect.TabIndex = 5;
-            this.btnLPUSelect.Text = "Выход";
-            this.btnLPUSelect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnLPUSelect.UseVisualStyleBackColor = true;
-            this.btnLPUSelect.Click += new System.EventHandler(this.btnLPUSelect_Click);
+            this.pDesktop.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pDesktop.Controls.Add(this.deskbtnTimeSheets);
+            this.pDesktop.Location = new System.Drawing.Point(12, 27);
+            this.pDesktop.Name = "pDesktop";
+            this.pDesktop.Size = new System.Drawing.Size(670, 380);
+            this.pDesktop.TabIndex = 5;
+            this.pDesktop.Visible = false;
             // 
-            // btnLoginEnter
+            // deskbtnTimeSheets
             // 
-            this.btnLoginEnter.Image = global::TimeSheetManger.Properties.Resources.Check_16x16;
-            this.btnLoginEnter.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnLoginEnter.Location = new System.Drawing.Point(108, 83);
-            this.btnLoginEnter.Name = "btnLoginEnter";
-            this.btnLoginEnter.Size = new System.Drawing.Size(84, 23);
-            this.btnLoginEnter.TabIndex = 0;
-            this.btnLoginEnter.Text = "Вход";
-            this.btnLoginEnter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.btnLoginEnter.UseVisualStyleBackColor = true;
-            this.btnLoginEnter.Click += new System.EventHandler(this.btnLoginEnter_Click);
+            this.deskbtnTimeSheets.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.deskbtnTimeSheets.Image = global::TimeSheetManager.Properties.Resources.Calendar_32x32;
+            this.deskbtnTimeSheets.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.deskbtnTimeSheets.Location = new System.Drawing.Point(15, 13);
+            this.deskbtnTimeSheets.Name = "deskbtnTimeSheets";
+            this.deskbtnTimeSheets.Size = new System.Drawing.Size(140, 40);
+            this.deskbtnTimeSheets.TabIndex = 0;
+            this.deskbtnTimeSheets.Text = "Табели";
+            this.deskbtnTimeSheets.UseVisualStyleBackColor = true;
+            this.deskbtnTimeSheets.Click += new System.EventHandler(this.btnTimeSheetList_Click);
             // 
             // reconnectTimer
             // 

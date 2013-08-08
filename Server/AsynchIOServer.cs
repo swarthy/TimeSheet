@@ -5,7 +5,7 @@ using System.Text;
 using System.Net.Sockets;
 using System.Net;
 using NetWork;
-using TimeSheetManger;
+using TimeSheetManager;
 
 namespace Server
 {
@@ -47,12 +47,10 @@ namespace Server
             }
         }
         private Socket serverSocket;
-        private int _port = 23069;
-        private string _IP = "127.0.0.1";        
+        private int _port = 23069;        
 
-        public AsynchronousIoServer(string ip, int port)
-        {
-            _IP = ip;
+        public AsynchronousIoServer(int port)
+        {            
             _port = port;
         }
 
@@ -92,10 +90,12 @@ namespace Server
                                           SocketType.Stream,
                                           ProtocolType.Tcp);
                 Connections = new List<ConnectionInfo>();
-                IPEndPoint ipEndPoint = new IPEndPoint(IPAddress.Parse(_IP), _port);
-                serverSocket.Bind(ipEndPoint);
+                IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 23069);                
+                serverSocket.Bind(localEndPoint);
                 serverSocket.Listen(10);
-                Log("Server started at {0}", DateTime.Now);
+                Log("Server started at {0} [{1}]", DateTime.Now, localEndPoint);
             }
             catch (Exception ex)
             {
@@ -113,8 +113,7 @@ namespace Server
                 connection.Connected = DateTime.Now;
                 connection.Buffer = new byte[512];
                 lock (Connections) Connections.Add(connection);
-                Log("Connected: {0}", connection.Socket.RemoteEndPoint);
-
+                Log("Connected: {0}", connection.Socket.RemoteEndPoint);                
                 //продолжаем принимать подключения
                 serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), result.AsyncState);
 

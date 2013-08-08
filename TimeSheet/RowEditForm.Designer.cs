@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class RowEditForm
     {
@@ -85,6 +85,8 @@
             // 
             this.cbPost.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbPost.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbPost.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbPost.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbPost.FormattingEnabled = true;
             this.cbPost.Location = new System.Drawing.Point(81, 50);
@@ -99,7 +101,7 @@
             this.tbRate.Location = new System.Drawing.Point(81, 112);
             this.tbRate.Name = "tbRate";
             this.tbRate.Size = new System.Drawing.Size(334, 20);
-            this.tbRate.TabIndex = 4;
+            this.tbRate.TabIndex = 5;
             this.tbRate.Text = "1,0";
             // 
             // label3
@@ -117,7 +119,7 @@
             this.btnAdd.Location = new System.Drawing.Point(259, 138);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(75, 23);
-            this.btnAdd.TabIndex = 6;
+            this.btnAdd.TabIndex = 7;
             this.btnAdd.Text = "Ок";
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
@@ -135,12 +137,14 @@
             // 
             this.cbCalendar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbCalendar.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbCalendar.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
             this.cbCalendar.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbCalendar.FormattingEnabled = true;
             this.cbCalendar.Location = new System.Drawing.Point(81, 80);
             this.cbCalendar.Name = "cbCalendar";
             this.cbCalendar.Size = new System.Drawing.Size(334, 21);
-            this.cbCalendar.TabIndex = 3;
+            this.cbCalendar.TabIndex = 4;
             // 
             // cbDefaultValues
             // 
@@ -148,7 +152,7 @@
             this.cbDefaultValues.Location = new System.Drawing.Point(15, 139);
             this.cbDefaultValues.Name = "cbDefaultValues";
             this.cbDefaultValues.Size = new System.Drawing.Size(218, 17);
-            this.cbDefaultValues.TabIndex = 7;
+            this.cbDefaultValues.TabIndex = 6;
             this.cbDefaultValues.Text = "Заполнить значениями по умолчанию";
             this.cbDefaultValues.UseVisualStyleBackColor = true;
             this.cbDefaultValues.Visible = false;

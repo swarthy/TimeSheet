@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using SwarthyComponents.FireBird;
 using System.Threading;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public partial class ImportForm : Form
     {

@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class FlagsForm
     {
@@ -79,7 +79,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Image = global::TimeSheetManger.Properties.Resources.Cancel_16x16;
+            this.btnCancel.Image = global::TimeSheetManager.Properties.Resources.Cancel_16x16;
             this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnCancel.Location = new System.Drawing.Point(26, 47);
             this.btnCancel.Name = "btnCancel";
@@ -92,7 +92,7 @@
             // btnOk
             // 
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOk.Image = global::TimeSheetManger.Properties.Resources.Check_16x16;
+            this.btnOk.Image = global::TimeSheetManager.Properties.Resources.Check_16x16;
             this.btnOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnOk.Location = new System.Drawing.Point(26, 18);
             this.btnOk.Name = "btnOk";

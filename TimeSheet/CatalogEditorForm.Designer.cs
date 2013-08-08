@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class CatalogEditorForm
     {
@@ -39,7 +39,7 @@
             this.btnFiltersEnable = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.bs = new System.Windows.Forms.BindingSource(this.components);
-            this.grid = new TimeSheetManger.MyDataGridView();
+            this.grid = new TimeSheetManager.MyDataGridView();
             this.gbFilters.SuspendLayout();
             this.gbValues.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bs)).BeginInit();
@@ -102,7 +102,7 @@
             // btnPrint
             // 
             this.btnPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnPrint.Image = global::TimeSheetManger.Properties.Resources.Print_16x16;
+            this.btnPrint.Image = global::TimeSheetManager.Properties.Resources.Print_16x16;
             this.btnPrint.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnPrint.Location = new System.Drawing.Point(400, 289);
             this.btnPrint.Name = "btnPrint";
@@ -116,7 +116,7 @@
             // btnAdd
             // 
             this.btnAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnAdd.Image = global::TimeSheetManger.Properties.Resources.Add_16x16;
+            this.btnAdd.Image = global::TimeSheetManager.Properties.Resources.Add_16x16;
             this.btnAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnAdd.Location = new System.Drawing.Point(105, 289);
             this.btnAdd.Name = "btnAdd";
@@ -130,7 +130,7 @@
             // btnFiltersEnable
             // 
             this.btnFiltersEnable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnFiltersEnable.Image = global::TimeSheetManger.Properties.Resources.Rename_16x16;
+            this.btnFiltersEnable.Image = global::TimeSheetManager.Properties.Resources.Rename_16x16;
             this.btnFiltersEnable.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnFiltersEnable.Location = new System.Drawing.Point(15, 289);
             this.btnFiltersEnable.Name = "btnFiltersEnable";
@@ -144,7 +144,7 @@
             // btnDelete
             // 
             this.btnDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnDelete.Image = global::TimeSheetManger.Properties.Resources.Delete_16x16;
+            this.btnDelete.Image = global::TimeSheetManager.Properties.Resources.Delete_16x16;
             this.btnDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnDelete.Location = new System.Drawing.Point(197, 289);
             this.btnDelete.Name = "btnDelete";

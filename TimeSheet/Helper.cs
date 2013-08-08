@@ -10,8 +10,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using System.Threading;
+using SwarthyComponents.FireBird;
 
-namespace TimeSheetManger
+namespace TimeSheetManager
 {
     public static class Helper
     {
@@ -103,6 +104,13 @@ namespace TimeSheetManger
                 return Path.Combine(string.Format(@"\\{0}", ServerIP), dir);
             }
         }
+        public static string AppVersion
+        {
+            get
+            {
+                return GetFileVersion(Application.ExecutablePath);
+            }
+        }
         public static string GetFileVersion(string filePath)
         {                        
             return FileVersionInfo.GetVersionInfo(filePath).FileVersion;       
@@ -111,6 +119,14 @@ namespace TimeSheetManger
         {
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
+        }
+        public static void EnvExitWithSocketAndDBClosing()
+        {
+            if (MainForm.Client != null && MainForm.Client.Connected)
+                MainForm.Client.Disconnect();
+            if (DB.Connected)
+                DB.Connection.Close();
+            Environment.Exit(0);
         }
     }
     public class WaitScreen

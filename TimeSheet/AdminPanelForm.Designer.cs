@@ -1,4 +1,4 @@
-﻿namespace TimeSheetManger
+﻿namespace TimeSheetManager
 {
     partial class AdminPanelForm
     {
@@ -147,7 +147,7 @@
             // 
             // btnExportTimeSheetDBF
             // 
-            this.btnExportTimeSheetDBF.Image = global::TimeSheetManger.Properties.Resources.Download_16x161;
+            this.btnExportTimeSheetDBF.Image = global::TimeSheetManager.Properties.Resources.Download_16x161;
             this.btnExportTimeSheetDBF.Location = new System.Drawing.Point(6, 166);
             this.btnExportTimeSheetDBF.Name = "btnExportTimeSheetDBF";
             this.btnExportTimeSheetDBF.Size = new System.Drawing.Size(195, 23);
@@ -160,7 +160,7 @@
             // 
             // btnExportTimeSheetXML
             // 
-            this.btnExportTimeSheetXML.Image = global::TimeSheetManger.Properties.Resources.Download_16x16;
+            this.btnExportTimeSheetXML.Image = global::TimeSheetManager.Properties.Resources.Download_16x16;
             this.btnExportTimeSheetXML.Location = new System.Drawing.Point(6, 137);
             this.btnExportTimeSheetXML.Name = "btnExportTimeSheetXML";
             this.btnExportTimeSheetXML.Size = new System.Drawing.Size(195, 23);
@@ -174,7 +174,7 @@
             // btnImport
             // 
             this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnImport.Image = global::TimeSheetManger.Properties.Resources.Upload_16x16;
+            this.btnImport.Image = global::TimeSheetManager.Properties.Resources.Upload_16x16;
             this.btnImport.Location = new System.Drawing.Point(332, 33);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(110, 23);
@@ -255,7 +255,7 @@
             // btnEditCatalog
             // 
             this.btnEditCatalog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditCatalog.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditCatalog.Image = global::TimeSheetManager.Properties.Resources.Edit_16x16;
             this.btnEditCatalog.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEditCatalog.Location = new System.Drawing.Point(332, 4);
             this.btnEditCatalog.Name = "btnEditCatalog";
@@ -619,7 +619,7 @@
             // btnEditSaveDaysHours
             // 
             this.btnEditSaveDaysHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnEditSaveDaysHours.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditSaveDaysHours.Image = global::TimeSheetManager.Properties.Resources.Edit_16x16;
             this.btnEditSaveDaysHours.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEditSaveDaysHours.Location = new System.Drawing.Point(63, 75);
             this.btnEditSaveDaysHours.Name = "btnEditSaveDaysHours";
@@ -774,7 +774,7 @@
             // 
             // btnEditSaveDayType
             // 
-            this.btnEditSaveDayType.Image = global::TimeSheetManger.Properties.Resources.Edit_16x16;
+            this.btnEditSaveDayType.Image = global::TimeSheetManager.Properties.Resources.Edit_16x16;
             this.btnEditSaveDayType.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnEditSaveDayType.Location = new System.Drawing.Point(182, 110);
             this.btnEditSaveDayType.Name = "btnEditSaveDayType";
