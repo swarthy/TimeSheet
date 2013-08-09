@@ -8,6 +8,51 @@ using System.Globalization;
 
 namespace SwarthyComponents.WinForms
 {
+    public class FocusTextBox:TextBox
+    {
+        public EventHandler OnEnterPressed;
+        string prevValue;
+        bool changed = false;
+        public FocusTextBox():base()
+        {}
+        protected override void OnEnter(EventArgs e)
+        {
+            prevValue = Text;
+            Text = "";
+            changed = false;
+            base.OnEnter(e);
+        }
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            {
+                Text = prevValue;
+                e.Handled = true;
+                e.SuppressKeyPress = false;
+            }
+            else
+                if (e.KeyCode == Keys.Enter && OnEnterPressed != null)
+                {
+                    OnEnterPressed(this, EventArgs.Empty);
+                    e.Handled = true;
+                    e.SuppressKeyPress = false;
+                }                
+            base.OnKeyDown(e);
+        }
+        protected override void OnLeave(EventArgs e)
+        {            
+            if (!changed)
+                Text = prevValue;
+            base.OnLeave(e);
+        }
+        protected override void OnTextChanged(EventArgs e)
+        {
+            if (Focused)
+                changed = true;
+            base.OnTextChanged(e);
+        }
+    }
+
     public class CalendarView:Panel
     {
         public EventHandler OnSelectedDateChanged { get; set; }

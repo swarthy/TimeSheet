@@ -49,7 +49,7 @@ namespace Client
                     OnConnecting(this, EventArgs.Empty);
                 clientSocket.BeginConnect(serverPoint, new AsyncCallback(ConnectCallBack), null);                
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
             }
         }
@@ -69,7 +69,7 @@ namespace Client
                     OnConnecting(this, EventArgs.Empty);
                 clientSocket.BeginConnect(serverPoint, new AsyncCallback(ConnectCallBack), null);
             }
-            catch (SocketException ex)
+            catch (SocketException)
             {
             }
         }

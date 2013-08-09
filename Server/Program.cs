@@ -15,6 +15,7 @@ namespace Server
         /// Главная точка входа для приложения.
         /// </summary>
         public static string Version = "";
+        public static DateTime StartTime;
         [STAThread]
         static void Main()
         {
@@ -24,21 +25,33 @@ namespace Server
             DBInit();
             GetServerVersion();
             Server.Initialize();
-            Server.OnLogin += (data, ci) => { Console.WriteLine("Auth user {0} from {1}", ci.User.Login, ci.Socket.RemoteEndPoint); };
-            Server.OnLogout += (data, ci) => { Console.WriteLine("Logout user {0}", ci.User.Login); };            
-            Server.Start();            
+            //Server.OnLogin += (data, ci) => {  };
+            //Server.OnLogout += (data, ci) => {  };            
+            Server.Start();
+            StartTime = DateTime.Now;
             string inp="";
             do
             {
                 inp = Console.ReadLine();
-                if (inp.ToLower() == "gui")
-                    Application.Run(new ServerForm());
-                if (inp.ToLower() == "status")
+                switch(inp.ToLower())
                 {
-                    Console.WriteLine("-------Online users-------");
-                    foreach (var item in Server.server.Connections)
-                        Console.WriteLine(item.ShortInfo);
-                    Console.WriteLine("--------------------------");
+                    case "gui":
+                        Application.Run(new ServerForm());
+                        break;
+                    case "status":
+                        Server.PingAll();
+                        Console.WriteLine("==============Online users [{0}]==============", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"));
+                    Console.WriteLine("==============================================================");
+                    foreach (var item in Server.server.Connections)                    
+                        Console.WriteLine("{0}\r\nOnline: {1}{2}\r\n", item.ShortInfo, DateTime.Now - item.Connected, item.User==null || item.User.Information == null ? "" : "\r\nInformation: " + item.User.Information.Info);
+                    Console.WriteLine("==============================================================");
+                        break;
+                    case "uptime":
+                        Console.WriteLine("Uptime: {0}", DateTime.Now - StartTime);
+                        break;
+                    case "help":
+                        Console.WriteLine("gui - запустить графический интерфейс\r\nstatus - вывести список пользователей, находящихся в сети\r\nuptime - время работы сервера\r\nexit | shutdown - выключение сервера\r\nhelp - вывод этой подсказки");
+                        break;
                 }
             } while (inp.ToLower() != "shutdown" && inp.ToLower() != "exit");
             Console.WriteLine("Server is shutting down...");

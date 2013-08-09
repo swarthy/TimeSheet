@@ -29,20 +29,21 @@ namespace TimeSheetManager
             personalCount = 0;            
             using (ExcelPackage package = new ExcelPackage(newFile, templateFile))
             {
-                worksheet = package.Workbook.Worksheets.First();
+                worksheet = package.Workbook.Worksheets.First();                
                 #region Заполнение по маркерам
                 worksheet.Workbook.Names["CommitDate"].Value = new DateTime(timeSheet.TS_Year, timeSheet.TS_Month, timeSheet._DaysInMonth).ToString("dd MMMM yyyy");
                 worksheet.Workbook.Names["MainDoc_LPUName"].Value = "Главный врач " + timeSheet.Department.LPU.Name;
-                worksheet.Workbook.Names["MainDoc"].Value = timeSheet.Department.LPU.MainDoc;
+                worksheet.Workbook.Names["MainDoc"].Value = timeSheet.Department.LPU == null ? null : timeSheet.Department.LPU.MainDoc;
                 worksheet.Workbook.Names["TimeSheetMonth"].Value = timeSheet._GetDate.ToString("MMMM");
                 worksheet.Workbook.Names["TimeSheetYear"].Value = timeSheet._GetDate.ToString("yyyy") + "г.";
                 worksheet.Workbook.Names["LPU_Name"].Value = timeSheet.Department.LPU.Name;
                 worksheet.Workbook.Names["DepartmentName"].Value = timeSheet.Department.Name;
                 worksheet.Workbook.Names["CalendarDaysCount"].Value = timeSheet._DaysInMonth;
+                worksheet.Workbook.Names["CalendarDayString"].Value = Helper.MakeForCount(timeSheet._DaysInMonth,"день", "дня", "дней");
                 #endregion
                 foreach (TimeSheet_Content content in timeSheet.Content)
                 {
-                    if (content.Days.Count == 0)
+                    if (content.Days.Count == 0 && !content._IsPercentType)
                     {
                         var insertPos = lastRow;
                         AddRow();
@@ -50,6 +51,18 @@ namespace TimeSheetManager
                         worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                         worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
                         worksheet.Cells[insertPos, 4].Value = content.Rate;
+                        continue;
+                    }
+                    if (content._IsPercentType)
+                    {
+                        var insertPos = lastRow;
+                        AddRow();
+                        worksheet.Cells[insertPos, 1].Value = personalCount;
+                        worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
+                        worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
+                        worksheet.Cells[insertPos, 4].Value = content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
+                        worksheet.Cells[insertPos, 5].Value = string.Format("Отработано {0}%. {1} {2}.", content.Percent, content.PercentDays, Helper.MakeForCount(content.PercentDays, "рабочий день", "рабочих дня", "рабочих дней"));
+                        worksheet.Cells[string.Format("E{0}:S{1}", insertPos, insertPos + 1)].Merge = true;
                         continue;
                     }
                     var groups = content.Days.GroupBy(d => d.Item_Date);
@@ -72,14 +85,14 @@ namespace TimeSheetManager
                     worksheet.Cells[rangeStart, 1].Value = personalCount;
                     worksheet.Cells[rangeStart, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
                     worksheet.Cells[rangeStart, 3].Value = content.Personal.Table_Number;
-                    worksheet.Cells[rangeStart, 4].Value = content.Rate;
-                    #endregion
-                    #region Заполнение дней                    
+                    worksheet.Cells[rangeStart, 4].Value = content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
+                    #endregion                    
+                    #region Заполнение дней
                     #region Верхняя строка
                     foreach (var gr in topRowDays)
                     {
                         int col = gr.Key.Day + 4;
-                        int i = 0;                        
+                        int i = 0;
                         foreach (var day in gr)
                         {
                             worksheet.Cells[rangeStart + i * 4, col].Value = day.Flag.Ru_Name;
@@ -115,8 +128,8 @@ namespace TimeSheetManager
                                     break;
                             }
                             i++;
-                        }                        
-                    }                    
+                        }
+                    }
                     #endregion
                     #region Нижняя строка
                     foreach (var gr in bottomRowDays)
@@ -135,7 +148,7 @@ namespace TimeSheetManager
                                 worksheet.Cells[rangeStart + i * 4 + 2, col].Style.Font.Color.SetColor(Color.Red);
                                 worksheet.Cells[rangeStart + i * 4 + 3, col].Style.Font.Color.SetColor(Color.Red);
                             }
-                            
+
                             switch (day.Flag.Name)
                             {
                                 case "ya":
@@ -184,17 +197,18 @@ namespace TimeSheetManager
                         worksheet.Cells[rangeStart + i * 4 + 1, 24].Value = holydayHoursCount[i].TopRow;
                         worksheet.Cells[rangeStart + i * 4 + 3, 24].Value = holydayHoursCount[i].BottomRow;
                     }
-                    #endregion                    
+                    #endregion
+                    
                     if (OnProgress != null)
                         OnProgress(null, new ProgressEventArgs(personalCount));
                 }
-                worksheet.Cells[lastRow + 1, 15].Value = timeSheet.Department.DepartmentManager._ShortName;
-                worksheet.Cells[lastRow + 3, 15].Value = MainForm.curUsr.Profile._ShortName;                
+                worksheet.Cells[lastRow + 1, 15].Value = timeSheet.Department.DepartmentManager == null ? null : timeSheet.Department.DepartmentManager._ShortName;
+                worksheet.Cells[lastRow + 3, 15].Value = timeSheet.User.Profile == null ? null : timeSheet.User.Profile._ShortName;
                 template.Value = "";
                 template.StyleName = "Normal";
                 if (OnSavingStart != null)
                     OnSavingStart(null, EventArgs.Empty);
-                package.Save();
+                package.Save();                
                 if (OnExportEnd != null)
                     OnExportEnd(null, EventArgs.Empty);
             }

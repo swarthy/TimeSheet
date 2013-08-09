@@ -9,7 +9,7 @@ using TimeSheetManager;
 
 namespace Server
 {
-    public delegate void Logging(string msg);    
+    public delegate void Logging(string msg, params object[] args);    
     public class ConnectionInfo
     {
         public Socket Socket { get; set; }
@@ -34,17 +34,8 @@ namespace Server
 
         public void Log(string message, params object[] args)
         {
-            if (LogMethod != null)
-            {
-                try
-                {
-                    LogMethod(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), string.Format(message, args)));
-                }
-                catch (Exception ex)
-                {
-                    LogMethod(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), ex.Message));
-                }
-            }
+            if (LogMethod != null)                            
+                LogMethod(message, args);
         }
         private Socket serverSocket;
         private int _port = 23069;        
@@ -62,7 +53,7 @@ namespace Server
         internal void Start()
         {
             SetupServerSocket();
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 5; i++)
                 serverSocket.BeginAccept(new AsyncCallback(AcceptCallback), serverSocket);
         }
 

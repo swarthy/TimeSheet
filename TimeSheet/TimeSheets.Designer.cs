@@ -36,6 +36,7 @@
             this.clmDepartment = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clmDate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clmUser = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.clmRaschetchik = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.clmID = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             this.SuspendLayout();
@@ -97,6 +98,7 @@
             this.clmDepartment,
             this.clmDate,
             this.clmUser,
+            this.clmRaschetchik,
             this.clmID});
             this.grid.Location = new System.Drawing.Point(12, 12);
             this.grid.MultiSelect = false;
@@ -128,6 +130,12 @@
             this.clmUser.HeaderText = "Табельщик";
             this.clmUser.Name = "clmUser";
             this.clmUser.ReadOnly = true;
+            // 
+            // clmRaschetchik
+            // 
+            this.clmRaschetchik.HeaderText = "Расчётчик";
+            this.clmRaschetchik.Name = "clmRaschetchik";
+            this.clmRaschetchik.ReadOnly = true;
             // 
             // clmID
             // 
@@ -167,6 +175,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn clmDepartment;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmDate;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmUser;
+        private System.Windows.Forms.DataGridViewTextBoxColumn clmRaschetchik;
         private System.Windows.Forms.DataGridViewTextBoxColumn clmID;
     }
 }

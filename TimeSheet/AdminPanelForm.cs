@@ -28,10 +28,6 @@ namespace TimeSheetManager
         SpecialDay currentSelected = null;
         TabPage currentOpened = null;
         bool needFreezeOtherTabs = false;
-        string[] tableNames = new string[]{
-            "USERS", "PERSONAL", "POSTS", "DEPARTMENT", "FLAGS", "LPU"
-        };
-
 
         DBList<Calendar_Name> AllCalNames;
         StyleSettings weekEnd, holyDay, shortDay;
@@ -88,7 +84,7 @@ namespace TimeSheetManager
                     break;
                 case "Персонал":
                     form.OpenPersonals();
-                    break;
+                    break;                
                 case "ЛПУ":
                     form.OpenLPU();
                     break;
@@ -302,7 +298,11 @@ namespace TimeSheetManager
                 return;
             }
             var cn = new Calendar_Name(tbPNewCName.Text);
-            cn.Save();
+            try
+            { cn.Save(); }
+            catch
+            { MessageBox.Show("","Ошибка сохранения",MessageBoxButtons.OK,MessageBoxIcon.Error); }
+            needFreezeOtherTabs = false;
             RenderPCalendars();
             gbAddName.Hide();            
         }
@@ -315,9 +315,20 @@ namespace TimeSheetManager
                 MessageBox.Show("Год введен неверно.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            Calendar c = new Calendar(currentCalendarName, year);
-            currentCalendarName.Calendars.Add(c);
-            currentCalendarName.Save();
+            double hours;
+            if (!double.TryParse(tbPYearHours.Text, out hours))
+            {
+                MessageBox.Show("Количество часов введено неверно.", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Calendar c = new Calendar(currentCalendarName, year);            
+            currentCalendarName.Calendars.Add(c);            
+            try
+            { currentCalendarName.Save(); }
+            catch
+            { MessageBox.Show("", "Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            c.Generate12Months(hours);
+            c.Save();
             currentCalendarName.Calendars.Sort((x, y) => x.CYear.CompareTo(y.CYear));
             cbPCalendar_SelectedValueChanged(sender, e);
             //RenderPCalendars();
@@ -328,11 +339,15 @@ namespace TimeSheetManager
         {
             Calendar_Content c = new Calendar_Content(currentCalendar, cbPAddMonth.SelectedIndex + 1, 7 * DateTime.DaysInMonth(currentCalendar.CYear, cbPAddMonth.SelectedIndex + 1), DateTime.DaysInMonth(currentCalendar.CYear, cbPAddMonth.SelectedIndex + 1));
             currentCalendar.Months.Add(c);
-            currentCalendar.Save();
+            try
+            { currentCalendar.Save(); }
+            catch
+            { MessageBox.Show("", "Ошибка сохранения", MessageBoxButtons.OK, MessageBoxIcon.Error); }
             currentCalendar.Months.Sort((x, y) => x.CMonth.CompareTo(y.CMonth));
             cbPYear_SelectedValueChanged(sender, e);
             RenderAllMonthData();
-            gbAddMonth.Hide();                        
+            needFreezeOtherTabs = false;
+            gbAddMonth.Hide();
         }
 
         private void btnAddPCYear_Click(object sender, EventArgs e)
@@ -505,8 +520,7 @@ namespace TimeSheetManager
         private void btnExportTimeSheetXML_Click(object sender, EventArgs e)
         {
             WaitScreen waitScreen = new WaitScreen(true);
-            Helper.DirectoryCreateIfNotExists("export\\xml");
-            //TimeSheetInstance.All<TimeSheetInstance>().ForEach(ts =>
+            Helper.DirectoryCreateIfNotExists("export\\xml");            
             mainForm.currentLPU.Departments.SelectMany<Department, TimeSheetInstance>(d => d.TimeSheets).ToList().ForEach(ts=>
             {
                 XDocument doc = new XDocument();
@@ -534,13 +548,14 @@ namespace TimeSheetManager
             OleDbCommand command = connection.CreateCommand();
             connection.Open();
             //Создание файла
-            command.CommandText = @"CREATE TABLE Tabel (USERTN Integer, TN Integer, LName Character(50), FName Character(50), MName Character(50), DNumber Integer, DName Character(50), TSYear Integer, TSMonth Integer, PCode Integer, PName Character(50), CID Integer, CName Character(50), DayDate Date, DayHours Integer, DayFlag Character(10))";
+            command.CommandText = @"CREATE TABLE Tabel (USERTN Integer, RASCHETCHIKTN Integer, TN Integer, LName Character(50), FName Character(50), MName Character(50), DNumber Integer, DName Character(50), TSYear Integer, TSMonth Integer, PCode Integer, PName Character(50), CID Integer, CName Character(50), DayDate Date, DayHours Integer, DayFlag Character(10))";
             command.ExecuteNonQuery();
             daysForDBF.ForEach(day =>
             {
                 var insrtcmd = connection.CreateCommand();
-                insrtcmd.CommandText = "insert into Tabel (USERTN, TN, LName, FName, MName, DNumber, DName, TSYear, TSMonth, PCode, PName, CID, CName, DayDate, DayHours, DayFlag) VALUES (@USERTN, @TN, @LName, @FName, @MName, @DNumber, @DName, @TSYear, @TSMonth, @PCode, @PName, @CID, @CName, @DayDate, @DayHours, @DayFlag)";
+                insrtcmd.CommandText = "insert into Tabel (USERTN, RASCHETCHIKTN, TN, LName, FName, MName, DNumber, DName, TSYear, TSMonth, PCode, PName, CID, CName, DayDate, DayHours, DayFlag) VALUES (@USERTN, @RASCHETCHIKTN, @TN, @LName, @FName, @MName, @DNumber, @DName, @TSYear, @TSMonth, @PCode, @PName, @CID, @CName, @DayDate, @DayHours, @DayFlag)";
                 insrtcmd.Parameters.AddWithValue("@USERTN", day.TimeSheetContent.TimeSheet.User.Profile.Table_Number);//тн сотрудника в табеле
+                insrtcmd.Parameters.AddWithValue("@RASCHETCHIKTN", day.TimeSheetContent.TimeSheet.Raschetchik.Table_Number);//тн расчетчика в табеле
                 insrtcmd.Parameters.AddWithValue("@TN", day.TimeSheetContent.Personal.Table_Number);//тн сотрудника в табеле
                 insrtcmd.Parameters.AddWithValue("@LName", day.TimeSheetContent.Personal.LastName);
                 insrtcmd.Parameters.AddWithValue("@FName", day.TimeSheetContent.Personal.FirstName);

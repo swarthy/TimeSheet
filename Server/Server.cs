@@ -17,7 +17,7 @@ namespace Server
         {
             int port = 23069;            
             server = new AsynchronousIoServer(port);
-            server.LogMethod += (msg) => { Console.WriteLine(msg); };
+            server.LogMethod += Log;
             server.OnReceiveData += new DataEvent(OnReceive);            
         }
         public static void Start()
@@ -36,16 +36,18 @@ namespace Server
                     int temp;
                     if (!int.TryParse(data.Text, out temp))
                     {
-                        Console.WriteLine("Auth error: id = " + data.Text);
+                        Log("Auth error: id = {0}", data.Text);
                         return;
                     }
                     ci.User = User.Get<User>(temp);
+                    Log("Auth user {0} from {1}", ci.User.Login, ci.Socket.RemoteEndPoint);
                     if (OnLogin != null)
                         OnLogin(data, ci);
                     break;
                 case Command.Logout:
                     if (OnLogout != null)
                         OnLogout(data, ci);
+                    Log("Logout user {0}", ci.User.Login);
                     ci.User = null;
                     break;
                 case Command.Message:
@@ -57,5 +59,14 @@ namespace Server
                     break;
             }            
         }        
+        static void Log(string msg, params object[] args)
+        {
+            Console.WriteLine(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), string.Format(msg, args))); 
+        }
+        public static void PingAll()
+        {
+            foreach (var ci in server.Connections)
+                server.SendToClient(ci, new NetData(Command.Ping, ""));
+        }
     }
 }

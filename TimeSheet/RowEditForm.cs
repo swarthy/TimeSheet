@@ -51,30 +51,71 @@ namespace TimeSheetManager
             {
                 MessageBox.Show("Выберите календарь", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            } 
-            
+            }
+
             if (TSContent.Personal == null)
             {
                 MessageBox.Show("Выберите сотрудника", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            double rate = 1;
-            if (!double.TryParse(tbRate.Text, out rate) || rate < 0)
+            TSContent.Rate = 1;
+            TSContent.Percent = 0;
+            TSContent.PercentDays = 0;
+            if (cbRate.Checked)
             {
-                MessageBox.Show("Поле ставка заполнено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                double rate = 1;
+                if (!double.TryParse(tbRate.Text, out rate) || rate < 0)
+                {
+                    MessageBox.Show("Поле \"Ставка\" заполнено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                TSContent.Rate = rate;
+            }
+            else
+            {
+                double percent = 0;
+                if (!double.TryParse(tbPercent.Text, out percent) || percent < 0 || percent > 100)
+                {
+                    MessageBox.Show("Поле \"Проценты\" заполнено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                TSContent.Percent = percent;
+
+                int percentDays = 0;
+                if (!int.TryParse(tbPercentDays.Text, out percentDays) || percentDays <= 0)
+                {
+                    MessageBox.Show("Поле \"Количество дней\" заполнено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                TSContent.PercentDays = percentDays;
+            }
+
+            int priority = 0;
+            if (!int.TryParse(tbPrioriry.Text, out priority) || priority < 0)
+            {
+                MessageBox.Show("Поле \"Приоритет\" заполнено неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            TSContent.Rate = rate;
+
+            if (TSContent.Priority != priority)
+                TSContent._PriorityChanged = true;
+            TSContent.Priority = priority;
+
             defaultval = cbDefaultValues.Checked;
             if (isNew)
                 mainForm.currentTimeSheet.Content.Add(TSContent);            
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             Close();
         }
+
         void DrawPRow(TimeSheet_Content content)
         {
             tbName.Text = content.Personal != null ? content.Personal._ShortName : "";
             tbRate.Text = content.Rate.ToString();
+            tbPercent.Text = content.Percent.ToString();
+            tbPercentDays.Text = content.PercentDays.ToString();
+            SetPercentType(content._IsPercentType);
+            tbPrioriry.Text = content.Priority.ToString();
             cbPost.SelectedItem = content.Post;
             cbCalendar.SelectedItem = content.Calendar;
         }
@@ -87,7 +128,25 @@ namespace TimeSheetManager
             mainForm.Calendars.ForEach(c => cbCalendar.Items.Add(c));
             cbDefaultValues.Visible = defaultval;
             if (TSContent != null)            
-                DrawPRow(TSContent);                
+                DrawPRow(TSContent);
+            SetPercentType(TSContent._IsPercentType);
+        }
+
+        private void cbRate_CheckedChanged(object sender, EventArgs e)
+        {            
+            tbRate.Enabled = cbDefaultValues.Enabled = cbRate.Checked;
+        }
+
+        private void cbPercent_CheckedChanged(object sender, EventArgs e)
+        {            
+            tbPercent.Enabled = tbPercentDays.Enabled = cbPercent.Checked;
+        }
+        void SetPercentType(bool percent = false)
+        {
+            if (percent)
+                cbPercent.Checked = true;
+            else
+                cbRate.Checked = true;
         }
     }
 }

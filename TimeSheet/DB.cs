@@ -996,6 +996,10 @@ namespace SwarthyComponents.FireBird
             if ((obj as Domain) == null)
                 return false;
             //return (obj as Domain).Fields.All(kv => Fields.ContainsKey(kv.Key) && Fields[kv.Key] == kv.Value);
+            return EqualFunc(obj);
+        }
+        public virtual bool EqualFunc(object obj)
+        {
             return (obj as Domain).ID == ID;
         }
         public override int GetHashCode()

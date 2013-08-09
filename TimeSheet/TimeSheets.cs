@@ -25,7 +25,7 @@ namespace TimeSheetManager
                 clmUser.Visible = false;
             grid.Rows.Clear();            
             if (mainForm.currentUser._IS_ADMIN)
-                mainForm.currentLPU.Users.SelectMany(u => u.HM<TimeSheetInstance>("TimeSheets", true)).ToList().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
+                mainForm.currentLPU.Users.SelectMany(u => u.HM<TimeSheetInstance>("TimeSheets", true)).ToList().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.Raschetchik, ts.ID));
             else
                 mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
         }
@@ -48,7 +48,7 @@ namespace TimeSheetManager
             {
                 mainForm.currentUser.TimeSheets.Add(createForm.TimeSheetIns);                
                 createForm.TimeSheetIns.Save();
-                grid.Rows.Add(createForm.TimeSheetIns.Department.Name, createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy"), createForm.TimeSheetIns.User.Profile, createForm.TimeSheetIns.ID);
+                grid.Rows.Add(createForm.TimeSheetIns.Department.Name, createForm.TimeSheetIns._GetDate.ToString("MMMM yyyy"), createForm.TimeSheetIns.User.Profile, createForm.TimeSheetIns.Raschetchik, createForm.TimeSheetIns.ID);
             }
             createForm.Dispose();
         }
@@ -70,6 +70,8 @@ namespace TimeSheetManager
 
         private void grid_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (e.RowIndex == -1)
+                return;
             OpenTimeSheet(Convert.ToInt32(grid.Rows[e.RowIndex].Cells["clmID"].Value));
         }
 

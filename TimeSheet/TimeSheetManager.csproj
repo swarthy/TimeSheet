@@ -101,7 +101,6 @@
     <Compile Include="ClientIOAsync.cs" />
     <Compile Include="DataGridViewPrinter.cs" />
     <Compile Include="DBClassesFile.cs" />
-    <Compile Include="DBFmanager.cs" />
     <Compile Include="ExcelManager.cs" />
     <Compile Include="FlagsForm.cs">
       <SubType>Form</SubType>

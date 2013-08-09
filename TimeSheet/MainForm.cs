@@ -106,23 +106,20 @@ namespace TimeSheetManager
             SpecialDay.Initialize<SpecialDay>();
             DBSettings.Initialize<DBSettings>();
             UserPDP.Initialize<UserPDP>();
-            #endregion                        
+            #endregion
         }
-        void Update()
+        void StartUpdate()
         {
             if (!File.Exists("Updater.exe"))
             {
                 using (FileStream exeFile = new FileStream("Updater.exe", FileMode.Create))
                     exeFile.Write(Properties.Resources.Updater, 0, Properties.Resources.Updater.Length);
             }
-            //if (Client != null && Client.Connected)
-                //Client.Disconnect();
             ProcessStartInfo si = new ProcessStartInfo("cmd", string.Format("/C ping 127.0.0.1 -n 3 > nul && updater.exe {0} {1}", Helper.ServerUpdatePath, Path.GetFileName(Application.ExecutablePath)));
             si.CreateNoWindow = false;
             si.UseShellExecute = false;
             si.WindowStyle = ProcessWindowStyle.Hidden;
             Process.Start(si);
-            //Helper.EnvExitWithSocketAndDBClosing();
             Environment.Exit(0);
         }
         void AdminAfterLoginCheck()
@@ -204,7 +201,7 @@ namespace TimeSheetManager
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager == null ? "" : currentTimeSheet.Department.DepartmentManager._FullName;
-                    lbCurrentTimeSheetName.Text = currentTimeSheet.Department.Name + " - " + currentTimeSheet._GetDate.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+                    lbCurrentTimeSheetName.Text = string.Format("{0} - {1} Расчетчик: {2}", currentTimeSheet.Department.Name, currentTimeSheet._GetDate.ToString("MMMM yyyy"), currentTimeSheet.Raschetchik);
                     DrawTimeSheetContent();
                     HideAllShowThis(pWorkspace);
                     waitScreen.Close();                                    
@@ -216,9 +213,9 @@ namespace TimeSheetManager
         private void DrawTimeSheetContent()
         {
             dgTimeSheet.Rows.Clear();
-            //var content = currentTimeSheet.HM<TimeSheet_Content>("Content", true);
-            var content = currentTimeSheet.Content;
-            content.Sort((x, y) => x.Personal.Priority == y.Personal.Priority ? x.Personal.LastName.CompareTo(y.Personal.LastName) : y.Personal.Priority.CompareTo(x.Personal.Priority));
+            dgTimeSheet.StartColumnSelect = dgTimeSheet.StartRowSelect = 0;
+            var content = currentTimeSheet.Content;            
+            content.Sort((x, y) => x.Personal.Priority == y.Personal.Priority ? x.Priority == y.Priority ? x.Personal.LastName.CompareTo(y.Personal.LastName) : y.Priority.CompareTo(x.Priority) : y.Personal.Priority.CompareTo(x.Personal.Priority));
             content.ForEach(row =>
             {   
                 var temp = row.Render(dgTimeSheet);
@@ -226,6 +223,8 @@ namespace TimeSheetManager
                     dgTimeSheet.Rows.AddRange(temp);
             }
             );
+            dgTimeSheet.StopRowSelect = dgTimeSheet.Rows.Count - 1;
+            dgTimeSheet.StopColumnSelect = dgTimeSheet.Columns.Count - 1;
         }
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
@@ -270,7 +269,8 @@ namespace TimeSheetManager
             currentUser = User.Get<User>(71);            
             changeState(AppState.Desktop);
             miAdminPanel_Click(this, e);
-            #endif            
+            #endif
+            ActiveControl = tbAuthPass;
         }
 
         private void btnLPUChoiceEnter_Click(object sender, EventArgs e)
@@ -315,6 +315,11 @@ namespace TimeSheetManager
         {
             var daysCount = ts._DaysInMonth;
             dgTimeSheet.Columns.Clear();
+
+            var prior = dgTimeSheet.Columns.Add("cPriority", "П");
+            dgTimeSheet.Columns[prior].Frozen = true;
+            dgTimeSheet.Columns[prior].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+
             var fio = dgTimeSheet.Columns.Add("cFIO", "ФИО");
             dgTimeSheet.Columns[fio].Frozen = true;
             dgTimeSheet.Columns[fio].AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
@@ -383,7 +388,7 @@ namespace TimeSheetManager
                         break;
                     case Keys.Space:
                         miAddMore_Click(this, EventArgs.Empty);
-                        break;
+                        break;                    
                 }                
             }
         }
@@ -400,14 +405,18 @@ namespace TimeSheetManager
             AdminPanelForm admin = new AdminPanelForm(this);
             admin.ShowDialog();
             if (State == AppState.EditTimeSheet)
-                changeState(AppState.EditTimeSheet);
-            //MessageBox.Show("Чтобы изменения вступили в силу необходимо перезапустить программу", "Требуется перезапуск программы", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                changeState(AppState.EditTimeSheet);            
         }
         
         private void dgTimeSheet_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == -1 || e.RowIndex == -1)
                 return;
+            if (e.ColumnIndex <= 4)
+            {
+                miEditPersonal_Click(sender, EventArgs.Empty);
+                return;
+            }
             var cell = dgTimeSheet[e.ColumnIndex, e.RowIndex];
             if (cell.OwningColumn.Tag!=null && cell.OwningColumn.Tag.GetType() == typeof(DateTime))
             {
@@ -415,10 +424,11 @@ namespace TimeSheetManager
                     return;
                 int contentPosition, contentOldCount;
                 var content = GetContentForDayByCell(cell, out contentPosition, out contentOldCount);
+                if (content._IsPercentType)
+                    return;
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    //Enabled = false;
+                {                    
                     WaitScreen waitScreen = new WaitScreen(true);
                     if (cell.Value == null)
                     {
@@ -434,8 +444,7 @@ namespace TimeSheetManager
                         existCell.Worked_Time = ff.worked_time;
                         existCell.Save();
                     }
-                    DrawContent(content, contentPosition, contentOldCount);
-                    //Enabled = true;
+                    DrawContent(content, contentPosition, contentOldCount);                    
                     waitScreen.Close();
                 }
             }
@@ -450,13 +459,13 @@ namespace TimeSheetManager
         TimeSheet_Content GetContentForDayByCell(DataGridViewCell cell, out int rowPos, out int rowCount)
         {
             var contentRow = cell.OwningRow.Index;
-            while (contentRow >= 0 && dgTimeSheet[0, contentRow].Value == null)
+            while (contentRow >= 0 && dgTimeSheet[1, contentRow].Value == null)
                 contentRow--;
             if (contentRow < 0)
                 throw new Exception("Что-то пошло не так. Не могу найти к кому отношусь :(\r\nС Уважением, Ячейка Нажатая");
-            var content = dgTimeSheet[0, contentRow].Value as TimeSheet_Content;
+            var content = dgTimeSheet[1, contentRow].Value as TimeSheet_Content;
             rowPos = contentRow;
-            rowCount = dgTimeSheet[0, contentRow].Tag == null ? 1 : Convert.ToInt32(dgTimeSheet[0, contentRow].Tag);
+            rowCount = dgTimeSheet[1, contentRow].Tag == null ? 1 : Convert.ToInt32(dgTimeSheet[1, contentRow].Tag);
             return content;
         }
         private void miAddMore_Click(object sender, EventArgs e)
@@ -466,19 +475,16 @@ namespace TimeSheetManager
                 var cell = dgTimeSheet.SelectedCells[0];                
                 FlagsForm ff = new FlagsForm(this, cell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    //Enabled = false;
+                {                    
                     WaitScreen waitScreen = new WaitScreen(true);
                     int rowStart, rowCount;
                     var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
                     var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
                     content.Days.Add(newCell);
                     newCell.Save();                    
-                    DrawContent(content, rowStart, rowCount);
-                    //Enabled = true;
+                    DrawContent(content, rowStart, rowCount);                    
                     waitScreen.Close();
-                }
-                
+                }                
             }
         }
 
@@ -491,12 +497,13 @@ namespace TimeSheetManager
                 var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
                 var roweditor = new RowEditForm(this, content);
                 if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    //Enabled = false;
+                {                    
                     WaitScreen waitScreen = new WaitScreen(true);
-                    roweditor.TSContent.Save();                    
-                    DrawContent(content, rowStart, rowCount);
-                    //Enabled = true;
+                    roweditor.TSContent.Save();
+                    if (roweditor.TSContent._PriorityChanged)
+                        DrawTimeSheetContent();
+                    else
+                        DrawContent(content, rowStart, rowCount);                    
                     waitScreen.Close();
                 }
             }
@@ -506,8 +513,7 @@ namespace TimeSheetManager
         {
             var roweditor = new RowEditForm(this, null, true);
             if (roweditor.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                //Enabled = false;
+            {                
                 WaitScreen waitScreen = new WaitScreen(true);
                 var newContent = roweditor.TSContent;                
                 var cal = newContent.Calendar.Months.Find(m => m.CMonth == currentTimeSheet.TS_Month);
@@ -532,7 +538,7 @@ namespace TimeSheetManager
                                     flag = Flags.Find(f => f.Name == "v");
                                     worked = TimeSpan.Zero;
                                     break;
-                                case 3://сокращенный                                    
+                                case 3://сокращенный
                                     worked = worked.Subtract(TimeSpan.FromHours(1));
                                     break;
                             }
@@ -541,10 +547,7 @@ namespace TimeSheetManager
                     }
                     newContent.Save();
                 }
-                //currentTimeSheet.Content.Add(newContent);
-                //currentTimeSheet.Save();
-                DrawTimeSheetContent();
-                //Enabled = true;
+                DrawTimeSheetContent();                
                 waitScreen.Close();
             }            
         }
@@ -581,6 +584,7 @@ namespace TimeSheetManager
                 var cell = dgTimeSheet.SelectedCells[0];                
                 int rowStart, rowCount;
                 var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
+                currentTimeSheet.Content.Remove(content);
                 content.Delete();
                 for (int i = 0; i < rowCount; i++)
                     dgTimeSheet.Rows.RemoveAt(rowStart);
@@ -595,10 +599,11 @@ namespace TimeSheetManager
                 var firstCell = dgTimeSheet.SelectedCells[dgTimeSheet.SelectedCells.Count - 1];
                 int contentPosition, contentOldCount;
                 var content = GetContentForDayByCell(firstCell, out contentPosition, out contentOldCount);
+                if (content._IsPercentType)
+                    return;
                 FlagsForm ff = new FlagsForm(this, firstCell.Value as TimeSheet_Day);
                 if (ff.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    //Enabled = false;
+                {                    
                     WaitScreen waitScreen = new WaitScreen(true);
                     foreach (DataGridViewCell cell in dgTimeSheet.SelectedCells)
                     {
@@ -619,8 +624,7 @@ namespace TimeSheetManager
                             existCell.Save();
                         }                        
                     }
-                    DrawContent(content, contentPosition, contentOldCount);
-                    //Enabled = true;
+                    DrawContent(content, contentPosition, contentOldCount);                    
                     waitScreen.Close();
                 }
             }
@@ -657,6 +661,7 @@ namespace TimeSheetManager
                     waitScreen.Close();
                 }
                 waitScreen.Close();
+                Process.Start("export\\");
             }
         }
         
@@ -720,9 +725,21 @@ namespace TimeSheetManager
                     break;
                 case Command.LetsUpdate:
                     MessageBox.Show("Требуется обновить программу. Нажмите Ок для продолжения.", "Системное сообщение", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    Update();
+                    StartUpdate();
                     break;
             }
+        }
+
+        private void dgTimeSheet_SelectionChanged(object sender, EventArgs e)
+        {
+            /*if (dgTimeSheet.SelectedCells.Count == 1)
+            {                
+                int rowPos, rowCount;
+                GetContentForDayByCell(dgTimeSheet.SelectedCells[0], out rowPos, out rowCount);
+                dgTimeSheet.StartRowSelect = rowPos;
+                dgTimeSheet.StopRowSelect = rowPos + rowCount - 1;
+                StatusRight = rowPos.ToString() + " " + (rowPos + rowCount - 1).ToString();                
+            }*/
         }
     }
     public enum AppState

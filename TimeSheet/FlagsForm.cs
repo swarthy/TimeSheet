@@ -88,5 +88,36 @@ namespace TimeSheetManager
             pFlags.Controls.Add(rb);
             return rb;
         }
+        string prevHours = "";
+        private void tbHours_Enter(object sender, EventArgs e)
+        {
+            prevHours = tbHours.Text;
+            tbHours.Text = "";
+        }
+
+        private void tbHours_Leave(object sender, EventArgs e)
+        {
+            if (tbHours.Text == "")
+                tbHours.Text = prevHours;
+        }
+
+        string prevMinutes = "";
+        private void tbMinutes_Enter(object sender, EventArgs e)
+        {
+            prevMinutes = tbMinutes.Text;
+            tbMinutes.Text = "";
+        }
+
+        private void tbMinutes_Leave(object sender, EventArgs e)
+        {
+            if (tbMinutes.Text == "")
+                tbMinutes.Text = prevMinutes;
+        }
+
+        private void tbHours_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                btnOk_Click(this, e);
+        }
     }
 }

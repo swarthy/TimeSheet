@@ -34,6 +34,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.btCreate = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.cbRaschetchiki = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // cbDepartment
@@ -81,10 +83,10 @@
             // btCreate
             // 
             this.btCreate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btCreate.Location = new System.Drawing.Point(232, 66);
+            this.btCreate.Location = new System.Drawing.Point(232, 94);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(75, 23);
-            this.btCreate.TabIndex = 3;
+            this.btCreate.TabIndex = 4;
             this.btCreate.Text = "Создать";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -93,20 +95,44 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(313, 66);
+            this.btnCancel.Location = new System.Drawing.Point(313, 94);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 4;
+            this.btnCancel.TabIndex = 5;
             this.btnCancel.Text = "Отмена";
             this.btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 65);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(62, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Расчётчик:";
+            // 
+            // cbRaschetchiki
+            // 
+            this.cbRaschetchiki.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbRaschetchiki.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.cbRaschetchiki.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.cbRaschetchiki.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRaschetchiki.FormattingEnabled = true;
+            this.cbRaschetchiki.Location = new System.Drawing.Point(83, 62);
+            this.cbRaschetchiki.Name = "cbRaschetchiki";
+            this.cbRaschetchiki.Size = new System.Drawing.Size(305, 21);
+            this.cbRaschetchiki.TabIndex = 3;
             // 
             // AddTimeSheetInstanceForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(400, 101);
+            this.ClientSize = new System.Drawing.Size(400, 129);
             this.ControlBox = false;
+            this.Controls.Add(this.cbRaschetchiki);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.dtpTS_Date);
@@ -130,5 +156,7 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btCreate;
         private System.Windows.Forms.Button btnCancel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ComboBox cbRaschetchiki;
     }
 }

@@ -39,6 +39,8 @@ namespace TimeSheetManager
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Ссылка на запись сотрудника
             { "PersonalProfile", new Link("Personal_TN", typeof(Personal), "Table_Number") },
+            //Последний расчетчик
+            { "LastRaschetchik", new Link("LastRaschetchik_TN", typeof(Personal), "Table_Number") },
             //ЛПУ
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
         };        
@@ -142,6 +144,17 @@ namespace TimeSheetManager
             set
             {
                 this["PersonalProfile"] = value;
+            }
+        }
+        public Personal LastRaschetchik
+        {
+            get
+            {
+                return BT<Personal>("LastRaschetchik");
+            }
+            set
+            {
+                this["LastRaschetchik"] = value;
             }
         }
         public DBList<TimeSheetInstance> TimeSheets
@@ -306,12 +319,12 @@ namespace TimeSheetManager
             : base(typeof(Department))
         {
         }
-        public Department(string name, int Department_Number, LPU lpu)
+        public Department(string name, int department_Number, LPU lpu)
             : base(typeof(Department))
         {
             Name = name;
             LPU = lpu;
-            Department_Number = Department_Number;
+            Department_Number = department_Number;
         }
     }
     /// <summary>
@@ -366,6 +379,11 @@ namespace TimeSheetManager
 where   personal.Department_Number=department.Department_Number
         and
         department.lpu_id = " + lpu_id);
+        }
+        public static DBList<Personal> Raschetchiki()
+        {
+            return Personal.Query<Personal>(@"raschetchiki, personal
+where   personal.Table_Number=raschetchiki.Personal_TN");
         }
         #region Properties
         public string _ShortName
@@ -699,6 +717,10 @@ where   personal.Department_Number=department.Department_Number
         {
             return Name;
         }
+        public override bool EqualFunc(object obj)
+        {
+            return (obj as Post).Name == Name;
+        }
         public override string Validation()
         {
             if (Name == "")
@@ -777,10 +799,16 @@ where   personal.Department_Number=department.Department_Number
         {
             return NameLink.Name;
         }
-        public void Generate12Months()
+        public int GetWorkedDaysForMonth(int month)
         {
-            for (int i = 1; i <= 12; i++)            
-                Months.Add(new Calendar_Content(this, i, 0, 0));            
+            int all = DateTime.DaysInMonth(CYear, month);
+            var specdays = SpecialDay.FindAll<SpecialDay>("(state = 1 or state = 2) and spec_date >= '01.{0}.{1}' and spec_date <= '{2}.{0}.{1}'", month, CYear, all);
+            return all-specdays.Count;
+        }
+        public void Generate12Months(double hours =0)
+        {
+            for (int i = 1; i <= 12; i++)
+                Months.Add(new Calendar_Content(this, i, hours, GetWorkedDaysForMonth(i)));
         }
         #region Properties
         public DBList<Calendar_Content> Months
@@ -839,7 +867,7 @@ where   personal.Department_Number=department.Department_Number
         public override string ToString()
         {
             return string.Format(new DateTime(Calendar.CYear, CMonth, 1).ToString("MMMM yyyy"));            
-        }
+        }        
         #region Properties
         public Calendar Calendar
         {
@@ -957,9 +985,11 @@ where   personal.Department_Number=department.Department_Number
         };
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() { 
             //Табельщик
-            {"User",new Link("User_ID",typeof(User))},            
+            {"User",new Link("User_ID",typeof(User))},
             //Отделение
             {"Department",new Link("Department_Number",typeof(Department), "Department_Number")},
+            //Расчетчик
+            {"RaschetchikProfile",new Link("Raschetchik",typeof(Personal), "Table_Number")}
         };
         public override string ToString()
         {
@@ -975,6 +1005,17 @@ where   personal.Department_Number=department.Department_Number
             set
             {
                 this["User"] = value;
+            }
+        }
+        public Personal Raschetchik
+        {
+            get
+            {
+                return BT<Personal>("RaschetchikProfile");
+            }
+            set
+            {
+                this["RaschetchikProfile"] = value;
             }
         }
         public Department Department
@@ -1047,10 +1088,11 @@ where   personal.Department_Number=department.Department_Number
             : base(typeof(TimeSheetInstance))
         {
         }
-        public TimeSheetInstance(User user, Department department, int year, int month)
+        public TimeSheetInstance(User user, Personal raschetchik, Department department, int year, int month)
             : base(typeof(TimeSheetInstance))
         {
             User = user;
+            Raschetchik = raschetchik;
             Department = department;
             TS_Year = year;
             TS_Month = month;
@@ -1062,7 +1104,7 @@ where   personal.Department_Number=department.Department_Number
     public class TimeSheet_Content : Domain
     {
         new public static string tableName = "TIMESHEET_CONTENT";
-        new public static string OrderBy = "Personal_TN, ID";
+        new public static string OrderBy = "Personal_TN, Priority";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено        
         new public static Dictionary<string, Link> has_many = new Dictionary<string, Link>()
         {
@@ -1084,14 +1126,21 @@ where   personal.Department_Number=department.Department_Number
             return Personal.ToString();
         }
         #region Properties
+        public bool _PriorityChanged = false;
+        public bool _IsPercentType
+        {
+            get
+            {
+                return PercentDays != 0;
+            }
+        }
         public DBList<TimeSheet_Day> Days
         {
             get
             {
                 return HM<TimeSheet_Day>("Days");
             }
-        }
-        
+        }        
         public Calendar Calendar
         {
             get
@@ -1147,6 +1196,39 @@ where   personal.Department_Number=department.Department_Number
                 this["Rate"] = value;
             }
         }
+        public double Percent
+        {
+            get
+            {
+                return this["Percent"] == null ? 1 : (double)this["Percent"];
+            }
+            set
+            {
+                this["Percent"] = value;
+            }
+        }
+        public int PercentDays
+        {
+            get
+            {
+                return this["PercentDays"] == null ? 0 : (int)this["PercentDays"];
+            }
+            set
+            {
+                this["PercentDays"] = value;
+            }
+        }
+        public int Priority
+        {
+            get
+            {
+                return this["Priority"] == null ? 0 : (int)this["Priority"];
+            }
+            set
+            {
+                this["Priority"] = value;
+            }
+        }
         #endregion
 
         public DataGridViewRow[] Render(MyDataGridView dg)
@@ -1156,24 +1238,25 @@ where   personal.Department_Number=department.Department_Number
             {
                 var row = new DataGridViewRow();
                 row.CreateCells(dg);
-                row.SetValues(this, Personal.Table_Number, Post, Rate);                
+                row.SetValues(Priority, this, Personal.Table_Number, Post, _IsPercentType ? string.Format("{0}%", Percent) : Rate.ToString());
                 return new DataGridViewRow[] { row };
             }
             var groups = Days.GroupBy(d => d.Item_Date);
             var needRows = groups.Max(a => a.Count());
             result = new DataGridViewRow[needRows];
             var values = new object[needRows][];
-            var colCount = 4 + TimeSheet._DaysInMonth + 4;
+            var colCount = 5 + TimeSheet._DaysInMonth + 4;
             for (int i = 0; i < needRows; i++)
             {
                 result[i] = new DataGridViewRow();
                 result[i].CreateCells(dg);
                 values[i] = new object[colCount];
             }
-            values[0][0] = this;
-            values[0][1] = Personal.Table_Number;
-            values[0][2] = Post;
-            values[0][3] = Rate;
+            values[0][0] = Priority;
+            values[0][1] = this;
+            values[0][2] = Personal.Table_Number;
+            values[0][3] = Post;
+            values[0][4] = _IsPercentType ? string.Format("{0}%", Percent) : Rate.ToString();
             foreach (IGrouping<DateTime, TimeSheet_Day> group in groups)
             {
                 int i = 0;
@@ -1205,7 +1288,7 @@ where   personal.Department_Number=department.Department_Number
                             values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего   
                             break;
                     }
-                    values[i++][group.Key.Day + 3] = item;
+                    values[i++][group.Key.Day + 4] = item;
                 }
             }
             for (int i = 0; i < needRows; i++)
@@ -1546,5 +1629,5 @@ where   personal.Department_Number=department.Department_Number
             Department = department;
             Post = post;
         }
-    }
+    }    
 }

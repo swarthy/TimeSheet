@@ -10,7 +10,7 @@ namespace TimeSheetManager
     public partial class CatalogEditorForm : Form
     {
         DBList<User> users;
-        DBList<Personal> personals;
+        DBList<Personal> personals, raschetchiki;
         DBList<LPU> lpuList;
         DBList<Post> posts;
         DBList<Department> departments;
@@ -134,6 +134,7 @@ namespace TimeSheetManager
             DataGridViewTextBoxColumn lpu = new DataGridViewTextBoxColumn();
             lpu.DataPropertyName = "LPU";
             lpu.HeaderText = "ЛПУ";
+            lpu.SortMode = DataGridViewColumnSortMode.NotSortable;
             grid.Columns.Add(lpu);
             var lpuFB = new MyCB(LPU.All<LPU>(), (box) => { view.ApplyFilter(u => u.LPU.Name.Contains(box.Text)); });
             aF(lpuFB);
@@ -266,10 +267,11 @@ namespace TimeSheetManager
             aF(middleNameFTB);
             var middleNameETB = new MyTB();
             aE(middleNameETB);
-            
+
             DataGridViewTextBoxColumn post = new DataGridViewTextBoxColumn();
             post.DataPropertyName = "MainPost";
             post.HeaderText = "Должность";
+            post.SortMode = DataGridViewColumnSortMode.NotSortable;
             grid.Columns.Add(post);
             var postFB = new MyCB(Post.All<Post>(), (box) => { view.ApplyFilter(p => p.MainPost == null || p.MainPost.Name.Contains(box.Text)); });
             aF(postFB);
@@ -279,8 +281,9 @@ namespace TimeSheetManager
             DataGridViewTextBoxColumn department = new DataGridViewTextBoxColumn();
             department.DataPropertyName = "Department";
             department.HeaderText = "Отделение";
+            department.SortMode = DataGridViewColumnSortMode.NotSortable;
             grid.Columns.Add(department);
-            var DepartmentFB = new MyCB(mainForm.currentLPU.HM<Department>("Departments", true), (box) => { view.ApplyFilter(u => u.Department==null || u.Department.Name.Contains(box.Text)); });
+            var DepartmentFB = new MyCB(mainForm.currentLPU.HM<Department>("Departments", true), (box) => { view.ApplyFilter(u => u.Department == null || u.Department.Name.Contains(box.Text)); });
             aF(DepartmentFB);
             var DepartmentEB = new MyCB(mainForm.currentLPU.Departments.ToList());
             aE(DepartmentEB);
@@ -313,7 +316,7 @@ namespace TimeSheetManager
             {
                 var personal = (bs.Current as ObjectView<Personal>).Object;
                 tnETB.Text = personal.Table_Number.ToString();
-                lastNameETB.Text= personal.LastName;
+                lastNameETB.Text = personal.LastName;
                 middleNameETB.Text = personal.MiddleName;
                 firstNameETB.Text = personal.FirstName;
                 postEB.SelectedItem = personal.MainPost;
@@ -325,7 +328,7 @@ namespace TimeSheetManager
             EditingComplete += (s, e) =>
             {
                 var personal = (bs.Current as ObjectView<Personal>).Object;
-                
+
                 int temp;
                 if (!int.TryParse(tnETB.Text, out temp))
                 {
@@ -340,7 +343,7 @@ namespace TimeSheetManager
                 personal.MainPost = postEB.SelectedItem as Post;
                 personal.Department = DepartmentEB.SelectedItem as Department;
                 //personal.TimeSheetManager = tsManagerEB.SelectedItem as User;
-                                
+
                 if (!int.TryParse(priorityETB.Text, out temp))
                 {
                     MessageBox.Show("Приоритет введен неверно", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -348,7 +351,7 @@ namespace TimeSheetManager
                     return;
                 }
                 personal.Priority = temp;
-                
+
                 if (!personal.Save())
                 {
                     success = false;
@@ -388,7 +391,7 @@ namespace TimeSheetManager
                     success = false;
                     return;
                 }
-                personals.Add(personal);                
+                personals.Add(personal);
                 view.Refresh();
             };
 
@@ -398,7 +401,7 @@ namespace TimeSheetManager
                 view.Refresh();
             };
             bs.DataSource = view;
-        }
+        }        
         //done
         public void OpenLPU()
         {            
@@ -578,6 +581,7 @@ namespace TimeSheetManager
             DataGridViewTextBoxColumn manager = new DataGridViewTextBoxColumn();
             manager.DataPropertyName = "DepartmentManager";            
             manager.HeaderText = "Заведующий отделения";
+            manager.SortMode = DataGridViewColumnSortMode.NotSortable;
             grid.Columns.Add(manager);
             var managerFB = new MyCB(LPUPersonals, (box) => { view.ApplyFilter(d => d.DepartmentManager == null || d.DepartmentManager.ToString().Contains(box.Text)); });
             aF(managerFB);
@@ -587,6 +591,7 @@ namespace TimeSheetManager
             DataGridViewTextBoxColumn lpu = new DataGridViewTextBoxColumn();
             lpu.DataPropertyName = "LPU";
             lpu.HeaderText = "ЛПУ";
+            lpu.SortMode = DataGridViewColumnSortMode.NotSortable;
             grid.Columns.Add(lpu);
             var lpuFB = new MyCB(LPU.All<LPU>(), (box) => { view.ApplyFilter(u => u.LPU.Name.Contains(box.Text)); });
             aF(lpuFB);

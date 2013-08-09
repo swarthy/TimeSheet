@@ -38,6 +38,7 @@ namespace Server
             lbOnline.DataSource = Server.server.Connections;
             lbOnline.DisplayMember = "ShortInfo";
             lbOnline.Refresh();
+            tssOnlineCount.Text = lbOnline.Items.Count.ToString();
         }
 
         private void lbOnline_SelectedIndexChanged(object sender, EventArgs e)
@@ -59,6 +60,7 @@ namespace Server
         private void timerInfoUpdater_Tick(object sender, EventArgs e)
         {
             updateInfo();
+            tssUptime.Text = (DateTime.Now - Program.StartTime).ToString();
         }
 
         List<ConnectionInfo> Connections
@@ -81,6 +83,8 @@ namespace Server
 
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
+            if (MessageBox.Show("Вы уверены?", "Подтверждение отключения пользователей", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != System.Windows.Forms.DialogResult.Yes)
+                return;
             foreach (var item in Connections)
                 Server.server.SendToClient(item, new NetData(Command.ServerIsShutingDown, "Test"));
         }

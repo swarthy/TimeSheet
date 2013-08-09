@@ -54,8 +54,10 @@
             this.timeout = new System.Windows.Forms.NumericUpDown();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tssOnlineCount = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tssUptime = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.timerInfoUpdater = new System.Windows.Forms.Timer(this.components);
+            this.btnPing = new System.Windows.Forms.Button();
             this.tcWorkspace.SuspendLayout();
             this.tbUsers.SuspendLayout();
             this.gbManagment.SuspendLayout();
@@ -96,6 +98,7 @@
             // 
             this.gbManagment.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.gbManagment.Controls.Add(this.btnPing);
             this.gbManagment.Controls.Add(this.btnSendMsg);
             this.gbManagment.Controls.Add(this.label5);
             this.gbManagment.Controls.Add(this.tbMessage);
@@ -124,7 +127,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 47);
+            this.label5.Location = new System.Drawing.Point(6, 58);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(68, 13);
             this.label5.TabIndex = 7;
@@ -135,15 +138,16 @@
             this.tbMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbMessage.Location = new System.Drawing.Point(9, 63);
+            this.tbMessage.Location = new System.Drawing.Point(9, 74);
             this.tbMessage.Multiline = true;
             this.tbMessage.Name = "tbMessage";
-            this.tbMessage.Size = new System.Drawing.Size(345, 107);
+            this.tbMessage.Size = new System.Drawing.Size(345, 96);
             this.tbMessage.TabIndex = 6;
             // 
             // btnDisconnect
             // 
-            this.btnDisconnect.Location = new System.Drawing.Point(274, 18);
+            this.btnDisconnect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDisconnect.Location = new System.Drawing.Point(315, 18);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(130, 23);
             this.btnDisconnect.TabIndex = 5;
@@ -318,6 +322,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tssOnlineCount,
+            this.tssUptime,
             this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 380);
             this.statusStrip1.Name = "statusStrip1";
@@ -331,16 +336,32 @@
             this.tssOnlineCount.Size = new System.Drawing.Size(62, 17);
             this.tssOnlineCount.Text = "Онлайн: 0";
             // 
+            // tssUptime
+            // 
+            this.tssUptime.Name = "tssUptime";
+            this.tssUptime.Size = new System.Drawing.Size(89, 17);
+            this.tssUptime.Text = "Время работы:";
+            // 
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(649, 17);
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(560, 17);
             this.toolStripStatusLabel1.Spring = true;
             // 
             // timerInfoUpdater
             // 
             this.timerInfoUpdater.Interval = 1000;
             this.timerInfoUpdater.Tick += new System.EventHandler(this.timerInfoUpdater_Tick);
+            // 
+            // btnPing
+            // 
+            this.btnPing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnPing.Location = new System.Drawing.Point(272, 47);
+            this.btnPing.Name = "btnPing";
+            this.btnPing.Size = new System.Drawing.Size(173, 23);
+            this.btnPing.TabIndex = 9;
+            this.btnPing.Text = "Проверить соединение";
+            this.btnPing.UseVisualStyleBackColor = true;
             // 
             // ServerForm
             // 
@@ -398,6 +419,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tbMessage;
         private System.Windows.Forms.Label lbCountDown;
+        private System.Windows.Forms.ToolStripStatusLabel tssUptime;
+        private System.Windows.Forms.Button btnPing;
 
     }
 }

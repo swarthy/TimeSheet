@@ -40,17 +40,20 @@
             // tbMinutes
             // 
             this.tbMinutes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tbMinutes.Location = new System.Drawing.Point(67, 47);
+            this.tbMinutes.Location = new System.Drawing.Point(67, 45);
             this.tbMinutes.Name = "tbMinutes";
             this.tbMinutes.Size = new System.Drawing.Size(47, 20);
             this.tbMinutes.TabIndex = 5;
             this.tbMinutes.Text = "0";
+            this.tbMinutes.Enter += new System.EventHandler(this.tbMinutes_Enter);
+            this.tbMinutes.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbHours_KeyDown);
+            this.tbMinutes.Leave += new System.EventHandler(this.tbMinutes_Leave);
             // 
             // lbValue
             // 
             this.lbValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.lbValue.AutoSize = true;
-            this.lbValue.Location = new System.Drawing.Point(12, 50);
+            this.lbValue.Location = new System.Drawing.Point(12, 48);
             this.lbValue.Name = "lbValue";
             this.lbValue.Size = new System.Drawing.Size(49, 13);
             this.lbValue.TabIndex = 5;
@@ -59,17 +62,20 @@
             // tbHours
             // 
             this.tbHours.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.tbHours.Location = new System.Drawing.Point(67, 21);
+            this.tbHours.Location = new System.Drawing.Point(67, 19);
             this.tbHours.Name = "tbHours";
             this.tbHours.Size = new System.Drawing.Size(47, 20);
             this.tbHours.TabIndex = 4;
             this.tbHours.Text = "0";
+            this.tbHours.Enter += new System.EventHandler(this.tbHours_Enter);
+            this.tbHours.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbHours_KeyDown);
+            this.tbHours.Leave += new System.EventHandler(this.tbHours_Leave);
             // 
             // label1
             // 
             this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 24);
+            this.label1.Location = new System.Drawing.Point(12, 22);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(38, 13);
             this.label1.TabIndex = 5;
@@ -81,7 +87,7 @@
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.btnCancel.Image = global::TimeSheetManager.Properties.Resources.Cancel_16x16;
             this.btnCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnCancel.Location = new System.Drawing.Point(26, 47);
+            this.btnCancel.Location = new System.Drawing.Point(53, 45);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(78, 24);
             this.btnCancel.TabIndex = 6;
@@ -94,7 +100,7 @@
             this.btnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnOk.Image = global::TimeSheetManager.Properties.Resources.Check_16x16;
             this.btnOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnOk.Location = new System.Drawing.Point(26, 18);
+            this.btnOk.Location = new System.Drawing.Point(53, 16);
             this.btnOk.Name = "btnOk";
             this.btnOk.Size = new System.Drawing.Size(78, 24);
             this.btnOk.TabIndex = 1;
@@ -122,7 +128,7 @@
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(116, 80);
+            this.ClientSize = new System.Drawing.Size(143, 78);
             this.ControlBox = false;
             this.Controls.Add(this.pFlags);
             this.Controls.Add(this.btnCancel);

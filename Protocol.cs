@@ -8,7 +8,7 @@ namespace NetWork
     public enum Command
     {
         Null,
-
+        Ping,
         //клиентские
         Login,
         Logout,

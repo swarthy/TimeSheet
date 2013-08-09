@@ -128,6 +128,24 @@ namespace TimeSheetManager
                 DB.Connection.Close();
             Environment.Exit(0);
         }
+        public static string MakeForCount(int count, string For1, string For4, string For5)
+        {
+            int number = count % 100, i;
+            if (number >= 11 && number <= 19)
+                return For5;
+            else
+            {
+                i = number % 10;
+                switch(i)
+                {
+                    case 1: return For1;                        
+                    case 2:
+                    case 3:
+                    case 4: return For4;
+                    default: return For5;
+                }
+            }
+        }
     }
     public class WaitScreen
     {        

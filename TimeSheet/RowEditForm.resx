@@ -117,4 +117,19 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <metadata name="toolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
+  <data name="cbDefaultValues.ToolTip" xml:space="preserve">
+    <value>При установлении этого флага, каждый день будет заполнен стандартными значениями, а именно:
+В выходные и праздничные дни количество часов = 0
+В рабочие дни часы устанавливаются согласно производственному календарю</value>
+  </data>
+  <data name="tbPrioriry.ToolTip" xml:space="preserve">
+    <value>Приоритет определяет ОТНОСИТЕЛЬНОЕ положение записи в табеле.
+Запись с большим приоритетом отображается выше записи с меньшим приоритетом.
+Примечание: после сортировки по данному приоритету производится сортировка по личному приоритету,
+таким образом сотрудники с большим личным приоритетом всегда будут выше,
+вне зависимости от приоритета их записи в табеле.</value>
+  </data>
 </root>

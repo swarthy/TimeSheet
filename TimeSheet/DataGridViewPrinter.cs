@@ -13,7 +13,7 @@ namespace SwarthyComponents.WinForms
         DataGridView grid;
         StringFormat strFormat;
         List<int> arrColumnLefts = new List<int>(), arrColumnWidths = new List<int>();
-        int iCellHeight, iCount, iTotalWidth, iHeaderHeight, iRow;
+        int iCellHeight, iTotalWidth, iHeaderHeight, iRow;
         bool bFirstPage, bNewPage;
         public DataGridViewPrinter(DataGridView grid)
         {
@@ -30,8 +30,7 @@ namespace SwarthyComponents.WinForms
 
                 arrColumnLefts.Clear();
                 arrColumnWidths.Clear();
-                iCellHeight = 0;
-                iCount = 0;
+                iCellHeight = 0;                
                 bFirstPage = true;
                 bNewPage = true;
                                 

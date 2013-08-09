@@ -21,26 +21,36 @@ namespace TimeSheetManager
 
         private void btCreate_Click(object sender, EventArgs e)
         {
-            if (cbDepartment.SelectedIndex != -1)
+            if (cbRaschetchiki.SelectedIndex == -1)
             {
-                var search = TimeSheetInstance.Find<TimeSheetInstance>(new { user_id = mainform.currentUser.ID, department_number = mainform.currentLPU.Departments[cbDepartment.SelectedIndex].Department_Number, ts_year = dtpTS_Date.Value.Year, ts_month = dtpTS_Date.Value.Month });
-                if (search != null)
-                {
-                    MessageBox.Show("Такой табель уже существует! Табельщик: "+search.User.Profile._ShortNameAndNumber);
-                    return;
-                }
-                TimeSheetIns = new TimeSheetInstance(mainform.currentUser, mainform.currentLPU.Departments[cbDepartment.SelectedIndex], dtpTS_Date.Value.Year, dtpTS_Date.Value.Month);
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                Close();
+                MessageBox.Show("Выберите расчетчика!", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
             }
-            else
+            if (cbDepartment.SelectedIndex == -1)
+            {
                 MessageBox.Show("Выберите отделение!", "Ошибка ввода", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var search = TimeSheetInstance.Find<TimeSheetInstance>(new { user_id = mainform.currentUser.ID, department_number = (cbDepartment.SelectedItem as Department).Department_Number, ts_year = dtpTS_Date.Value.Year, ts_month = dtpTS_Date.Value.Month, raschetchik = (cbRaschetchiki.SelectedItem as Personal).Table_Number });
+            if (search != null)
+            {
+                MessageBox.Show("Такой табель уже существует! Табельщик: "+search.User.Profile._ShortNameAndNumber);
+                return;
+            }
+            TimeSheetIns = new TimeSheetInstance(mainform.currentUser, cbRaschetchiki.SelectedItem as Personal, cbDepartment.SelectedItem as Department, dtpTS_Date.Value.Year, dtpTS_Date.Value.Month);
+            mainform.currentUser.LastRaschetchik = cbRaschetchiki.SelectedItem as Personal;
+            mainform.currentUser.Save();
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            Close();                
         }
 
         private void AddTimeSheetInstanceForm_Load(object sender, EventArgs e)
         {
             cbDepartment.Items.Clear();
             mainform.currentLPU.Departments.ForEach(d => cbDepartment.Items.Add(d));
+            cbRaschetchiki.DataSource = Personal.Raschetchiki();
+            cbRaschetchiki.SelectedItem = mainform.currentUser.LastRaschetchik;
         }
     }
 }

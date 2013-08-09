@@ -181,7 +181,7 @@
             this.btnLPUSelect.Location = new System.Drawing.Point(15, 83);
             this.btnLPUSelect.Name = "btnLPUSelect";
             this.btnLPUSelect.Size = new System.Drawing.Size(84, 23);
-            this.btnLPUSelect.TabIndex = 5;
+            this.btnLPUSelect.TabIndex = 3;
             this.btnLPUSelect.Text = "Выход";
             this.btnLPUSelect.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnLPUSelect.UseVisualStyleBackColor = true;
@@ -193,7 +193,7 @@
             this.tbAuthPass.Name = "tbAuthPass";
             this.tbAuthPass.PasswordChar = '*';
             this.tbAuthPass.Size = new System.Drawing.Size(126, 20);
-            this.tbAuthPass.TabIndex = 4;
+            this.tbAuthPass.TabIndex = 0;
             this.tbAuthPass.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAuthPass_KeyDown);
             // 
             // tbAuthLogin
@@ -201,7 +201,7 @@
             this.tbAuthLogin.Location = new System.Drawing.Point(66, 31);
             this.tbAuthLogin.Name = "tbAuthLogin";
             this.tbAuthLogin.Size = new System.Drawing.Size(126, 20);
-            this.tbAuthLogin.TabIndex = 3;
+            this.tbAuthLogin.TabIndex = 4;
             this.tbAuthLogin.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAuthPass_KeyDown);
             // 
             // lbPassword
@@ -229,7 +229,7 @@
             this.btnLoginEnter.Location = new System.Drawing.Point(108, 83);
             this.btnLoginEnter.Name = "btnLoginEnter";
             this.btnLoginEnter.Size = new System.Drawing.Size(84, 23);
-            this.btnLoginEnter.TabIndex = 0;
+            this.btnLoginEnter.TabIndex = 2;
             this.btnLoginEnter.Text = "Вход";
             this.btnLoginEnter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.btnLoginEnter.UseVisualStyleBackColor = true;
@@ -590,7 +590,8 @@
             this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
             this.dgTimeSheet.TabIndex = 2;
             this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
-            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
+            this.dgTimeSheet.SelectionChanged += new System.EventHandler(this.dgTimeSheet_SelectionChanged);
+            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);            
             // 
             // cFIO
             // 
