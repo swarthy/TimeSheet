@@ -52,6 +52,10 @@
             this.lbCurrentDepartment = new System.Windows.Forms.Label();
             this.tbCurrentDepartmentManager = new System.Windows.Forms.TextBox();
             this.tbCurrentDepartment = new System.Windows.Forms.TextBox();
+            this.dgTimeSheet = new TimeSheetManager.MyDataGridView();
+            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.cmsDaysMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.редактироватьВыделеннуюЗаписьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.miAddMore = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,20 +84,18 @@
             this.pDesktop = new System.Windows.Forms.Panel();
             this.deskbtnTimeSheets = new System.Windows.Forms.Button();
             this.reconnectTimer = new System.Windows.Forms.Timer(this.components);
-            this.dgTimeSheet = new TimeSheetManager.MyDataGridView();
-            this.cFIO = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cPost = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.cRate = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tbCurrentTimeSheetLastEditor = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.pLPUSelection.SuspendLayout();
             this.pAuth.SuspendLayout();
             this.pWorkspace.SuspendLayout();
             this.pTimeSheetEditor.SuspendLayout();
             this.pDepartment.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.cmsDaysMenu.SuspendLayout();
             this.statusBar.SuspendLayout();
             this.msMainMenu.SuspendLayout();
             this.pDesktop.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).BeginInit();
             this.SuspendLayout();
             // 
             // pLPUSelection
@@ -287,13 +289,15 @@
             // pDepartment
             // 
             this.pDepartment.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.pDepartment.Controls.Add(this.label2);
             this.pDepartment.Controls.Add(this.label1);
             this.pDepartment.Controls.Add(this.lbCurrentDepartment);
+            this.pDepartment.Controls.Add(this.tbCurrentTimeSheetLastEditor);
             this.pDepartment.Controls.Add(this.tbCurrentDepartmentManager);
             this.pDepartment.Controls.Add(this.tbCurrentDepartment);
             this.pDepartment.Location = new System.Drawing.Point(297, 262);
             this.pDepartment.Name = "pDepartment";
-            this.pDepartment.Size = new System.Drawing.Size(364, 56);
+            this.pDepartment.Size = new System.Drawing.Size(364, 89);
             this.pDepartment.TabIndex = 4;
             // 
             // label1
@@ -333,6 +337,51 @@
             this.tbCurrentDepartment.ReadOnly = true;
             this.tbCurrentDepartment.Size = new System.Drawing.Size(211, 20);
             this.tbCurrentDepartment.TabIndex = 0;
+            // 
+            // dgTimeSheet
+            // 
+            this.dgTimeSheet.AllowUserToAddRows = false;
+            this.dgTimeSheet.AllowUserToDeleteRows = false;
+            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
+            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.cFIO,
+            this.cPost,
+            this.cRate});
+            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
+            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
+            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
+            this.dgTimeSheet.Name = "dgTimeSheet";
+            this.dgTimeSheet.ReadOnly = true;
+            this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
+            this.dgTimeSheet.TabIndex = 2;
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
+            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);
+            // 
+            // cFIO
+            // 
+            this.cFIO.HeaderText = "ФИО";
+            this.cFIO.Name = "cFIO";
+            this.cFIO.ReadOnly = true;
+            this.cFIO.Width = 59;
+            // 
+            // cPost
+            // 
+            this.cPost.HeaderText = "Должность";
+            this.cPost.Name = "cPost";
+            this.cPost.ReadOnly = true;
+            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.cPost.Width = 90;
+            // 
+            // cRate
+            // 
+            this.cRate.HeaderText = "Ставка";
+            this.cRate.Name = "cRate";
+            this.cRate.ReadOnly = true;
+            this.cRate.Width = 68;
             // 
             // cmsDaysMenu
             // 
@@ -569,50 +618,24 @@
             this.reconnectTimer.Interval = 60000;
             this.reconnectTimer.Tick += new System.EventHandler(this.reconnectTimer_Tick);
             // 
-            // dgTimeSheet
+            // tbCurrentTimeSheetLastEditor
             // 
-            this.dgTimeSheet.AllowUserToAddRows = false;
-            this.dgTimeSheet.AllowUserToDeleteRows = false;
-            this.dgTimeSheet.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
+            this.tbCurrentTimeSheetLastEditor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgTimeSheet.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.dgTimeSheet.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgTimeSheet.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.cFIO,
-            this.cPost,
-            this.cRate});
-            this.dgTimeSheet.ContextMenuStrip = this.cmsDaysMenu;
-            this.dgTimeSheet.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
-            this.dgTimeSheet.Location = new System.Drawing.Point(3, 3);
-            this.dgTimeSheet.Name = "dgTimeSheet";
-            this.dgTimeSheet.ReadOnly = true;
-            this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
-            this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);            
-            this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);            
+            this.tbCurrentTimeSheetLastEditor.Location = new System.Drawing.Point(150, 56);
+            this.tbCurrentTimeSheetLastEditor.Name = "tbCurrentTimeSheetLastEditor";
+            this.tbCurrentTimeSheetLastEditor.ReadOnly = true;
+            this.tbCurrentTimeSheetLastEditor.Size = new System.Drawing.Size(211, 20);
+            this.tbCurrentTimeSheetLastEditor.TabIndex = 0;
             // 
-            // cFIO
+            // label2
             // 
-            this.cFIO.HeaderText = "ФИО";
-            this.cFIO.Name = "cFIO";
-            this.cFIO.ReadOnly = true;
-            this.cFIO.Width = 59;
-            // 
-            // cPost
-            // 
-            this.cPost.HeaderText = "Должность";
-            this.cPost.Name = "cPost";
-            this.cPost.ReadOnly = true;
-            this.cPost.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.cPost.Width = 90;
-            // 
-            // cRate
-            // 
-            this.cRate.HeaderText = "Ставка";
-            this.cRate.Name = "cRate";
-            this.cRate.ReadOnly = true;
-            this.cRate.Width = 68;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(8, 59);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(107, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Изменения вносил:";
             // 
             // MainForm
             // 
@@ -643,13 +666,13 @@
             this.pTimeSheetEditor.ResumeLayout(false);
             this.pDepartment.ResumeLayout(false);
             this.pDepartment.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.cmsDaysMenu.ResumeLayout(false);
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
             this.msMainMenu.ResumeLayout(false);
             this.msMainMenu.PerformLayout();
             this.pDesktop.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgTimeSheet)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -711,6 +734,8 @@
         private System.Windows.Forms.ToolStripStatusLabel ttsVersion;
         private System.Windows.Forms.ToolStripStatusLabel tssServerConnection;
         private System.Windows.Forms.Timer reconnectTimer;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbCurrentTimeSheetLastEditor;
 
 
 

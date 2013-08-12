@@ -762,7 +762,7 @@ namespace SwarthyComponents.FireBird
         /// <summary>
         /// Сохроняет запись в БД. В зависимости от того, задан ID или нет, будет вызван запрос UPDATE или INSERT
         /// </summary>
-        public bool Save(bool hard_save = false)
+        public virtual bool Save(bool hard_save = false)
         {
             if (!_Changed && !hard_save)
                 return true;

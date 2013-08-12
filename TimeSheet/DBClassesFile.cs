@@ -994,6 +994,8 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() { 
             //Табельщик
             {"User",new Link("User_ID",typeof(User))},
+            //Последний, кто вносил изменения
+            {"LastEditor",new Link("Last_Editor_ID",typeof(User))},
             //Отделение
             {"Department",new Link("Department_Number",typeof(Department), "Department_Number")},
             //Расчетчик
@@ -1013,6 +1015,17 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             set
             {
                 this["User"] = value;
+            }
+        }
+        public User LastEditor
+        {
+            get
+            {
+                return BT<User>("LastEditor");
+            }
+            set
+            {
+                this["LastEditor"] = value;
             }
         }
         public Personal Raschetchik
@@ -1363,7 +1376,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         public override string ToString()
         {
             return Flag + (Worked_Time.TotalHours == 0 ? "" : " " + Worked_Time.ToString("hh':'mm"));
-        }
+        }        
         #region Properties
         public Flag Flag
         {

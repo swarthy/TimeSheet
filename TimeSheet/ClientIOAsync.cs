@@ -29,6 +29,10 @@ namespace Client
         public ClientIOAsync()
         {            
         }
+        public void Dispose()
+        {
+            clientSocket.Dispose();
+        }
         public bool Connected
         {
             get

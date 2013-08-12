@@ -202,6 +202,7 @@ namespace TimeSheetManager
                     Calendars = Calendar.FindAll<Calendar>(new { cyear = currentTimeSheet._GetDate.Year });                    
                     tbCurrentDepartment.Text = currentTimeSheet.Department.Name;
                     tbCurrentDepartmentManager.Text = currentTimeSheet.Department.DepartmentManager == null ? "" : currentTimeSheet.Department.DepartmentManager._FullName;
+                    tbCurrentTimeSheetLastEditor.Text = currentTimeSheet.LastEditor == null ? "" : currentTimeSheet.LastEditor.Profile._FullName;
                     lbCurrentTimeSheetName.Text = string.Format("{0} - {1} Расчетчик: {2}", currentTimeSheet.Department.Name, currentTimeSheet._GetDate.ToString("MMMM yyyy"), currentTimeSheet.Raschetchik);
                     DrawTimeSheetContent();
                     HideAllShowThis(pWorkspace);
@@ -230,9 +231,15 @@ namespace TimeSheetManager
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
             if (DB.Connection.State == ConnectionState.Open)
+            {
                 DB.Connection.Close();
-            if (Client!=null && Client.Connected)
+                DB.Connection.Dispose();
+            }
+            if (Client != null && Client.Connected)
+            {
                 Client.Disconnect();
+                Client.Dispose();
+            }
         }
         void SetControlsEnabled(bool value)
         {            
@@ -250,14 +257,15 @@ namespace TimeSheetManager
                         
             Domain.OnFindBegin += delegate { Invoke((Action)(() => { StatusRight = "Запрос к БД..."; })); };
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR();})); };
-
-            Client = new ClientIOAsync();
-            Client.OnReceiveData += (data) => { if (Closing)return; MessageParse(data); };
-            Client.OnConnecting += delegate { if (Closing)return; tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Show(); })); };
-            Client.OnConnected += delegate { if (Closing)return; tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { SetControlsEnabled(true); connectWaitScreen.Close(); Client.Send(new NetData(Command.ClientVersion, Helper.AppVersion)); })); };
-            Client.OnServerNotAvailable += delegate { if (Closing)return; tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Close(); })); MessageBox.Show("Сервер недоступен.\r\nПроверьте подключение к сети или обратитесь к администратору.\r\n[Server]", "Ошибка подключения к серверу", MessageBoxButtons.OK, MessageBoxIcon.Error); };
-            Client.Connect(Helper.ServerIP, 23069);
-
+            if (!Helper.IgnoreServerOffline)
+            {
+                Client = new ClientIOAsync();            
+                Client.OnReceiveData += (data) => { if (Closing)return; MessageParse(data); };
+                Client.OnConnecting += delegate { if (Closing)return; tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; Invoke((Action)(() => {  connectWaitScreen.Show(); })); };
+                Client.OnConnected += delegate { if (Closing)return; tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => {  connectWaitScreen.Close(); Client.Send(new NetData(Command.ClientVersion, Helper.AppVersion)); })); };
+                Client.OnServerNotAvailable += delegate { if (Closing)return; tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => {  connectWaitScreen.Close(); })); };
+                Client.Connect(Helper.ServerIP, 23069);
+            }
             LPUlist = LPU.All<LPU>();            
             cbLPUList.Items.Clear();            
             foreach (LPU lpu in LPUlist)            
@@ -291,7 +299,8 @@ namespace TimeSheetManager
                 MessageBox.Show("Неверное имя пользователя и/или пароль", "Ошибка авторизации", MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
             {
-                Client.Send(new NetData(Command.Login, user.ID.ToString()));
+                if (Client!=null)
+                    Client.Send(new NetData(Command.Login, user.ID.ToString()));
                 Helper.Set("user", "lastLogin", tbAuthLogin.Text);
                 currentUser = user;
                 changeState(AppState.Desktop);
@@ -397,7 +406,8 @@ namespace TimeSheetManager
         private void miLogout_Click(object sender, EventArgs e)
         {
             currentUser = null;
-            Client.Send(new NetData(Command.Logout, ""));
+            if (Client!=null)
+                Client.Send(new NetData(Command.Logout, ""));
             changeState(AppState.Auth);
         }
 
@@ -445,6 +455,8 @@ namespace TimeSheetManager
                         existCell.Worked_Time = ff.worked_time;
                         existCell.Save();
                     }
+                    currentTimeSheet.LastEditor = currentUser;
+                    currentTimeSheet.Save();
                     DrawContent(content, contentPosition, contentOldCount);                    
                     waitScreen.Close();
                 }
@@ -483,7 +495,9 @@ namespace TimeSheetManager
                     var newCell = new TimeSheet_Day(Convert.ToDateTime(cell.OwningColumn.Tag), ff.worked_time, ff.flag);
                     content.Days.Add(newCell);
                     newCell.Save();                    
-                    DrawContent(content, rowStart, rowCount);                    
+                    DrawContent(content, rowStart, rowCount);
+                    currentTimeSheet.LastEditor = currentUser;
+                    currentTimeSheet.Save();
                     waitScreen.Close();
                 }                
             }
@@ -504,7 +518,9 @@ namespace TimeSheetManager
                     if (roweditor.TSContent._PriorityChanged)
                         DrawTimeSheetContent();
                     else
-                        DrawContent(content, rowStart, rowCount);                    
+                        DrawContent(content, rowStart, rowCount);
+                    currentTimeSheet.LastEditor = currentUser;
+                    currentTimeSheet.Save();
                     waitScreen.Close();
                 }
             }
@@ -548,6 +564,8 @@ namespace TimeSheetManager
                     }
                     newContent.Save();
                 }
+                currentTimeSheet.LastEditor = currentUser;
+                currentTimeSheet.Save();
                 DrawTimeSheetContent();                
                 waitScreen.Close();
             }            
@@ -558,8 +576,7 @@ namespace TimeSheetManager
             if (dgTimeSheet.SelectedCells.Count == 0 || Saving)
                 return;
             if (MessageBox.Show(string.Format("Вы действительно хотите удалить выделенн{0} запис{1}?", dgTimeSheet.SelectedCells.Count > 1 ? "ые" : "ую", dgTimeSheet.SelectedCells.Count > 1 ? "и" : "ь"), "Подтверждение удаления", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
-                return;
-            //Enabled = false;
+                return;            
             WaitScreen waitScreen = new WaitScreen(true);
             var firstCell = dgTimeSheet.SelectedCells[0];
             int rowStart, rowCount;
@@ -568,13 +585,13 @@ namespace TimeSheetManager
             {
                 if (cell.Value != null && cell.OwningColumn.Tag != null && cell.OwningColumn.Tag.GetType() == typeof(DateTime))
                 {
-                    var day = cell.Value as TimeSheet_Day;
-                    //content.Days.Remove(day, true);
+                    var day = cell.Value as TimeSheet_Day;                    
                     content.Days.Remove(day, true);
                 }
             }
-            DrawContent(content, rowStart, rowCount);
-            //Enabled = true;
+            currentTimeSheet.LastEditor = currentUser;
+            currentTimeSheet.Save();
+            DrawContent(content, rowStart, rowCount);            
             waitScreen.Close();
         }
 
@@ -582,7 +599,7 @@ namespace TimeSheetManager
         {
             if (dgTimeSheet.SelectedCells.Count == 1 && MessageBox.Show("Вы уверены, что хотите удалить выделенную запись?","Подтверждение удаления",MessageBoxButtons.YesNo,MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
             {
-                Enabled = false;
+                WaitScreen waitScreen = new WaitScreen(true);
                 var cell = dgTimeSheet.SelectedCells[0];                
                 int rowStart, rowCount;
                 var content = GetContentForDayByCell(cell, out rowStart, out rowCount);
@@ -590,7 +607,9 @@ namespace TimeSheetManager
                 content.Delete();
                 for (int i = 0; i < rowCount; i++)
                     dgTimeSheet.Rows.RemoveAt(rowStart);
-                Enabled = true;
+                currentTimeSheet.LastEditor = currentUser;
+                currentTimeSheet.Save();
+                waitScreen.Close();
             }
         }
 
@@ -626,6 +645,8 @@ namespace TimeSheetManager
                             existCell.Save();
                         }                        
                     }
+                    currentTimeSheet.LastEditor = currentUser;
+                    currentTimeSheet.Save();
                     DrawContent(content, contentPosition, contentOldCount);                    
                     waitScreen.Close();
                 }

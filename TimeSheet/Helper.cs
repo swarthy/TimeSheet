@@ -77,6 +77,14 @@ namespace TimeSheetManager
         {
             return string.Format("{0:00}:{1:00}", Math.Truncate(span.TotalHours), span.Minutes);
         }
+        public static bool IgnoreServerOffline
+        {
+            get
+            {
+                var ign = Get("server", "ignore");
+                return ign != "";
+            }
+        }
         public static string ServerIP
         {
             get
