@@ -25,9 +25,9 @@ namespace Server
             DBInit();
             GetServerVersion();
             Server.Initialize();
-            Server.OnLogin += (data, ci) => { File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("{0} login at {1}\r\n", ci.User._LoginAndProfile, DateTime.Now)); };
+            Server.OnLogin += (data, ci) => {  };
             Server.OnLogout += (ci) => { File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("{0} logout at {1}\r\n", ci.User._LoginAndProfile, DateTime.Now)); };            
-            Server.Start();
+            Server.Start();            
             StartTime = DateTime.Now;
             Console.WriteLine("Actual Client Version: {0}", ClientForUpdateVersion);
             string inp="";
@@ -56,6 +56,7 @@ namespace Server
                 }
             } while (inp.ToLower() != "shutdown" && inp.ToLower() != "exit");
             Console.WriteLine("Server is shutting down...");
+            File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("Server stoped: {0}\r\n", DateTime.Now));
             Server.Stop();
         }
         static void DBInit()

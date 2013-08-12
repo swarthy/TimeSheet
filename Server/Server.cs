@@ -44,14 +44,14 @@ namespace Server
                         return;
                     }
                     ci.User = User.Get<User>(temp);
-                    Log("Auth user {0} from {1}", ci.User.Login, ci.Socket.RemoteEndPoint);
+                    Log("{0} login from {1}", ci.User.Login, ci.Socket.RemoteEndPoint);
                     if (OnLogin != null)
                         OnLogin(data, ci);
                     break;
                 case Command.Logout:
                     if (OnLogout != null)
                         OnLogout(ci);
-                    Log("Logout user {0}", ci.User.Login);
+                    Log("{0} logout", ci.User.Login);
                     ci.User = null;
                     break;
                 case Command.Message:
@@ -72,7 +72,8 @@ namespace Server
         }
         static void Log(string msg, params object[] args)
         {
-            Console.WriteLine(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), string.Format(msg, args))); 
+            Console.WriteLine(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), string.Format(msg, args)));
+            File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("[{0}] {1}\r\n", DateTime.Now.ToShortTimeString(), string.Format(msg, args)));
         }
         public static void PingAll()
         {

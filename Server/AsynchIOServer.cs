@@ -47,9 +47,6 @@ namespace Server
 
         public List<ConnectionInfo> Connections { get; set; }
 
-        //private List<ConnectionInfo> Connections =
-            //new List<ConnectionInfo>();
-
         internal void Start()
         {
             SetupServerSocket();
