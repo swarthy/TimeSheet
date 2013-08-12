@@ -49,7 +49,7 @@ namespace TimeSheetManager
         {
             cbDepartment.Items.Clear();
             mainform.currentLPU.Departments.ForEach(d => cbDepartment.Items.Add(d));
-            cbRaschetchiki.DataSource = Personal.Raschetchiki();
+            cbRaschetchiki.DataSource = Personal.RaschetchikiOfLPU(mainform.currentLPU.ID);
             cbRaschetchiki.SelectedItem = mainform.currentUser.LastRaschetchik;
         }
     }

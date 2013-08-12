@@ -380,10 +380,18 @@ where   personal.Department_Number=department.Department_Number
         and
         department.lpu_id = " + lpu_id);
         }
-        public static DBList<Personal> Raschetchiki()
+        public static DBList<Personal> RaschetchikiOfLPU(int lpu_id)
         {
-            return Personal.Query<Personal>(@"raschetchiki, personal
-where   personal.Table_Number=raschetchiki.Personal_TN");
+            return Personal.Query<Personal>(@"raschetchiki, personal, department
+where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_NUMBER=department.DEPARTMENT_NUMBER and department.lpu_id = " + lpu_id.ToString());
+        }
+        public void MakeRaschetchik()
+        {
+            DB.Query("insert into raschetchiki(personal_tn) values (" + Table_Number + ")");
+        }
+        public void DeleteRaschetchik()
+        {
+            DB.Query("delete from raschetchiki where personal_tn = " + Table_Number);
         }
         #region Properties
         public string _ShortName

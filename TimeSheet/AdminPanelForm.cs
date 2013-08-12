@@ -19,7 +19,7 @@ namespace TimeSheetManager
 {
     public partial class AdminPanelForm : Form
     {
-        public static string[] SuperAdminCatalogs = new string[] { "Пользователи", "Персонал", "Должности", "Отделения", "Показатели", "ЛПУ" };
+        public static string[] SuperAdminCatalogs = new string[] { "Пользователи", "Персонал", "Расчетчики", "Должности", "Отделения", "Показатели", "ЛПУ" };
         public static string[] AdminCatalogs = new string[] { "Персонал", "Должности", "Отделения" };
         public static DayOfWeek[] WeekEnd = new DayOfWeek[] { DayOfWeek.Saturday, DayOfWeek.Sunday };
         MainForm mainForm;
@@ -63,6 +63,8 @@ namespace TimeSheetManager
         {
             UpdateSpecialDaysFromServer(DateTime.Today.Year);            
             RenderPCalendars();
+            cHolydayCalendar.Year = DateTime.Today.Year;
+            cHolydayCalendar.Month = DateTime.Today.Month;
             OnDBFExportProgress += delegate {
                 pbExportProgress.Increment(1);
                 lbExportStatus.Text = string.Format("Обработано записей: {0}/{1}\r\nДо окончания операции: {2}", pbExportProgress.Value, pbExportProgress.Maximum, TimeSpan.FromSeconds(((DateTime.Now - ExportStartTime).TotalSeconds / pbExportProgress.Value) * (pbExportProgress.Maximum - pbExportProgress.Value)));
@@ -76,6 +78,14 @@ namespace TimeSheetManager
         {
             if (cbCatalogs.SelectedIndex == -1)
                 return;
+
+            if (cbCatalogs.Text == "Расчетчики")
+            {
+                Raschetchiki raschForm = new Raschetchiki(mainForm);
+                raschForm.ShowDialog();
+                return;
+            }
+
             CatalogEditorForm form = new CatalogEditorForm(mainForm, cbCatalogs.Text);
             switch (cbCatalogs.Text)
             {

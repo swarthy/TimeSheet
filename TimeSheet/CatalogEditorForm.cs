@@ -10,7 +10,7 @@ namespace TimeSheetManager
     public partial class CatalogEditorForm : Form
     {
         DBList<User> users;
-        DBList<Personal> personals, raschetchiki;
+        DBList<Personal> personals;
         DBList<LPU> lpuList;
         DBList<Post> posts;
         DBList<Department> departments;
@@ -227,7 +227,7 @@ namespace TimeSheetManager
         //done
         public void OpenPersonals()
         {
-            personals = LPUPersonals;
+            personals = LPUPersonals;            
             BindingListView<Personal> view = new BindingListView<Personal>(personals);
             #region Столбцы и элементы управления
             grid.Columns.Clear();

@@ -57,6 +57,7 @@ Global
 		{A4E0A1DD-8BAC-45E2-B9ED-F93913610F5A}.Release|x64.Build.0 = Release|x64
 		{A4E0A1DD-8BAC-45E2-B9ED-F93913610F5A}.Release|x86.ActiveCfg = Release|x64
 		{A4E0A1DD-8BAC-45E2-B9ED-F93913610F5A}.Release|x86.Build.0 = Release|x64
+		{A4E0A1DD-8BAC-45E2-B9ED-F93913610F5A}.Release|x86.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

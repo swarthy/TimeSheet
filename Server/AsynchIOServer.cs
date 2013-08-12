@@ -173,7 +173,7 @@ namespace Server
 
         internal void CloseConnection(ConnectionInfo ci, bool fireDiscEvent = true)
         {
-            Log("Disconnected: {0}", ci.Socket.RemoteEndPoint);
+            Log("Disconnected: {0}", ci.Socket.RemoteEndPoint);            
             ci.Socket.Shutdown(SocketShutdown.Both);
             ci.Socket.Close();
             lock (Connections) Connections.Remove(ci);

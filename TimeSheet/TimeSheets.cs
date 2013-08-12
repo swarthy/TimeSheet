@@ -27,7 +27,7 @@ namespace TimeSheetManager
             if (mainForm.currentUser._IS_ADMIN)
                 mainForm.currentLPU.Users.SelectMany(u => u.HM<TimeSheetInstance>("TimeSheets", true)).ToList().ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.Raschetchik, ts.ID));
             else
-                mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.ID));
+                mainForm.currentUser.HM<TimeSheetInstance>("TimeSheets", true).ForEach(ts => grid.Rows.Add(ts.Department.Name, ts._GetDate.ToString("MMMM yyyy"), ts.User.Profile, ts.Raschetchik, ts.ID));
         }
 
         void OpenTimeSheet(int ID)

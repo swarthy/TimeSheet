@@ -19,6 +19,7 @@ namespace TimeSheetManager
         public static Color weekEndColor = Color.MistyRose;
         public static Color holyDayColor = Color.LightCoral;
         public static Color shortDayColor = Color.BurlyWood;
+        public static bool Closing = false;
         public AppState State = AppState.LPUselect;
         public DBList<LPU> LPUlist = new DBList<LPU>();
         public DBList<Department> Departmentlist = new DBList<Department>();
@@ -251,10 +252,10 @@ namespace TimeSheetManager
             Domain.OnFindEnd += delegate { Invoke((Action)(() => { ReadyR();})); };
 
             Client = new ClientIOAsync();
-            Client.OnReceiveData += (data) => { MessageParse(data); };
-            Client.OnConnecting += delegate { tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Show(); })); };
-            Client.OnConnected += delegate { tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { Client.Send(new NetData(Command.ClientVersion, Helper.AppVersion)); SetControlsEnabled(true); connectWaitScreen.Close(); })); };
-            Client.OnServerNotAvailable += delegate { tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Close(); })); MessageBox.Show("Сервер недоступен.\r\nПроверьте подключение к сети или обратитесь к администратору.\r\n[Server]", "Ошибка подключения к серверу", MessageBoxButtons.OK, MessageBoxIcon.Error); };
+            Client.OnReceiveData += (data) => { if (Closing)return; MessageParse(data); };
+            Client.OnConnecting += delegate { if (Closing)return; tssServerConnection.Text = "Подключение..."; tssServerConnection.Image = Properties.Resources.Synchronize_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Show(); })); };
+            Client.OnConnected += delegate { if (Closing)return; tssServerConnection.Text = "Online"; tssServerConnection.Image = Properties.Resources.Hard_Disk_16x16; Invoke((Action)(() => { SetControlsEnabled(true); connectWaitScreen.Close(); Client.Send(new NetData(Command.ClientVersion, Helper.AppVersion)); })); };
+            Client.OnServerNotAvailable += delegate { if (Closing)return; tssServerConnection.Text = "Сервер недоступен"; tssServerConnection.Image = Properties.Resources.Cancel_16x16; Invoke((Action)(() => { SetControlsEnabled(false); connectWaitScreen.Close(); })); MessageBox.Show("Сервер недоступен.\r\nПроверьте подключение к сети или обратитесь к администратору.\r\n[Server]", "Ошибка подключения к серверу", MessageBoxButtons.OK, MessageBoxIcon.Error); };
             Client.Connect(Helper.ServerIP, 23069);
 
             LPUlist = LPU.All<LPU>();            
@@ -670,7 +671,9 @@ namespace TimeSheetManager
             #if !DEBUG
             if (MessageBox.Show("Завершить работу с программой?", "Подтверждение выхода", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
                 e.Cancel = true;
-            #endif
+            else
+#endif
+                Closing = true;
         }
 
         private void tbAuthPass_KeyDown(object sender, KeyEventArgs e)

@@ -13,8 +13,8 @@ namespace Server
     {
         /// <summary>
         /// Главная точка входа для приложения.
-        /// </summary>
-        public static string Version = "";
+        /// </summary>                
+        public static string ClientForUpdateVersion = "";
         public static DateTime StartTime;
         [STAThread]
         static void Main()
@@ -25,10 +25,11 @@ namespace Server
             DBInit();
             GetServerVersion();
             Server.Initialize();
-            //Server.OnLogin += (data, ci) => {  };
-            //Server.OnLogout += (data, ci) => {  };            
+            Server.OnLogin += (data, ci) => { File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("{0} login at {1}\r\n", ci.User._LoginAndProfile, DateTime.Now)); };
+            Server.OnLogout += (ci) => { File.AppendAllText(string.Format("logs\\{0}log.txt", DateTime.Today.ToString("yyyyMM")), string.Format("{0} logout at {1}\r\n", ci.User._LoginAndProfile, DateTime.Now)); };            
             Server.Start();
             StartTime = DateTime.Now;
+            Console.WriteLine("Actual Client Version: {0}", ClientForUpdateVersion);
             string inp="";
             do
             {
@@ -40,7 +41,7 @@ namespace Server
                         break;
                     case "status":
                         Server.PingAll();
-                        Console.WriteLine("==============Online users [{0}]==============", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"));
+                        Console.WriteLine("==============Online users ({1}) [{0}]==============", DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss"), Server.server.Connections.Count);
                     Console.WriteLine("==============================================================");
                     foreach (var item in Server.server.Connections)                    
                         Console.WriteLine("{0}\r\nOnline: {1}{2}\r\n", item.ShortInfo, DateTime.Now - item.Connected, item.User==null || item.User.Information == null ? "" : "\r\nInformation: " + item.User.Information.Info);
@@ -82,7 +83,7 @@ namespace Server
             {
                 string[] files = File.ReadAllLines(@"Updates\updatelist.txt");
                 if (files.Length > 0 && File.Exists("Updates\\"+files[0]))                
-                    Version = FileVersionInfo.GetVersionInfo("Updates\\"+files[0]).FileVersion;                
+                    ClientForUpdateVersion = FileVersionInfo.GetVersionInfo("Updates\\"+files[0]).FileVersion;                
             }            
         }
     }

@@ -11,14 +11,18 @@ namespace Server
 {
     public static class Server
     {
-        public static DataEvent OnLogin, OnLogout;
+        public static DataEvent OnLogin;
+        public static ConnectionInfoEvent OnLogout;
         internal static AsynchronousIoServer server;
         public static void Initialize()
         {
             int port = 23069;            
             server = new AsynchronousIoServer(port);
             server.LogMethod += Log;
-            server.OnReceiveData += new DataEvent(OnReceive);            
+            server.OnReceiveData += new DataEvent(OnReceive);
+            server.OnClientDisconnect += new ConnectionInfoEvent(OnDisconnect);
+            if (!Directory.Exists("logs"))
+                Directory.CreateDirectory("logs");
         }
         public static void Start()
         {
@@ -46,19 +50,26 @@ namespace Server
                     break;
                 case Command.Logout:
                     if (OnLogout != null)
-                        OnLogout(data, ci);
+                        OnLogout(ci);
                     Log("Logout user {0}", ci.User.Login);
                     ci.User = null;
                     break;
                 case Command.Message:
                     Console.WriteLine("[{0}] {1}", ci.User.Login, data.Text);
                     break;
-                case Command.ClientVersion:
-                    if (Program.Version != "" && Program.Version != data.Text)
+                case Command.ClientVersion:                    
+                    if (Program.ClientForUpdateVersion != "" && Program.ClientForUpdateVersion != data.Text)
                         server.SendToClient(ci, new NetData(Command.LetsUpdate, ""));
                     break;
             }            
-        }        
+        }
+        static void OnDisconnect(ConnectionInfo ci)
+        {
+            if (OnLogout != null && ci.User != null)
+            {                
+                OnLogout(ci);
+            }
+        }
         static void Log(string msg, params object[] args)
         {
             Console.WriteLine(string.Format("[{0}] {1}", DateTime.Now.ToShortTimeString(), string.Format(msg, args))); 

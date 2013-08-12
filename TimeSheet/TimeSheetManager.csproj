@@ -118,6 +118,12 @@
     <Compile Include="MyDataGridView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Raschetchiki.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Raschetchiki.Designer.cs">
+      <DependentUpon>Raschetchiki.cs</DependentUpon>
+    </Compile>
     <Compile Include="RowEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -183,6 +189,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ImportForm.resx">
       <DependentUpon>ImportForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Raschetchiki.resx">
+      <DependentUpon>Raschetchiki.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="RowEditForm.resx">
       <DependentUpon>RowEditForm.cs</DependentUpon>
