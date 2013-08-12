@@ -1208,7 +1208,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         {
             get
             {
-                return this["Percent"] == null ? 1 : (double)this["Percent"];
+                return this["Percent"] == null ? 100 : (double)this["Percent"];
             }
             set
             {

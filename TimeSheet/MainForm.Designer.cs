@@ -589,8 +589,7 @@
             this.dgTimeSheet.ReadOnly = true;
             this.dgTimeSheet.Size = new System.Drawing.Size(658, 253);
             this.dgTimeSheet.TabIndex = 2;
-            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);
-            this.dgTimeSheet.SelectionChanged += new System.EventHandler(this.dgTimeSheet_SelectionChanged);
+            this.dgTimeSheet.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgTimeSheet_CellDoubleClick);            
             this.dgTimeSheet.KeyDown += new System.Windows.Forms.KeyEventHandler(this.dgTimeSheet_KeyDown);            
             // 
             // cFIO

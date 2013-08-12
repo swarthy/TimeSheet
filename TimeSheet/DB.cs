@@ -138,13 +138,13 @@ namespace SwarthyComponents.FireBird
     {
         private readonly T data;
         private readonly string FieldSource, FieldDestination;
-        private readonly bool needSaveThis;
+        //private readonly bool needSaveThis; //удалено из за проблем при удалении записи ячейки дня
         public DBEventArgs(T data, string FieldSource, string FieldDestination, bool needSaveThis = true)
         {
             this.data = data;
             this.FieldSource = FieldSource;
             this.FieldDestination = FieldDestination;
-            this.needSaveThis = needSaveThis;
+            //this.needSaveThis = needSaveThis;
         }
         public T GetData
         {
@@ -166,14 +166,7 @@ namespace SwarthyComponents.FireBird
             {
                 return FieldDestination;
             }
-        }
-        public bool NeedSave
-        {
-            get
-            {
-                return needSaveThis;
-            }
-        }
+        }        
     }
     public class DBList<T> : List<T> where T : Domain, new()
     {
@@ -977,8 +970,8 @@ namespace SwarthyComponents.FireBird
         public void ListOnRemove<T>(object sender, DBEventArgs<T> args) where T: Domain, new()
         {
             args.GetData.Fields[args.GetFieldSource] = null;            
-            if (args.NeedSave)
-                args.GetData.Save(true);
+            //if (args.NeedSave)
+                //args.GetData.Save(true);
             changed = true;
         }
         public static bool operator ==(Domain A, Domain B)

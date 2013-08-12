@@ -569,7 +569,8 @@ namespace TimeSheetManager
                 if (cell.Value != null && cell.OwningColumn.Tag != null && cell.OwningColumn.Tag.GetType() == typeof(DateTime))
                 {
                     var day = cell.Value as TimeSheet_Day;
-                    content.Days.Remove(day, true);                    
+                    //content.Days.Remove(day, true);
+                    content.Days.Remove(day, true);
                 }
             }
             DrawContent(content, rowStart, rowCount);
@@ -731,18 +732,6 @@ namespace TimeSheetManager
                     StartUpdate();
                     break;
             }
-        }
-
-        private void dgTimeSheet_SelectionChanged(object sender, EventArgs e)
-        {
-            /*if (dgTimeSheet.SelectedCells.Count == 1)
-            {                
-                int rowPos, rowCount;
-                GetContentForDayByCell(dgTimeSheet.SelectedCells[0], out rowPos, out rowCount);
-                dgTimeSheet.StartRowSelect = rowPos;
-                dgTimeSheet.StopRowSelect = rowPos + rowCount - 1;
-                StatusRight = rowPos.ToString() + " " + (rowPos + rowCount - 1).ToString();                
-            }*/
         }
     }
     public enum AppState
