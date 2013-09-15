@@ -116,7 +116,7 @@ namespace TimeSheetManager
 
         private void tbHours_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
+            if (e.KeyCode == Keys.Enter && MessageBox.Show(string.Format("Вы ввели {0}:{1}. Сохранить?",tbHours.Text,tbMinutes.Text),"Подтверждение изменений",MessageBoxButtons.YesNo, MessageBoxIcon.Question)==System.Windows.Forms.DialogResult.Yes)
                 btnOk_Click(this, e);
         }
     }
