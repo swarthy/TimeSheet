@@ -38,8 +38,9 @@ namespace TimeSheetManager
                 worksheet.Workbook.Names["TimeSheetYear"].Value = timeSheet._GetDate.ToString("yyyy") + "г.";
                 worksheet.Workbook.Names["LPU_Name"].Value = timeSheet.Department.LPU.Name;
                 worksheet.Workbook.Names["DepartmentName"].Value = timeSheet.Department.Name;
-                worksheet.Workbook.Names["CalendarDaysCount"].Value = timeSheet._DaysInMonth;
-                worksheet.Workbook.Names["CalendarDayString"].Value = Helper.MakeForCount(timeSheet._DaysInMonth,"день", "дня", "дней");
+                var workedDays = Calendar.WorkedDaysInMonth(timeSheet.TS_Year, timeSheet.TS_Month);
+                worksheet.Workbook.Names["CalendarDaysCount"].Value = workedDays;
+                worksheet.Workbook.Names["CalendarDayString"].Value = Helper.MakeForCount(workedDays, "день", "дня", "дней");
                 #endregion
                 foreach (TimeSheet_Content content in timeSheet.Content)
                 {

@@ -809,9 +809,13 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         }
         public int GetWorkedDaysForMonth(int month)
         {
-            int all = DateTime.DaysInMonth(CYear, month);
-            var specdays = SpecialDay.FindAll<SpecialDay>("(state = 1 or state = 2) and spec_date >= '01.{0}.{1}' and spec_date <= '{2}.{0}.{1}'", month, CYear, all);
-            return all-specdays.Count;
+            return WorkedDaysInMonth(CYear, month);
+        }
+        public static int WorkedDaysInMonth(int year, int month)
+        {
+            int all = DateTime.DaysInMonth(year, month);
+            var specdays = SpecialDay.FindAll<SpecialDay>("(state = 1 or state = 2) and spec_date >= '01.{0}.{1}' and spec_date <= '{2}.{0}.{1}'", month, year, all);
+            return all - specdays.Count;
         }
         public void Generate12Months(double hours =0)
         {
