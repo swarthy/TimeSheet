@@ -14,9 +14,10 @@ namespace TimeSheetManager
     public static class ExcelManager
     {
         const int templateStartRow = 35;
-        static int lastRow = 30;
+        const int templateRowCount = 2;
+        static int lastRow = 31;
         static int rowCount = 0;
-        static int personalCount = 0;        
+        static int personalCount = 0;
         static ExcelWorksheet worksheet;
         public static EventHandler OnProgress = null, OnSavingStart = null, OnExportEnd = null;
         public static void ExportContent(TimeSheetInstance timeSheet, string templatePath, string newFilePath)
@@ -24,23 +25,25 @@ namespace TimeSheetManager
             WaitScreen waitScreen = new WaitScreen(true);
             FileInfo templateFile = new FileInfo(templatePath);
             FileInfo newFile = new FileInfo(newFilePath);
-            lastRow = 30;
+            lastRow = 31;
             rowCount = 0;
-            personalCount = 0;            
+            personalCount = 0;
+
             using (ExcelPackage package = new ExcelPackage(newFile, templateFile))
             {
-                worksheet = package.Workbook.Worksheets.First();                
+                worksheet = package.Workbook.Worksheets.First();
                 #region Заполнение по маркерам
-                worksheet.Workbook.Names["CommitDate"].Value = new DateTime(timeSheet.TS_Year, timeSheet.TS_Month, timeSheet._DaysInMonth).ToString("dd MMMM yyyy");
-                worksheet.Workbook.Names["MainDoc_LPUName"].Value = "Главный врач " + timeSheet.Department.LPU.Name;
+                worksheet.Workbook.Names["CommitDate1"].Value = worksheet.Workbook.Names["CommitDate2"].Value = new DateTime(timeSheet.TS_Year, timeSheet.TS_Month, timeSheet._DaysInMonth).ToString("dd MMMM yyyy");
+                //worksheet.Workbook.Names["MainDoc_LPUName"].Value = "Главный врач " + timeSheet.Department.LPU.Name;
                 worksheet.Workbook.Names["MainDoc"].Value = timeSheet.Department.LPU == null ? null : timeSheet.Department.LPU.MainDoc;
-                worksheet.Workbook.Names["TimeSheetMonth"].Value = timeSheet._GetDate.ToString("MMMM");
-                worksheet.Workbook.Names["TimeSheetYear"].Value = timeSheet._GetDate.ToString("yyyy") + "г.";
+                worksheet.Workbook.Names["TimeSheetDate"].Value = string.Format("{0} г.", timeSheet._GetDate.ToString("MMMM yyyy"));
+                //worksheet.Workbook.Names["TimeSheetMonth"].Value = timeSheet._GetDate.ToString("MMMM");
+                //worksheet.Workbook.Names["TimeSheetYear"].Value = timeSheet._GetDate.ToString("yyyy");
                 worksheet.Workbook.Names["LPU_Name"].Value = timeSheet.Department.LPU.Name;
                 worksheet.Workbook.Names["DepartmentName"].Value = timeSheet.Department.Name;
                 var workedDays = Calendar.WorkedDaysInMonth(timeSheet.TS_Year, timeSheet.TS_Month);
                 worksheet.Workbook.Names["CalendarDaysCount"].Value = workedDays;
-                worksheet.Workbook.Names["CalendarDayString"].Value = Helper.MakeForCount(workedDays, "день", "дня", "дней");
+                //worksheet.Workbook.Names["CalendarDayString"].Value = Helper.MakeForCount(workedDays, "день", "дня", "дней");
                 #endregion
                 foreach (TimeSheet_Content content in timeSheet.Content)
                 {
@@ -49,9 +52,10 @@ namespace TimeSheetManager
                         var insertPos = lastRow;
                         AddRow();
                         worksheet.Cells[insertPos, 1].Value = ++personalCount;
-                        worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
-                        worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
-                        worksheet.Cells[insertPos, 4].Value = content.Rate;
+                        worksheet.Cells[insertPos, 2].Value = content.Personal._FullName;//string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
+                        //worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
+                        //worksheet.Cells[insertPos, 10].Value = content.Rate;
+                        worksheet.Cells[insertPos, 10].Value = content.Post.Name;
                         continue;
                     }
                     if (content._IsPercentType)
@@ -59,23 +63,20 @@ namespace TimeSheetManager
                         var insertPos = lastRow;
                         AddRow();
                         worksheet.Cells[insertPos, 1].Value = personalCount;
-                        worksheet.Cells[insertPos, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
-                        worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
-                        worksheet.Cells[insertPos, 4].Value = content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
-                        worksheet.Cells[insertPos, 5].Value = string.Format("Отработано {0}%. {1} {2}.", content.Percent, content.PercentDays, Helper.MakeForCount(content.PercentDays, "рабочий день", "рабочих дня", "рабочих дней"));
-                        worksheet.Cells[string.Format("E{0}:S{1}", insertPos, insertPos + 1)].Merge = true;
+                        worksheet.Cells[insertPos, 2].Value = content.Personal._FullName;//string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
+                        //worksheet.Cells[insertPos, 3].Value = content.Personal.Table_Number;
+                        worksheet.Cells[insertPos, 10].Value = content.Post.Name;//content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
+                        worksheet.Cells[insertPos, 12].Value = string.Format("Отработано {0}%. {1} {2}.", content.Percent, content.PercentDays, Helper.MakeForCount(content.PercentDays, "рабочий день", "рабочих дня", "рабочих дней"));
+                        worksheet.Cells[string.Format("M{0}:AQ{1}", insertPos, insertPos + templateRowCount - 1)].Merge = true;
                         continue;
                     }
                     var groups = content.Days.GroupBy(d => d.Item_Date);
                     var needRows = groups.Max(a => a.Count());
 
-                    var topRowDays = groups.Where(ig => ig.Key.Day >= 1 && ig.Key.Day <= 15);
-                    var bottomRowDays = groups.Where(ig => ig.Key.Day >= 16 && ig.Key.Day <= 31);
-
-                    DayCounter[] daysCount = new DayCounter[needRows];
-                    HoursCounter[] totalHoursCount = new HoursCounter[needRows];
-                    HoursCounter[] nightHoursCount = new HoursCounter[needRows];
-                    HoursCounter[] holydayHoursCount = new HoursCounter[needRows];
+                    var daysCount = new int[needRows];
+                    var totalHoursCount = new double[needRows];
+                    var nightHoursCount = new double[needRows];
+                    var holydayHoursCount = new double[needRows];
 
                     int rangeStart = lastRow;//начало
 
@@ -84,132 +85,90 @@ namespace TimeSheetManager
                         AddRow();
                     #region Заполнение ПП, ФИО и Табельного номера
                     worksheet.Cells[rangeStart, 1].Value = personalCount;
-                    worksheet.Cells[rangeStart, 2].Value = string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
-                    worksheet.Cells[rangeStart, 3].Value = content.Personal.Table_Number;
-                    worksheet.Cells[rangeStart, 4].Value = content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
-                    #endregion                    
+                    worksheet.Cells[rangeStart, 2].Value = content.Personal._FullName;//string.Format("{0} - {1}", content.Personal._ShortName, content.Post.Name);
+                    //worksheet.Cells[rangeStart, 3].Value = content.Personal.Table_Number;
+                    worksheet.Cells[rangeStart, 10].Value = content.Post.Name;// content._IsPercentType ? string.Format("{0}%", content.Percent) : content.Rate.ToString();
+                    #endregion
                     #region Заполнение дней
-                    #region Верхняя строка
-                    foreach (var gr in topRowDays)
+                    foreach (var gr in groups)
                     {
-                        int col = gr.Key.Day + 4;
+                        int col = gr.Key.Day + 12;
                         int i = 0;
                         foreach (var day in gr)
                         {
-                            worksheet.Cells[rangeStart + i * 4, col].Value = day.Flag.Ru_Name;
+                            worksheet.Cells[rangeStart + i * templateRowCount, col].Value = day.Flag.Ru_Name;
                             if (day.Worked_Time.TotalHours == 0 && day.Flag.Name == "v")
-                                worksheet.Cells[rangeStart + i * 4 + 1, col].Value = day.Flag.Ru_Name;
+                                worksheet.Cells[rangeStart + i * templateRowCount + 1, col].Value = day.Flag.Ru_Name;
                             else
-                                worksheet.Cells[rangeStart + i * 4 + 1, col].Value = Helper.FormatSpan(day.Worked_Time);
+                                worksheet.Cells[rangeStart + i * templateRowCount + 1, col].Value = Helper.FormatSpan(day.Worked_Time);
                             if (day.Flag.Name == "v")
                             {
-                                worksheet.Cells[rangeStart + i * 4, col].Style.Font.Color.SetColor(Color.Red);
-                                worksheet.Cells[rangeStart + i * 4 + 1, col].Style.Font.Color.SetColor(Color.Red);
+                                worksheet.Cells[rangeStart + i * templateRowCount, col].Style.Font.Color.SetColor(Color.Red);
+                                worksheet.Cells[rangeStart + i * templateRowCount + 1, col].Style.Font.Color.SetColor(Color.Red);
                             }
                             switch (day.Flag.Name)
                             {
                                 case "ya":
-                                    daysCount[i].TopRow++;
-                                    totalHoursCount[i].TopRow += day.Worked_Time.TotalHours;
+                                    daysCount[i]++;
+                                    totalHoursCount[i] += day.Worked_Time.TotalHours;
                                     break;
                                 case "s":
-                                    totalHoursCount[i].TopRow += day.Worked_Time.TotalHours;
+                                    totalHoursCount[i] += day.Worked_Time.TotalHours;
                                     break;
                                 case "n":
-                                    nightHoursCount[i].TopRow += day.Worked_Time.TotalHours;
-                                    totalHoursCount[i].TopRow += day.Worked_Time.TotalHours;
+                                    nightHoursCount[i] += day.Worked_Time.TotalHours;
+                                    totalHoursCount[i] += day.Worked_Time.TotalHours;
                                     break;
                                 case "rp":
-                                    holydayHoursCount[i].TopRow += day.Worked_Time.TotalHours;
-                                    totalHoursCount[i].TopRow += day.Worked_Time.TotalHours;
+                                    holydayHoursCount[i] += day.Worked_Time.TotalHours;
+                                    totalHoursCount[i] += day.Worked_Time.TotalHours;
                                     break;
                                 case "v":
-                                    holydayHoursCount[i].TopRow += day.Worked_Time.TotalHours;
-                                    totalHoursCount[i].TopRow += day.Worked_Time.TotalHours;
+                                    holydayHoursCount[i] += day.Worked_Time.TotalHours;
+                                    totalHoursCount[i] += day.Worked_Time.TotalHours;
                                     break;
                             }
                             i++;
                         }
                     }
                     #endregion
-                    #region Нижняя строка
-                    foreach (var gr in bottomRowDays)
-                    {
-                        int col = gr.Key.Day - 15 + 4;
-                        int i = 0;
-                        foreach (var day in gr)
-                        {
-                            worksheet.Cells[rangeStart + i * 4 + 2, col].Value = day.Flag.Ru_Name;
-                            if (day.Worked_Time.TotalHours == 0 && day.Flag.Name == "v")
-                                worksheet.Cells[rangeStart + i * 4 + 3, col].Value = day.Flag.Ru_Name;
-                            else
-                                worksheet.Cells[rangeStart + i * 4 + 3, col].Value = Helper.FormatSpan(day.Worked_Time);
-                            if (day.Flag.Name == "v")
-                            {
-                                worksheet.Cells[rangeStart + i * 4 + 2, col].Style.Font.Color.SetColor(Color.Red);
-                                worksheet.Cells[rangeStart + i * 4 + 3, col].Style.Font.Color.SetColor(Color.Red);
-                            }
 
-                            switch (day.Flag.Name)
-                            {
-                                case "ya":
-                                    daysCount[i].BottomRow++;
-                                    totalHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    break;
-                                case "s":
-                                    totalHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    break;
-                                case "n":
-                                    nightHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    totalHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    break;
-                                case "rp":
-                                    holydayHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    totalHoursCount[i].BottomRow += day.Worked_Time.TotalHours;
-                                    break;
-                            }
-                            i++;
-                        }
-                    }
                     for (int i = 0; i < needRows; i++)
                         for (int j = timeSheet._DaysInMonth + 1; j <= 31; j++)
                         {
-                            worksheet.Cells[rangeStart + i * 4 + 3, j - 15 + 4].Value = "X";
-                            worksheet.Cells[rangeStart + i * 4 + 4, j - 15 + 4].Value = "X";
+                            worksheet.Cells[rangeStart + i * templateRowCount, j + 12].Value = "X";
+                            worksheet.Cells[rangeStart + i * templateRowCount + 1, j + 12].Value = "X";
                         }
-                    #endregion
-                    #endregion
+                    //#endregion
+                    //#endregion
                     #region Summary
                     for (int i = 0; i < needRows; i++)
                     {
-                        worksheet.Cells[rangeStart + i * 4, 21].Value = daysCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 21].Value = daysCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 21].Value = daysCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * templateRowCount, 45].Value = daysCount[i];
 
-                        worksheet.Cells[rangeStart + i * 4, 22].Value = totalHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 22].Value = totalHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 22].Value = totalHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * templateRowCount, 46].Value = totalHoursCount[i];
 
-                        worksheet.Cells[rangeStart + i * 4, 23].Value = nightHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 23].Value = nightHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 23].Value = nightHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * templateRowCount, 47].Value = nightHoursCount[i];
 
-                        worksheet.Cells[rangeStart + i * 4, 24].Value = holydayHoursCount[i].AllSum;
-                        worksheet.Cells[rangeStart + i * 4 + 1, 24].Value = holydayHoursCount[i].TopRow;
-                        worksheet.Cells[rangeStart + i * 4 + 3, 24].Value = holydayHoursCount[i].BottomRow;
+                        worksheet.Cells[rangeStart + i * templateRowCount, 48].Value = holydayHoursCount[i];
+
+                        worksheet.Cells[rangeStart + i * templateRowCount, 49].Value = content.Personal.Table_Number;
+
                     }
                     #endregion
-                    
+
                     if (OnProgress != null)
                         OnProgress(null, new ProgressEventArgs(personalCount));
                 }
-                worksheet.Cells[lastRow + 1, 15].Value = timeSheet.Department.DepartmentManager == null ? null : timeSheet.Department.DepartmentManager._ShortName;
-                worksheet.Cells[lastRow + 3, 15].Value = timeSheet.User.Profile == null ? null : timeSheet.User.Profile._ShortName;
+                //worksheet.Cells[lastRow + 1, 15].Value = timeSheet.Department.DepartmentManager == null ? null : timeSheet.Department.DepartmentManager._ShortName;
+                worksheet.Cells[lastRow + 2, 5].Value = timeSheet.User.Profile.MainPost == null ? null : timeSheet.User.Profile.MainPost.Name;
+                worksheet.Cells[lastRow + 2, 20].Value = timeSheet.User.Profile == null ? null : timeSheet.User.Profile._ShortName;
+                worksheet.Cells[lastRow + 2, 33].Value = new DateTime(timeSheet.TS_Year, timeSheet.TS_Month, timeSheet._DaysInMonth).ToString("dd MMMM yyyy");
                 template.Value = "";
                 template.StyleName = "Normal";
                 if (OnSavingStart != null)
                     OnSavingStart(null, EventArgs.Empty);
-                package.Save();                
+                package.Save();
                 if (OnExportEnd != null)
                     OnExportEnd(null, EventArgs.Empty);
             }
@@ -219,39 +178,15 @@ namespace TimeSheetManager
         {
             get
             {
-                return worksheet.Cells[string.Format("A{0}:X{1}", templateStartRow + rowCount * 4, templateStartRow + rowCount * 4 + 3)];
+                return worksheet.Cells[string.Format("A{0}:AW{1}", templateStartRow + rowCount * templateRowCount, templateStartRow + rowCount * templateRowCount + templateRowCount - 1)];
             }
         }
         static void AddRow()
         {
-            worksheet.InsertRow(lastRow, 4);
+            worksheet.InsertRow(lastRow, templateRowCount);
             rowCount++;
-            template.Copy(worksheet.Cells[string.Format("A{0}:X{1}", lastRow, lastRow + 3)]);
-            lastRow += 4;
-        }
-        struct DayCounter
-        {
-            public int TopRow;
-            public int BottomRow;
-            public int AllSum
-            {
-                get
-                {
-                    return TopRow + BottomRow;
-                }
-            }
-        }
-        struct HoursCounter
-        {
-            public double TopRow;
-            public double BottomRow;
-            public double AllSum
-            {
-                get
-                {
-                    return TopRow + BottomRow;
-                }
-            }
+            template.Copy(worksheet.Cells[string.Format("A{0}:AW{1}", lastRow, lastRow + templateRowCount - 1)]);
+            lastRow += templateRowCount;
         }
     }
     public class ProgressEventArgs : EventArgs

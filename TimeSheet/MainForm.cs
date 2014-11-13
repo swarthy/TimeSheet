@@ -168,8 +168,9 @@ namespace TimeSheetManager
         {
             switch (newstate)
             {
-                case AppState.LPUselect:                    
-                    var lastOpened = Convert.ToInt32(Helper.Get("LPU", "lastOpened"));
+                case AppState.LPUselect:
+                    var lastOpenedData = Helper.Get("LPU", "lastOpened");
+                    var lastOpened = lastOpenedData == "" ? 0 : Convert.ToInt32(lastOpenedData);
                     if (lastOpened != 0 && !wantChangeLPU)
                     {                        
                         currentLPU = LPU.Get<LPU>(lastOpened);
@@ -684,7 +685,7 @@ namespace TimeSheetManager
                     waitScreen.Close();
                 }
                 waitScreen.Close();
-                Process.Start("export\\");
+                //Process.Start("export\\");
             }
         }
         

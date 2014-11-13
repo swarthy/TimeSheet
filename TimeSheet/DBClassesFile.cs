@@ -43,7 +43,7 @@ namespace TimeSheetManager
             { "LastRaschetchik", new Link("LastRaschetchik_TN", typeof(Personal), "Table_Number") },
             //ЛПУ
             { "LPU", new Link("LPU_ID", typeof(LPU)) }
-        };        
+        };
         public override string ToString()
         {
             return Login;
@@ -104,7 +104,7 @@ namespace TimeSheetManager
             get
             {
                 return Role > 0;
-            }            
+            }
         }
         public bool _IS_ADMIN
         {
@@ -213,7 +213,7 @@ namespace TimeSheetManager
             {"DepartmentManager", new Link("DEPARTMENT_MANAGER_TN", typeof(Personal), "Table_Number") },
             //ЛПУ
             {"LPU",new Link("LPU_ID",typeof(LPU))}
-        };        
+        };
         public override string ToString()
         {
             return Name;
@@ -225,7 +225,7 @@ namespace TimeSheetManager
             if (Department_Number <= 0)
                 return "Не указан номер отделения";
             if (LPU == null)
-                return "Не указано ЛПУ";            
+                return "Не указано ЛПУ";
             return "";
         }
         #region Properties
@@ -272,7 +272,7 @@ namespace TimeSheetManager
             {
                 this["LPU"] = value;
             }
-        }        
+        }
         public DBList<Personal> PersonalOfDepartment
         {
             get
@@ -301,7 +301,7 @@ namespace TimeSheetManager
         /// <param name="str"></param>
         /// <returns></returns>
         public new static bool TryParseFromString(string str)
-        {            
+        {
             var values = str.SplitAndTrim('|');
             int temp;
             Department department = new Department();
@@ -310,10 +310,10 @@ namespace TimeSheetManager
                 return false;
             department.Department_Number = temp;
             //if (!int.TryParse(values[2], out temp))
-                //return false;
+            //return false;
             //department["DEPARTMENT_MANAGER_TN"] = temp;
             department["LPU_ID"] = MainForm.curUsr.LPU.ID;
-            return department.Save();            
+            return department.Save();
         }
         public Department()
             : base(typeof(Department))
@@ -368,7 +368,7 @@ namespace TimeSheetManager
             if (string.IsNullOrEmpty(MiddleName))
                 return "Отчество заполнено неверно";
             if (Table_Number <= 0)
-                return "Табельный номер заполнен неверно";            
+                return "Табельный номер заполнен неверно";
             if (Priority <= 0)
                 return "Приоритет заполнен неверно";
             return "";
@@ -406,7 +406,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         public string _ShortNameAndNumber
         {
             get
-            {                
+            {
                 return string.Format("{0} ({1})", _ShortName, Table_Number);
             }
         }
@@ -414,7 +414,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         {
             get
             {
-                return string.Format("{0} {1} {2}",LastName, FirstName, MiddleName);
+                return string.Format("{0} {1} {2}", LastName, FirstName, MiddleName);
             }
         }
         public string _FullNameAndNumber
@@ -495,8 +495,8 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             get
             {
                 return HM<UserPDP>("UserPDP");
-            }            
-        }        
+            }
+        }
         public Department Department
         {
             get
@@ -527,7 +527,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         /// <returns></returns>
         public new static bool TryParseFromString(string str)
         {
-            var values = str.SplitAndTrim('|');            
+            var values = str.SplitAndTrim('|');
             int temp;
             Personal personal = new Personal();
             personal.LastName = values[0].ToProperCase();
@@ -586,7 +586,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Главный врач
             {"MainDoc", new Link("MAINDOC_TN",typeof(Personal),"Table_Number")}
-        };        
+        };
         public override string ToString()
         {
             return Name;
@@ -663,7 +663,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             if (string.IsNullOrEmpty(Name))
                 return "Флаг введен неверно";
             if (string.IsNullOrEmpty(Ru_Name))
-                return "Визуальный код флага введен неверно";            
+                return "Визуальный код флага введен неверно";
             return "";
         }
         #region Properties
@@ -760,7 +760,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
                 this["Code"] = value;
             }
         }
-        #endregion        
+        #endregion
         /// <summary>
         /// Название|Код должности
         /// </summary>
@@ -802,7 +802,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         new public static Dictionary<string, Link> belongs_to = new Dictionary<string, Link>() {
             //Имя
             {"Name", new Link("Name_ID",typeof(Calendar_Name))}
-        };        
+        };
         public override string ToString()
         {
             return NameLink.Name;
@@ -817,7 +817,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             var specdays = SpecialDay.FindAll<SpecialDay>("(state = 1 or state = 2) and spec_date >= '01.{0}.{1}' and spec_date <= '{2}.{0}.{1}'", month, year, all);
             return all - specdays.Count;
         }
-        public void Generate12Months(double hours =0)
+        public void Generate12Months(double hours = 0)
         {
             for (int i = 1; i <= 12; i++)
                 Months.Add(new Calendar_Content(this, i, hours, GetWorkedDaysForMonth(i)));
@@ -851,7 +851,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             {
                 this["CYear"] = value;
             }
-        }        
+        }
 
         #endregion
         public Calendar()
@@ -862,7 +862,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             : base(typeof(Calendar))
         {
             NameLink = name;
-            CYear = year;            
+            CYear = year;
         }
     }
     /// <summary>
@@ -878,8 +878,8 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         };
         public override string ToString()
         {
-            return string.Format(new DateTime(Calendar.CYear, CMonth, 1).ToString("MMMM yyyy"));            
-        }        
+            return string.Format(new DateTime(Calendar.CYear, CMonth, 1).ToString("MMMM yyyy"));
+        }
         #region Properties
         public Calendar Calendar
         {
@@ -902,7 +902,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             {
                 this["CMonth"] = value;
             }
-        }        
+        }
         public double Hours
         {
             get
@@ -971,7 +971,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             {
                 this["name"] = value;
             }
-        }  
+        }
         #endregion
         public Calendar_Name()
             : base(typeof(Calendar_Name))
@@ -1165,7 +1165,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             {
                 return HM<TimeSheet_Day>("Days");
             }
-        }        
+        }
         public Calendar Calendar
         {
             get
@@ -1257,7 +1257,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         #endregion
 
         public DataGridViewRow[] Render(MyDataGridView dg)
-        {            
+        {
             DataGridViewRow[] result;
             if (Days.Count == 0)
             {
@@ -1289,11 +1289,11 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
                 {
                     switch (item.Flag.Name)
                     {
-                        case "ya":                            
+                        case "ya":
                             values[i][colCount - 4] = Convert.ToInt32(values[i][colCount - 4]) + 1;//дни явок
                             values[i][colCount - 3] = Convert.ToDouble(values[i][colCount - 3]) + item.Worked_Time.TotalHours;//часы - всего
                             var sdate = MainForm.specialDays.Find(sd => sd.Spec_Date == item.Item_Date);
-                            if (sdate!=null && (sdate.State == 1 || sdate.State == 2))
+                            if (sdate != null && (sdate.State == 1 || sdate.State == 2))
                                 values[i][colCount - 1] = Convert.ToDouble(values[i][colCount - 1]) + item.Worked_Time.TotalHours;//часы - выходные
                             break;
                         case "n":
@@ -1318,12 +1318,12 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             }
             for (int i = 0; i < needRows; i++)
             {
-                result[i].SetValues(values[i]);                
+                result[i].SetValues(values[i]);
             }
             result[0].Cells[0].Tag = needRows;
             return result;
         }
-        
+
         /*
          *может быть... когда нибудь... а пока что так, как выше :)
         public List<DataRow> AddToTable(DataTable table)
@@ -1380,7 +1380,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         public override string ToString()
         {
             return Flag + (Worked_Time.TotalHours == 0 ? "" : " " + Worked_Time.ToString("hh':'mm"));
-        }        
+        }
         #region Properties
         public Flag Flag
         {
@@ -1441,7 +1441,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         }
         public TimeSheet_Day(DateTime date, TimeSpan worked_time, Flag flag)
             : base(typeof(TimeSheet_Day))
-        {            
+        {
             Item_Date = date;
             Worked_Time = worked_time;
             Flag = flag;
@@ -1504,7 +1504,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
     {
         new public static string tableName = "SETTINGS";
         new public static List<string> FieldNames = new List<string>();//обязательно должно быть переопределено                
-        #region Properties        
+        #region Properties
         public string Setting_Key
         {
             get
@@ -1526,7 +1526,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             {
                 this["Setting_Value"] = value;
             }
-        }        
+        }
         #endregion
         public static string Get(string key)
         {
@@ -1542,7 +1542,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
                 setting.Setting_Value = value;
             setting.Save();
         }
-        
+
         public DBSettings()
             : base(typeof(DBSettings))
         {
@@ -1562,7 +1562,7 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
         /// <summary>
         /// Имя таблицы
         /// </summary>
-        new public static string tableName = "USERPDP";        
+        new public static string tableName = "USERPDP";
         /// <summary>
         /// Список полей (автоматически заполняется из на основе свойств класса, должен быть переопределен в каждом классе)
         /// </summary>
@@ -1592,8 +1592,8 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             if (Post == null)
                 return "Не указана должность";
             return "";
-        }        
-        #region Properties        
+        }
+        #region Properties
         public User User
         {
             get
@@ -1654,5 +1654,5 @@ where   personal.Table_Number=raschetchiki.Personal_TN and personal.DEPARTMENT_N
             Department = department;
             Post = post;
         }
-    }    
+    }
 }
